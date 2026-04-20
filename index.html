@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Flipdish Online Ordering vs Marketplaces — Value Calculator</title>
+<title>Flipdish Kiosk Value Calculator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Domine:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -36,18 +36,9 @@
     font-family: 'Domine', Georgia, serif;
   }
   .wrap { max-width: 1120px; margin: 0 auto; }
-
-  .back {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 13px; font-weight: 500; color: var(--muted);
-    text-decoration: none; margin-bottom: 14px;
-  }
-  .back:hover { color: var(--flipdish-blue); }
-  .back svg { width: 14px; height: 14px; }
-
   header {
     display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+    margin-bottom: 28px; flex-wrap: wrap; gap: 12px;
     padding-bottom: 16px; border-bottom: 1px solid var(--border);
   }
   .brand { display: flex; align-items: center; gap: 10px; }
@@ -112,7 +103,6 @@
     color: var(--muted); padding: 6px 0; user-select: none;
   }
   details summary:hover { color: var(--flipdish-blue); }
-  details[open] { padding-top: 4px; }
 
   .hero {
     background: linear-gradient(135deg, #E6F1FB 0%, #C6DEF3 100%);
@@ -132,7 +122,7 @@
   .hero .sub { font-size: 14px; color: var(--flipdish-blue-dark); opacity: 0.85; }
 
   .detail-grid {
-    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 14px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px;
   }
   .detail {
     background: white; border: 1px solid var(--border); border-radius: 8px;
@@ -142,7 +132,7 @@
     font-size: 11px; color: var(--muted); font-weight: 600;
     text-transform: uppercase; letter-spacing: 0.06em;
   }
-  .detail .v { font-size: 18px; font-weight: 700; margin-top: 3px; }
+  .detail .v { font-size: 20px; font-weight: 700; margin-top: 3px; }
 
   .assume {
     margin-top: 16px; padding: 16px 18px; border-left: 3px solid var(--flipdish-blue);
@@ -153,9 +143,29 @@
   .assume ul { margin: 4px 0 0; padding-left: 18px; }
   .assume li { margin-bottom: 2px; }
 
+  .actions { display: flex; gap: 8px; margin-top: 14px; }
+  .actions button {
+    flex: 1; padding: 11px 14px; border-radius: 8px;
+    border: 1px solid var(--border); background: white;
+    font-size: 13px; font-weight: 600; cursor: pointer; color: var(--flipdish-dark);
+    font-family: inherit;
+  }
+  .actions button:hover { background: #F9FAFB; }
+  .actions button.primary {
+    background: var(--flipdish-blue); color: white; border-color: var(--flipdish-blue);
+  }
+  .actions button.primary:hover { background: var(--flipdish-blue-dark); }
+
   footer {
     margin-top: 28px; font-size: 12px; color: var(--muted); text-align: center;
     padding-top: 20px; border-top: 1px solid var(--border);
+  }
+
+  .range-wrap { display: flex; align-items: center; gap: 10px; }
+  .range-wrap input[type="range"] { flex: 1; accent-color: var(--flipdish-blue); }
+  .range-wrap .rv {
+    min-width: 54px; text-align: right; font-weight: 700;
+    font-variant-numeric: tabular-nums; font-size: 15px;
   }
 
   .legend {
@@ -164,11 +174,9 @@
     color: var(--flipdish-blue-dark); margin-left: 6px;
   }
 
-  /* tab-specific input visibility */
-  body.no-drivers-view .own-drivers-only { display: none !important; }
-  body.own-drivers-view .no-drivers-only { display: none !important; }
+  body.revenue-view .labour-only { display: none !important; }
 
-  /* Mobile */
+  /* Mobile: field reps use phones most of the time */
   @media (max-width: 640px) {
     body { padding: 16px 12px 32px; }
     h1 { font-size: 22px; }
@@ -178,8 +186,10 @@
     .hero .big { font-size: 34px; letter-spacing: -0.01em; word-break: break-word; }
     .hero .sub { font-size: 13px; }
     .detail .k { font-size: 10px; }
-    .detail .v { font-size: 16px; }
+    .detail .v { font-size: 17px; }
     .detail { padding: 10px 12px; }
+    .actions { flex-direction: column; }
+    .actions button { width: 100%; }
     header { gap: 8px; }
     .brand svg { height: 28px; }
     .brand .tag { display: none; }
@@ -187,21 +197,16 @@
     .segmented { width: 100%; display: flex; }
     .segmented button { flex: 1; text-align: center; }
     .input-row label { flex-wrap: wrap; }
-    .input-row input, .input-row select { font-size: 16px; } /* iOS zoom prevention */
+    .input-row input, .input-row select { font-size: 16px; } /* 16px prevents iOS zoom on focus */
   }
-  @media (max-width: 480px) {
+  @media (max-width: 400px) {
     .detail-grid { grid-template-columns: 1fr; }
     .hero .big { font-size: 30px; }
   }
 </style>
 </head>
-<body class="own-drivers-view">
+<body>
 <div class="wrap">
-
-  <a href="../" class="back">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-    All calculators
-  </a>
 
   <header>
     <div class="brand">
@@ -222,25 +227,25 @@
       </svg>
       <span class="tag">Business Value Assessment</span>
     </div>
-    <div class="meta">Online Ordering · Marketplace comparison · v1.0</div>
+    <div class="meta">Kiosk · Rates verified April 2026 · v1.0 mockup</div>
   </header>
 
-  <h1 id="pageTitle">Stop giving 30% to the marketplaces</h1>
-  <p class="lede" id="pageLede">See exactly how much a restaurant gets back when orders move from third-party marketplaces to Flipdish direct ordering. All Flipdish fees deducted — what's shown is real money the restaurant keeps.</p>
+  <h1 id="pageTitle">How much could a Flipdish Kiosk save you?</h1>
+  <p class="lede" id="pageLede">Enter your restaurant's numbers on the left. The annual saving updates live. Nothing is saved — this is a live illustration.</p>
 
   <div class="segmented" role="tablist">
-    <button class="active" data-view="own">Restaurant has own drivers</button>
-    <button data-view="no">Uses delivery service</button>
+    <button class="active" data-view="labour">Labour savings</button>
+    <button data-view="revenue">Revenue growth</button>
   </div>
 
   <div class="layout">
 
     <!-- INPUTS -->
     <div class="card">
-      <h2>Restaurant's numbers <span class="legend">editable</span></h2>
+      <h2>Your numbers <span class="legend">editable</span></h2>
 
       <div class="input-row">
-        <label>Market <span class="hint">sets currency &amp; VAT</span></label>
+        <label>Market <span class="hint">sets currency & rates</span></label>
         <select id="market">
           <option value="UK">United Kingdom (£)</option>
           <option value="IE">Ireland (€)</option>
@@ -249,233 +254,357 @@
       </div>
 
       <div class="input-row">
-        <label>Monthly GMV from marketplaces <span class="hint">order value before fees</span></label>
-        <input id="gmv" type="number" value="5000">
+        <label>Monthly in-store card volume <span class="hint">e.g. typical QSR ~£10k</span></label>
+        <input id="cardVol" type="number" value="10000">
       </div>
 
       <div class="input-row">
-        <label>Average order value (AOV) <span class="hint">marketplace + online avg</span></label>
-        <input id="aov" type="number" value="25">
+        <label>Average order value (AOV) <span class="hint">avg per transaction</span></label>
+        <input id="aov" type="number" value="14">
+      </div>
+
+      <div class="input-row labour-only">
+        <label>Number of cashiers <span class="hint">currently in-store</span></label>
+        <input id="cashiers" type="number" value="2">
+      </div>
+
+      <div class="input-row labour-only">
+        <label>Cashier hours per week each <span class="hint">per cashier</span></label>
+        <input id="hours" type="number" value="40">
+      </div>
+
+      <div class="input-row labour-only">
+        <label>Hourly wage <span class="hint">inc. employer costs</span></label>
+        <input id="wage" type="number" value="14">
       </div>
 
       <div class="input-row">
-        <label>VAT rate <span class="hint">applied to marketplace take</span></label>
-        <input id="vat" type="number" value="20" step="0.5">
-      </div>
-
-      <!-- TAB-SPECIFIC: own drivers -->
-      <div class="input-row own-drivers-only">
-        <label>Marketplace cut (own drivers) <span class="hint">typical: 10–15%</span></label>
-        <input id="mpRateOwn" type="number" value="12" step="0.5">
-      </div>
-      <div class="input-row own-drivers-only">
-        <label>% rerouted to Flipdish <span class="hint">orders that move from marketplaces</span></label>
-        <input id="convOwn" type="number" value="70" step="5">
-      </div>
-      <div class="input-row own-drivers-only">
-        <label>Order volume uplift <span class="hint">from Flipdish marketing &amp; loyalty</span></label>
-        <input id="upliftOwn" type="number" value="2" step="0.5">
-      </div>
-
-      <!-- TAB-SPECIFIC: no own drivers -->
-      <div class="input-row no-drivers-only">
-        <label>Marketplace cut (delivery service) <span class="hint">typical: 25–35%</span></label>
-        <input id="mpRateNo" type="number" value="30" step="0.5">
-      </div>
-      <div class="input-row no-drivers-only">
-        <label>% rerouted to Flipdish <span class="hint">lower when delivery still needed</span></label>
-        <input id="convNo" type="number" value="40" step="5">
-      </div>
-      <div class="input-row no-drivers-only">
-        <label>Order volume uplift <span class="hint">from Flipdish marketing &amp; loyalty</span></label>
-        <input id="upliftNo" type="number" value="2" step="0.5">
-      </div>
-
-      <details>
-        <summary>Advanced &mdash; Flipdish fees, subscription &amp; delivery</summary>
-
-        <div class="input-row own-drivers-only" style="margin-top:10px;">
-          <label>Flipdish processing fee % (own drivers) <span class="hint">on Flipdish-routed GMV</span></label>
-          <input id="fdFeeOwn" type="number" value="3.5" step="0.1">
+        <label>
+          <span>% of on-prem volume going through kiosk</span>
+          <span class="hint">typical 60–80%</span>
+        </label>
+        <div class="range-wrap">
+          <input id="volCaptured" type="range" min="0" max="100" value="70" step="5">
+          <span class="rv"><span id="volCapturedVal">70</span>%</span>
         </div>
+      </div>
 
-        <div class="input-row no-drivers-only" style="margin-top:10px;">
-          <label>Flipdish processing fee % (delivery service) <span class="hint">on Flipdish-routed GMV</span></label>
-          <input id="fdFeeNo" type="number" value="5.0" step="0.1">
+      <div class="input-row labour-only">
+        <label>
+          <span>% of labour replaced by kiosk</span>
+          <span class="hint">typical 30–50%</span>
+        </label>
+        <div class="range-wrap">
+          <input id="labourReplaced" type="range" min="0" max="100" value="40" step="5">
+          <span class="rv"><span id="labourReplacedVal">40</span>%</span>
         </div>
+      </div>
 
+      <details style="margin-top: 6px;">
+        <summary>Advanced — fees, subscriptions and hardware</summary>
+
+        <div class="input-row" style="margin-top: 10px;">
+          <label>Current POS processing rate % <span class="hint">what you pay today</span></label>
+          <input id="posRate" type="number" value="1.2" step="0.1">
+        </div>
         <div class="input-row">
-          <label>Flipdish OO subscription <span class="hint">monthly, fixed</span></label>
-          <input id="fdSub" type="number" value="99">
+          <label>Current POS per-transaction fee <span class="hint">typically around 10p / 10c</span></label>
+          <input id="posFixed" type="number" value="0.10" step="0.01">
         </div>
-
-        <div class="input-row no-drivers-only">
-          <label>Avg Flipdish delivery cost per order <span class="hint">paid by restaurant, e.g. £5.31 / €5.31 / $5.50</span></label>
-          <input id="fdDelivery" type="number" value="5.31" step="0.01">
+        <div class="input-row">
+          <label>Flipdish kiosk processing rate % <span class="hint">standard: 1.5%</span></label>
+          <input id="fdRate" type="number" value="1.5" step="0.1">
+        </div>
+        <div class="input-row">
+          <label>Flipdish per-transaction fee <span class="hint">standard: 20p / 20c / $0.20</span></label>
+          <input id="fdFixed" type="number" value="0.20" step="0.01">
+        </div>
+        <div class="input-row">
+          <label>Flipdish kiosk monthly subscription</label>
+          <input id="fdSub" type="number" value="79">
+        </div>
+        <div class="input-row">
+          <label>Kiosk hardware total price <span class="hint">standard: ~£1,500</span></label>
+          <input id="hardware" type="number" value="1500">
         </div>
       </details>
 
+      <div id="revenueInputs" style="display:none;">
+        <hr style="border:0; border-top:1px solid var(--border); margin:14px 0;">
+        <div class="input-row">
+          <label>
+            <span>AOV uplift from upsell</span>
+            <span class="hint">typical 5–10%, up to 30%</span>
+          </label>
+          <div class="range-wrap">
+            <input id="aovUplift" type="range" min="0" max="30" value="12" step="1">
+            <span class="rv"><span id="aovUpliftVal">12</span>%</span>
+          </div>
+        </div>
+        <div class="input-row">
+          <label>
+            <span>Order volume uplift</span>
+            <span class="hint">typical 3–8%</span>
+          </label>
+          <div class="range-wrap">
+            <input id="volUplift" type="range" min="0" max="20" value="2" step="1">
+            <span class="rv"><span id="volUpliftVal">2</span>%</span>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- RESULTS -->
+    <!-- OUTPUTS -->
     <div>
       <div class="hero">
-        <div class="label" id="heroLabel">Monthly revenue increase</div>
-        <div class="big" id="heroBig">—</div>
-        <div class="sub" id="heroSub">Net of all Flipdish fees, subscription and delivery costs</div>
+        <div class="label" id="heroLabel">Annual saving</div>
+        <div class="big" id="heroValue">£0</div>
+        <div class="sub" id="heroSub">Labour saved, net of Flipdish processing & subscription</div>
       </div>
 
       <div class="detail-grid">
-        <div class="detail">
-          <div class="k">Annual increase</div>
-          <div class="v" id="k1">—</div>
-        </div>
-        <div class="detail">
-          <div class="k">Revenue today</div>
-          <div class="v" id="k2">—</div>
-        </div>
-        <div class="detail">
-          <div class="k">Revenue with Flipdish</div>
-          <div class="v" id="k3">—</div>
-        </div>
+        <div class="detail"><div class="k" id="k1">Monthly saving</div><div class="v" id="v1">£0</div></div>
+        <div class="detail"><div class="k" id="k2">Hardware payback</div><div class="v" id="v2">—</div></div>
+        <div class="detail"><div class="k" id="k3">Cost today per month</div><div class="v" id="v3">£0</div></div>
+        <div class="detail"><div class="k" id="k4">Cost with Flipdish per month</div><div class="v" id="v4">£0</div></div>
       </div>
 
       <div class="assume">
-        <strong>How we got there</strong>
+        <strong>How this was calculated</strong>
         <ul id="assumeList"></ul>
+      </div>
+
+      <div class="actions">
+        <button onclick="window.print()">Print / save as PDF</button>
+        <button class="primary" onclick="copySummary()">Copy summary to email</button>
       </div>
     </div>
 
   </div>
 
   <footer>
-    Flipdish Online Ordering Value Calculator &middot; Live calculation, nothing is saved
+    This is a value illustration, not a contractual quote. Final pricing is confirmed in your Flipdish proposal.
+    <br>Flipdish Commercial · Business Value Assessment · Owned by Commercial Enablement
   </footer>
 
 </div>
 
 <script>
-  // ---------- defaults by market ----------
+  const ccyMap = { UK: "£", IE: "€", US: "$" };
   const defaultsByMarket = {
-    UK: { vat: 20, sub: 99,  delivery: 5.31, currency: '£' },
-    IE: { vat: 23, sub: 99,  delivery: 5.31, currency: '€' },
-    US: { vat: 0,  sub: 99,  delivery: 5.50, currency: '$' }
+    UK: { posRate: 1.20, posFixed: 0.10, fdRate: 1.50, fdFixed: 0.20, wage: 14, hardware: 1500 },
+    IE: { posRate: 1.50, posFixed: 0.08, fdRate: 1.50, fdFixed: 0.20, wage: 15, hardware: 1500 },
+    US: { posRate: 2.60, posFixed: 0.10, fdRate: 1.50, fdFixed: 0.20, wage: 16, hardware: 1800 }
   };
 
-  let currentTab = 'own'; // 'own' or 'no'
-  let currency = '£';
+  let currentAssumptions = [];
 
-  // ---------- helpers ----------
-  const $ = id => document.getElementById(id);
-  const num = id => parseFloat($(id).value) || 0;
-  const fmtMoney = n => {
-    if (!isFinite(n)) return '—';
-    const sign = n < 0 ? '-' : '';
-    const abs = Math.abs(n);
-    return sign + currency + abs.toLocaleString(undefined, { maximumFractionDigits: 0 });
-  };
-  const fmtMoneyDecimal = n => {
-    if (!isFinite(n)) return '—';
-    const sign = n < 0 ? '-' : '';
-    const abs = Math.abs(n);
-    return sign + currency + abs.toLocaleString(undefined, { maximumFractionDigits: 0, minimumFractionDigits: 0 });
-  };
-  const fmtPct = n => (n).toFixed(1) + '%';
-  const fmtOrders = n => n.toLocaleString(undefined, { maximumFractionDigits: 0 });
+  let view = "labour";
 
-  // ---------- tab switching ----------
+  const $ = (id) => document.getElementById(id);
+  const num = (id) => parseFloat($(id).value) || 0;
+  const fmt = (val, ccy) => {
+    if (!isFinite(val)) return "—";
+    const rounded = Math.round(val);
+    const sign = rounded < 0 ? "-" : "";
+    return sign + ccy + Math.abs(rounded).toLocaleString('en-GB');
+  };
+
+  // Tab switcher
   document.querySelectorAll('.segmented button').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.segmented button').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      currentTab = btn.dataset.view;
-      document.body.classList.toggle('own-drivers-view', currentTab === 'own');
-      document.body.classList.toggle('no-drivers-view', currentTab === 'no');
+      view = btn.dataset.view;
+      $('revenueInputs').style.display = (view === "revenue") ? "block" : "none";
+      document.body.classList.toggle('revenue-view', view === "revenue");
+      if (view === "labour") {
+        $('pageTitle').textContent = "How much could a Flipdish Kiosk save you?";
+        $('pageLede').textContent = "Enter your restaurant's numbers on the left. The annual saving updates live. Nothing is saved — this is a live illustration.";
+      } else {
+        $('pageTitle').textContent = "How much extra revenue could a Flipdish Kiosk bring in?";
+        $('pageLede').textContent = "Enter your restaurant's numbers on the left. The extra annual revenue updates live. Nothing is saved — this is a live illustration.";
+      }
       calc();
     });
   });
 
-  // ---------- market change updates defaults ----------
-  $('market').addEventListener('change', () => {
-    const m = defaultsByMarket[$('market').value];
-    $('vat').value = m.vat;
-    $('fdSub').value = m.sub;
-    $('fdDelivery').value = m.delivery;
-    currency = m.currency;
+  // Range value labels
+  ['labourReplaced', 'volCaptured', 'aovUplift', 'volUplift'].forEach(id => {
+    const el = $(id);
+    if (!el) return;
+    el.addEventListener('input', () => { $(id + 'Val').textContent = el.value; });
+  });
+
+  // Market default switch
+  $('market').addEventListener('change', e => {
+    const d = defaultsByMarket[e.target.value];
+    $('posRate').value = d.posRate;
+    $('posFixed').value = d.posFixed;
+    $('fdRate').value = d.fdRate;
+    $('fdFixed').value = d.fdFixed;
+    $('wage').value = d.wage;
+    $('hardware').value = d.hardware;
     calc();
   });
 
-  // ---------- live recalculation ----------
-  document.querySelectorAll('input').forEach(el => el.addEventListener('input', calc));
-
   function calc() {
-    // Set currency from market
-    currency = defaultsByMarket[$('market').value].currency;
-
-    // Shared
-    const gmv = num('gmv');
+    const ccy = ccyMap[$('market').value];
+    const cardVol = num('cardVol');
     const aov = num('aov');
-    const vat = num('vat');
+    const cashiers = num('cashiers');
+    const hours = num('hours');
+    const wage = num('wage');
+    const labourReplaced = num('labourReplaced') / 100;
+    const volCaptured = num('volCaptured') / 100;
+    const hardware = num('hardware');
+    const posRate = num('posRate') / 100;
+    const posFixed = num('posFixed');
+    const fdRate = num('fdRate') / 100;
+    const fdFixed = num('fdFixed');
     const fdSub = num('fdSub');
 
-    // Tab-specific picks
-    const isOwn = currentTab === 'own';
-    const mpRate = isOwn ? num('mpRateOwn') : num('mpRateNo');
-    const conv   = isOwn ? num('convOwn')   : num('convNo');
-    const uplift = isOwn ? num('upliftOwn') : num('upliftNo');
-    const fdFee  = isOwn ? num('fdFeeOwn')  : num('fdFeeNo');
-    const fdDelivery = isOwn ? 0 : num('fdDelivery');
+    // Current monthly cost = current processing (rate + per-txn) + current labour
+    const monthlyLabour = cashiers * hours * (52/12) * wage;
+    const currentTxns = aov > 0 ? (cardVol / aov) : 0;
+    const monthlyCurrentProcessing = (cardVol * posRate) + (currentTxns * posFixed);
+    const currentMonthly = monthlyLabour + monthlyCurrentProcessing;
 
-    // Marketplace effective rate including VAT
-    const mpEffective = (mpRate / 100) * (1 + vat / 100);
+    // New monthly cost = Flipdish kiosk processing + residual POS processing + reduced labour + subscription
+    const kioskVol = cardVol * volCaptured;
+    const remainingVol = cardVol - kioskVol;
+    const kioskTxns = aov > 0 ? (kioskVol / aov) : 0;
+    const remainingTxns = aov > 0 ? (remainingVol / aov) : 0;
+    const newProcessing =
+      (kioskVol * fdRate) + (kioskTxns * fdFixed) +
+      (remainingVol * posRate) + (remainingTxns * posFixed);
+    const newLabour = monthlyLabour * (1 - labourReplaced);
+    const newMonthly = newProcessing + newLabour + fdSub;
 
-    // ---- Marketplace-only (today) ----
-    const mpOrdersToday = aov > 0 ? gmv / aov : 0;
-    const mpCostToday = gmv * mpEffective;
-    const revenueToday = gmv - mpCostToday;
+    const monthlySave = currentMonthly - newMonthly;
+    const annualSave = monthlySave * 12;
+    const paybackMonths = monthlySave > 0 ? hardware / monthlySave : Infinity;
 
-    // ---- With Flipdish ----
-    const newGmv = gmv * (1 + uplift / 100);
-    const newOrders = aov > 0 ? newGmv / aov : 0;
-    const fdGmv = newGmv * (conv / 100);
-    const fdOrders = newOrders * (conv / 100);
-    const remainingMpGmv = newGmv * (1 - conv / 100);
-    const remainingMpOrders = newOrders * (1 - conv / 100);
-
-    const remainingMpCost = remainingMpGmv * mpEffective;
-    const fdProcessing = fdGmv * (fdFee / 100);
-    const fdDeliveryTotal = fdOrders * fdDelivery;
-    const fdTotal = fdProcessing + fdSub + fdDeliveryTotal;
-
-    const totalCost = remainingMpCost + fdTotal;
-    const revenueWithFD = newGmv - totalCost;
-
-    const monthlyIncrease = revenueWithFD - revenueToday;
-    const annualIncrease = monthlyIncrease * 12;
-
-    // ---- Render results ----
-    $('heroBig').textContent = fmtMoney(monthlyIncrease) + '/mo';
-    $('heroSub').textContent = isOwn
-      ? 'Net of Flipdish processing and subscription'
-      : 'Net of Flipdish processing, subscription and delivery costs';
-    $('k1').textContent = fmtMoney(annualIncrease) + '/yr';
-    $('k2').textContent = fmtMoney(revenueToday) + '/mo';
-    $('k3').textContent = fmtMoney(revenueWithFD) + '/mo';
-
-    // ---- Assumptions ----
-    const lines = [];
-    lines.push(`Total orders: <strong>${fmtOrders(newOrders)}</strong>/month — <strong>${fmtOrders(fdOrders)}</strong> via Flipdish, <strong>${fmtOrders(remainingMpOrders)}</strong> remain on marketplaces.`);
-    lines.push(`Marketplace effective cost: <strong>${fmtPct(mpEffective * 100)}</strong> (${fmtPct(mpRate)} cut + ${fmtPct(vat)} VAT) — costs the restaurant <strong>${fmtMoney(remainingMpCost)}/mo</strong> on remaining marketplace orders.`);
-    if (isOwn) {
-      lines.push(`Flipdish costs: <strong>${fmtMoney(fdProcessing)}</strong> processing (${fmtPct(fdFee)} of ${fmtMoney(fdGmv)}) + <strong>${fmtMoney(fdSub)}</strong> subscription = <strong>${fmtMoney(fdTotal)}/mo</strong>.`);
-    } else {
-      lines.push(`Flipdish costs: <strong>${fmtMoney(fdProcessing)}</strong> processing + <strong>${fmtMoney(fdSub)}</strong> subscription + <strong>${fmtMoney(fdDeliveryTotal)}</strong> delivery (${fmtOrders(fdOrders)} orders × ${currency}${fdDelivery.toFixed(2)}) = <strong>${fmtMoney(fdTotal)}/mo</strong>.`);
+    // Revenue uplift (applies only to volume through kiosk)
+    // We show NET of Flipdish processing fees on the uplift to avoid overstating what actually
+    // lands in the restaurant's pocket.
+    let revAnnualUplift = 0;
+    let revMonthlyUplift = 0;
+    let grossMonthlyUplift = 0;
+    let processingOnUplift = 0;
+    let extraMonthlyTxns = 0;
+    if (view === "revenue") {
+      const aovUplift = num('aovUplift') / 100;
+      const volUplift = num('volUplift') / 100;
+      const combined = (1 + aovUplift) * (1 + volUplift) - 1;
+      grossMonthlyUplift = kioskVol * combined;
+      const currentKioskOrders = aov > 0 ? (kioskVol / aov) : 0;
+      extraMonthlyTxns = currentKioskOrders * volUplift;
+      processingOnUplift = (grossMonthlyUplift * fdRate) + (extraMonthlyTxns * fdFixed);
+      revMonthlyUplift = grossMonthlyUplift - processingOnUplift;
+      revAnnualUplift = revMonthlyUplift * 12;
     }
-    lines.push(`Order volume uplift of <strong>${fmtPct(uplift)}</strong> from Flipdish marketing &amp; loyalty included.`);
-    lines.push(`Restaurant keeps <strong>${fmtMoney(revenueWithFD)}</strong> with Flipdish vs <strong>${fmtMoney(revenueToday)}</strong> on marketplaces only — <strong>${fmtMoney(monthlyIncrease)}/mo</strong> more in their pocket.`);
 
-    $('assumeList').innerHTML = lines.map(l => '<li>' + l + '</li>').join('');
+    // Hero, detail cells, and assumptions all switch by tab
+    if (view === "labour") {
+      $('heroLabel').textContent = "Annual saving";
+      $('heroValue').textContent = fmt(annualSave, ccy);
+      $('heroSub').textContent = "Your saving after all Flipdish costs are deducted";
+
+      $('k1').textContent = "Monthly saving";
+      $('k2').textContent = "Hardware payback";
+      $('k3').textContent = "Labour + processing today";
+      $('k4').textContent = "Labour + processing with Flipdish";
+      $('v1').textContent = fmt(monthlySave, ccy);
+      $('v2').textContent = (isFinite(paybackMonths) && paybackMonths > 0)
+        ? (paybackMonths < 1 ? "< 1 month" : Math.ceil(paybackMonths) + " months")
+        : "—";
+      $('v3').textContent = fmt(currentMonthly, ccy);
+      $('v4').textContent = fmt(newMonthly, ccy);
+
+      currentAssumptions = [
+        "Labour replaced: " + (labourReplaced * 100).toFixed(0) + "% of existing cashier hours",
+        "Kiosk captures " + (volCaptured * 100).toFixed(0) + "% of current on-prem volume",
+        "Processing today: " + (posRate * 100).toFixed(2) + "% + " + ccy + posFixed.toFixed(2) + " per transaction",
+        "Processing with Flipdish kiosk: " + (fdRate * 100).toFixed(2) + "% + " + ccy + fdFixed.toFixed(2) + " per transaction",
+        "Flipdish subscription included in the monthly cost",
+        "Hardware payback calculated from monthly saving (" + fmt(hardware, ccy) + " ÷ " + fmt(monthlySave, ccy) + "/month)"
+      ];
+    } else {
+      const upliftPct = kioskVol > 0 ? (revMonthlyUplift / kioskVol) * 100 : 0;
+      const aovU = num('aovUplift');
+      const volU = num('volUplift');
+
+      $('heroLabel').textContent = "Additional annual revenue";
+      $('heroValue').textContent = fmt(revAnnualUplift, ccy);
+      $('heroSub').textContent = "Net of Flipdish processing fees on the uplift — this is extra money the restaurant actually keeps";
+
+      const newAov = aov * (1 + (aovU / 100));
+
+      // Hardware payback from revenue uplift alone
+      const paybackMonthsRev = revMonthlyUplift > 0 ? hardware / revMonthlyUplift : Infinity;
+
+      $('k1').textContent = "Extra monthly revenue";
+      $('k2').textContent = "Hardware payback";
+      $('k3').textContent = "New AOV after upsell";
+      $('k4').textContent = "Extra orders per month";
+      $('v1').textContent = fmt(revMonthlyUplift, ccy);
+      $('v2').textContent = (isFinite(paybackMonthsRev) && paybackMonthsRev > 0)
+        ? (paybackMonthsRev < 1 ? "< 1 month" : Math.ceil(paybackMonthsRev) + " months")
+        : "—";
+      $('v3').textContent = ccy + newAov.toFixed(2);
+      $('v4').textContent = Math.round(extraMonthlyTxns).toLocaleString('en-GB');
+
+      currentAssumptions = [
+        "AOV uplift from upsell: +" + aovU + "%",
+        "Order volume uplift: +" + volU + "%",
+        "Combined revenue uplift: +" + upliftPct.toFixed(1) + "% (net of processing fees)",
+        "Uplift applies to " + fmt(kioskVol, ccy) + " of kiosk volume per month (" + (volCaptured * 100).toFixed(0) + "% of total volume)",
+        "Gross monthly uplift: " + fmt(grossMonthlyUplift, ccy) + " · minus Flipdish processing on the uplift (" + fmt(processingOnUplift, ccy) + ") = net " + fmt(revMonthlyUplift, ccy),
+        "Hardware payback calculated from extra revenue alone (" + fmt(hardware, ccy) + " ÷ " + fmt(revMonthlyUplift, ccy) + "/month)"
+      ];
+    }
+
+    // Render the assumptions panel from the current list
+    document.getElementById('assumeList').innerHTML =
+      currentAssumptions.map(a => "<li>" + a + "</li>").join("");
   }
+
+  function copySummary() {
+    const heroLabel = $('heroLabel').textContent;
+    const heroVal = $('heroValue').textContent;
+    const lines = [
+      "Flipdish Kiosk — Value illustration",
+      "====================================",
+      heroLabel + ": " + heroVal,
+      $('k1').textContent + ": " + $('v1').textContent,
+      $('k2').textContent + ": " + $('v2').textContent,
+      $('k3').textContent + ": " + $('v3').textContent,
+      $('k4').textContent + ": " + $('v4').textContent,
+      "",
+      "Assumptions:",
+      ...currentAssumptions.map(a => "- " + a)
+    ].join("\n");
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(lines).then(
+        () => alert("Summary copied — paste it into your follow-up email."),
+        () => fallbackCopy(lines)
+      );
+    } else {
+      fallbackCopy(lines);
+    }
+  }
+
+  function fallbackCopy(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); alert("Summary copied."); } catch(e) { alert("Copy not supported — select and copy manually.\n\n" + text); }
+    document.body.removeChild(ta);
+  }
+
+  // Wire all inputs
+  document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', calc));
 
   calc();
 </script>
