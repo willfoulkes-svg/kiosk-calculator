@@ -1,388 +1,483 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Flipdish Business Value Calculators</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Flipdish Online Ordering vs Marketplaces — Value Calculator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Domine:wght@500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Domine:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --science-blue: #0074D9;
-    --venice-blue: #064885;
-    --ink: #0A1F33;
-    --muted: #5A6A7A;
+    --flipdish-blue: #0074D9;
+    --flipdish-blue-dark: #064885;
+    --flipdish-blue-light: #E6F1FB;
+    --flipdish-blue-line: #BEDAF2;
+    --flipdish-dark: #1A1A1A;
+    --muted: #6B7280;
     --bg: #F6F9FC;
     --card: #FFFFFF;
-    --border: #E1E8EF;
-    --soft-blue: #E8F1FB;
-    --success: #1D9F5A;
-    --shadow: 0 1px 2px rgba(10,31,51,0.04), 0 4px 16px rgba(10,31,51,0.06);
-    --shadow-hover: 0 2px 6px rgba(10,31,51,0.08), 0 12px 28px rgba(10,31,51,0.12);
+    --border: #E5E7EB;
+    --input-bg: #F8FBFF;
+    --input-border: #C7DEF3;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
   body {
-    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
     background: var(--bg);
-    color: var(--ink);
+    color: var(--flipdish-dark);
+    padding: 32px 20px 48px;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    font-weight: 400;
   }
+  h1, h2, .hero .big {
+    font-family: 'Domine', Georgia, serif;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; }
 
-  /* ---------- Top bar ---------- */
-  .topbar {
-    background: #fff;
-    border-bottom: 1px solid var(--border);
-    padding: 14px 28px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  .back {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 500; color: var(--muted);
+    text-decoration: none; margin-bottom: 14px;
+  }
+  .back:hover { color: var(--flipdish-blue); }
+  .back svg { width: 14px; height: 14px; }
+
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+    padding-bottom: 16px; border-bottom: 1px solid var(--border);
   }
   .brand { display: flex; align-items: center; gap: 10px; }
-  .brand svg { display: block; }
-  .brand-name {
-    font-family: 'Domine', serif;
-    font-weight: 700;
-    color: var(--venice-blue);
-    font-size: 18px;
-    letter-spacing: -0.2px;
+  .brand svg { height: 36px; width: auto; display: block; }
+  .brand .tag {
+    font-family: 'Roboto', sans-serif; font-size: 13px; font-weight: 500;
+    color: var(--muted); padding-left: 12px; border-left: 1px solid var(--border);
+    margin-left: 2px;
   }
-  .topbar-tag {
-    font-size: 12px;
-    color: var(--muted);
-    background: var(--soft-blue);
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-weight: 500;
+  .meta { font-size: 12px; color: var(--muted); }
+
+  h1 { font-size: 30px; margin: 0 0 6px; letter-spacing: -0.01em; font-weight: 700; color: var(--flipdish-blue-dark); }
+  .lede { color: var(--muted); margin: 0 0 20px; font-size: 15px; max-width: 680px; }
+
+  .segmented {
+    display: inline-flex; background: #F1F2F4; border-radius: 10px; padding: 4px;
+    margin-bottom: 22px;
+  }
+  .segmented button {
+    border: 0; background: transparent; padding: 8px 16px; font-size: 13px; font-weight: 600;
+    border-radius: 7px; cursor: pointer; color: var(--muted); font-family: inherit;
+  }
+  .segmented button.active {
+    background: white; color: var(--flipdish-dark);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   }
 
-  /* ---------- Hero ---------- */
+  .layout { display: grid; grid-template-columns: 1fr 1.25fr; gap: 20px; align-items: start; }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px 22px;
+  }
+  .card h2 {
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--muted); margin: 0 0 16px; font-weight: 700;
+  }
+
+  .input-row { display: flex; flex-direction: column; margin-bottom: 14px; }
+  .input-row label {
+    font-size: 13px; font-weight: 600; margin-bottom: 5px;
+    display: flex; justify-content: space-between; align-items: baseline; gap: 10px;
+  }
+  .hint { font-size: 11px; font-weight: 400; color: var(--muted); font-style: italic; }
+  .input-row input, .input-row select {
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--flipdish-dark);
+    width: 100%;
+  }
+  .input-row input:focus, .input-row select:focus {
+    outline: 2px solid var(--flipdish-blue); outline-offset: -1px;
+  }
+
+  details summary {
+    cursor: pointer; font-size: 13px; font-weight: 600;
+    color: var(--muted); padding: 6px 0; user-select: none;
+  }
+  details summary:hover { color: var(--flipdish-blue); }
+  details[open] { padding-top: 4px; }
+
   .hero {
-    padding: 56px 28px 32px;
-    max-width: 1120px;
-    margin: 0 auto;
-    width: 100%;
-    text-align: center;
+    background: linear-gradient(135deg, #E6F1FB 0%, #C6DEF3 100%);
+    border: 1px solid var(--flipdish-blue-line);
+    border-radius: 12px;
+    padding: 24px 26px;
+    margin-bottom: 12px;
   }
-  .eyebrow {
-    display: inline-block;
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    color: var(--science-blue);
-    background: var(--soft-blue);
-    padding: 6px 14px;
-    border-radius: 999px;
-    margin-bottom: 18px;
+  .hero .label {
+    font-size: 12px; color: var(--flipdish-blue-dark); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
   }
-  h1 {
-    font-family: 'Domine', serif;
-    font-size: 44px;
-    font-weight: 700;
-    color: var(--venice-blue);
-    margin: 0 0 14px;
-    letter-spacing: -0.8px;
-    line-height: 1.15;
+  .hero .big {
+    font-size: 48px; font-weight: 700; color: var(--flipdish-blue-dark);
+    line-height: 1.1; margin: 8px 0 6px; letter-spacing: -0.02em;
   }
-  .lede {
-    font-size: 18px;
-    color: var(--muted);
-    max-width: 620px;
-    margin: 0 auto;
-    line-height: 1.5;
-  }
+  .hero .sub { font-size: 14px; color: var(--flipdish-blue-dark); opacity: 0.85; }
 
-  /* ---------- Grid ---------- */
-  .grid-wrap {
-    max-width: 1120px;
-    margin: 0 auto;
-    padding: 24px 28px 48px;
-    width: 100%;
-    flex: 1;
+  .detail-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 14px;
   }
-  .section-label {
-    font-family: 'Domine', serif;
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--ink);
-    margin: 24px 0 16px;
+  .detail {
+    background: white; border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 14px;
   }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+  .detail .k {
+    font-size: 11px; color: var(--muted); font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
   }
-  @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+  .detail .v { font-size: 18px; font-weight: 700; margin-top: 3px; }
 
-  .tile {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 22px;
-    box-shadow: var(--shadow);
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
-    text-decoration: none;
-    color: inherit;
-    min-height: 200px;
+  .assume {
+    margin-top: 16px; padding: 16px 18px; border-left: 3px solid var(--flipdish-blue);
+    background: #F5FAFE; font-size: 13px; color: #0A2A47;
+    border-radius: 0 8px 8px 0;
   }
-  .tile.live:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-hover);
-    border-color: var(--science-blue);
-  }
-  .tile.coming {
-    opacity: 0.7;
-    cursor: default;
-  }
+  .assume strong { color: var(--flipdish-dark); display: block; margin-bottom: 4px; }
+  .assume ul { margin: 4px 0 0; padding-left: 18px; }
+  .assume li { margin-bottom: 2px; }
 
-  .tile-head {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-  }
-  .tile-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 10px;
-    background: var(--soft-blue);
-    color: var(--science-blue);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-  .badge {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 999px;
-    letter-spacing: 0.4px;
-    text-transform: uppercase;
-    white-space: nowrap;
-  }
-  .badge.live {
-    background: rgba(29,159,90,0.12);
-    color: var(--success);
-  }
-  .badge.soon {
-    background: #F0F2F5;
-    color: var(--muted);
-  }
-
-  .tile-title {
-    font-family: 'Domine', serif;
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--ink);
-    margin: 0;
-    letter-spacing: -0.2px;
-  }
-  .tile-desc {
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1.5;
-    margin: 0;
-    flex: 1;
-  }
-  .tile-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--science-blue);
-    margin-top: 4px;
-  }
-  .tile.coming .tile-cta { color: var(--muted); }
-  .tile-cta svg { transition: transform .15s ease; }
-  .tile.live:hover .tile-cta svg { transform: translateX(3px); }
-
-  /* ---------- Internal note ---------- */
-  .internal-note {
-    margin-top: 36px;
-    background: #fff;
-    border: 1px dashed var(--border);
-    border-radius: 14px;
-    padding: 22px 26px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    color: var(--muted);
-    font-size: 14px;
-  }
-  .internal-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    background: var(--soft-blue);
-    color: var(--venice-blue);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-  .internal-note strong {
-    color: var(--ink);
-    font-weight: 500;
-    display: block;
-    margin-bottom: 2px;
-  }
-
-  /* ---------- Footer ---------- */
   footer {
-    background: #fff;
-    border-top: 1px solid var(--border);
-    padding: 18px 28px;
-    text-align: center;
-    font-size: 12px;
-    color: var(--muted);
+    margin-top: 28px; font-size: 12px; color: var(--muted); text-align: center;
+    padding-top: 20px; border-top: 1px solid var(--border);
   }
 
-  /* ---------- Mobile ---------- */
+  .legend {
+    display: inline-block; background: var(--flipdish-blue-light); border: 1px solid var(--flipdish-blue-line);
+    padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600;
+    color: var(--flipdish-blue-dark); margin-left: 6px;
+  }
+
+  /* tab-specific input visibility */
+  body.no-drivers-view .own-drivers-only { display: none !important; }
+  body.own-drivers-view .no-drivers-only { display: none !important; }
+
+  /* Mobile */
   @media (max-width: 640px) {
-    .topbar { padding: 12px 18px; }
-    .topbar-tag { display: none; }
-    .hero { padding: 36px 18px 16px; }
-    h1 { font-size: 32px; letter-spacing: -0.4px; }
-    .lede { font-size: 16px; }
-    .grid-wrap { padding: 16px 18px 32px; }
-    .tile { min-height: auto; }
-    .internal-note { flex-direction: column; align-items: flex-start; padding: 18px; }
+    body { padding: 16px 12px 32px; }
+    h1 { font-size: 22px; }
+    .lede { font-size: 14px; }
+    .card { padding: 16px 16px; }
+    .hero { padding: 18px 18px; }
+    .hero .big { font-size: 34px; letter-spacing: -0.01em; word-break: break-word; }
+    .hero .sub { font-size: 13px; }
+    .detail .k { font-size: 10px; }
+    .detail .v { font-size: 16px; }
+    .detail { padding: 10px 12px; }
+    header { gap: 8px; }
+    .brand svg { height: 28px; }
+    .brand .tag { display: none; }
+    .meta { font-size: 11px; width: 100%; }
+    .segmented { width: 100%; display: flex; }
+    .segmented button { flex: 1; text-align: center; }
+    .input-row label { flex-wrap: wrap; }
+    .input-row input, .input-row select { font-size: 16px; } /* iOS zoom prevention */
+  }
+  @media (max-width: 480px) {
+    .detail-grid { grid-template-columns: 1fr; }
+    .hero .big { font-size: 30px; }
   }
 </style>
 </head>
-<body>
+<body class="own-drivers-view">
+<div class="wrap">
 
-<header class="topbar">
-  <div class="brand">
-    <svg width="28" height="28" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="64" height="64" rx="14" fill="#0074D9"/>
-      <path d="M22 18h22v8h-14v6h12v8h-12v14h-8z" fill="white"/>
-    </svg>
-    <span class="brand-name">Flipdish</span>
-  </div>
-  <span class="topbar-tag">Business Value Calculators</span>
-</header>
+  <a href="../" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    All calculators
+  </a>
 
-<section class="hero">
-  <span class="eyebrow">For commercial teams</span>
-  <h1>See what restaurants stand to gain</h1>
-  <p class="lede">Quick, transparent calculators that show the real financial impact of switching to Flipdish — built for use in live sales conversations, on any device.</p>
-</section>
-
-<main class="grid-wrap">
-
-  <h2 class="section-label">External calculators</h2>
-  <div class="grid">
-
-    <!-- KIOSK (LIVE) -->
-    <a class="tile live" href="kiosk/">
-      <div class="tile-head">
-        <div class="tile-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="14" rx="2"/><path d="M9 21h6"/><path d="M12 17v4"/><circle cx="12" cy="10" r="2"/></svg>
-        </div>
-        <span class="badge live">Live</span>
-      </div>
-      <h3 class="tile-title">Kiosk</h3>
-      <p class="tile-desc">Self-service ordering kiosks. Calculate labour savings or revenue uplift, with hardware payback baked in.</p>
-      <span class="tile-cta">Open calculator
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </span>
-    </a>
-
-    <!-- ONLINE ORDERING (COMING SOON) -->
-    <div class="tile coming">
-      <div class="tile-head">
-        <div class="tile-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-        </div>
-        <span class="badge soon">Coming soon</span>
-      </div>
-      <h3 class="tile-title">Online Ordering</h3>
-      <p class="tile-desc">Flipdish direct ordering vs third-party marketplaces. Two scenarios: restaurant has own drivers, or uses Flipdish delivery.</p>
-      <span class="tile-cta">In development</span>
+  <header>
+    <div class="brand">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 288" aria-label="Flipdish">
+        <g fill="#020203">
+          <path d="M581.63,126.64c5.01,0.42,9.77,1.06,14.48,3.15c4,1.82,6.77,4.78,9.03,8.45c2.03,3.42,0.92,7.69-2.76,10.19 c-3.19,2.28-6.78,2.15-10.27-0.6c-1.4-1.01-2.78-2.49-4.18-3.5c-3.48-2.99-9.7-3.21-13.61-0.72c-2.45,1.59-3.75,4.41-3.12,7.06 c0.64,2.18,2.02,3.66,4.15,4.45c1.89,0.78,4.03,1.1,5.92,1.65c4.27,1.11,8.53,2.22,12.55,3.56c4.96,1.85,8.93,4.62,11.88,9.03 c5.23,7.6,4.62,18.1-0.92,25.8c-4.27,5.59-9.88,8.74-16.85,9.69c-8.42,1.37-16.53,0.61-24.29-3.25c-4.46-2.31-8.18-5.55-10.89-9.95 c-1.8-3.17-1.43-6.75,1.05-9.29c3.73-3.93,8.52-4,12.68-0.03c0.69,0.74,1.38,1.48,2.07,2.23c3.45,3.95,7.94,5.54,12.97,5.24 c1.92-0.17,3.61-0.59,5.32-1.72c3.92-2.73,4.12-8.23,0.15-11c-1.87-1.26-4-1.82-6.14-2.37c-4.26-1.35-8.77-2.23-13.02-3.81 c-4.97-1.61-9.17-4.63-11.88-9.03c-5-7.35-4.39-17.86,1.62-25.3c3.65-4.64,8.22-7.56,13.62-9.08 C574.59,126.52,578.13,126.52,581.63,126.64z"/>
+          <path d="M365.85,243.99c5.74,0,10.28-4.53,10.28-10.25l0-22.39v-16.36c5.93,6.03,13.69,9.69,22.19,9.69 c18.61,0,33.7-17.51,33.7-39.11c0-21.6-15.09-39.11-33.7-39.11c-8.51,0-16.28,3.67-22.21,9.72c-0.28-5.46-4.7-9.72-10.26-9.72 c-5.74,0-10.28,4.53-10.28,10.25v15.95l0,58.68l0,22.39C355.56,239.46,360.11,243.99,365.85,243.99z M394.65,144.32 c10.33,0,18.7,9.51,18.7,21.25c0,11.74-8.37,21.25-18.7,21.25c-10.33,0-18.7-9.51-18.7-21.25 C375.95,153.84,384.32,144.32,394.65,144.32z"/>
+          <path d="M502.01,90.92c-5.74,0-10.28,4.53-10.28,10.25v18.52v16.36c-5.93-6.03-13.69-9.69-22.19-9.69 c-18.61,0-33.7,17.51-33.7,39.11s15.09,39.11,33.7,39.11c8.51,0,16.28-3.67,22.21-9.72c0.28,5.46,4.7,9.72,10.26,9.72 c5.74,0,10.28-4.53,10.28-10.25v-15.95V119.7v-18.52C512.29,95.45,507.75,90.92,502.01,90.92z M473.21,186.72 c-10.33,0-18.7-9.51-18.7-21.25c0-11.74,8.37-21.25,18.7-21.25c10.33,0,18.7,9.51,18.7,21.25 C491.91,177.21,483.54,186.72,473.21,186.72z"/>
+          <path d="M205.01,128.94h-3.21l-0.23-3.4c-0.27-2.73-0.96-5.26-1.65-8.02c-3.37-12.77-10.11-23.36-19.75-32.04 c-9.39-8.43-20.23-13.49-32.27-15.66c0.72-1.69,1.2-3.37,1.2-5.3c0-6.99-5.54-12.53-12.52-12.53c-6.74,0-12.52,5.54-12.52,12.53 c0,1.93,0.48,3.61,1.2,5.06c-3.13,0.48-6.5,1.45-9.63,2.41c-7.95,2.89-15.17,6.99-21.43,12.53H42.92 c-5.06,0.24-9.15,4.34-9.15,9.39s4.09,9.15,9.15,9.15h37.08c-0.72,1.2-1.2,2.41-1.93,3.61H55.69c-5.06,0-9.15,4.1-9.15,9.15 c0,5.06,4.09,9.15,9.15,9.15h17.1c-0.24,1.19-0.42,2.6-0.48,3.95h-4.99c-4.62,0-8.39,3.78-8.39,8.39v0.84 c0,4.62,3.78,8.39,8.39,8.39h50.72l-0.23,10.46l-30.34,12.04c-2.41,0.96-4.33,2.89-5.06,5.54c-0.72,2.41-0.48,5.3,0.72,7.47 l7.95,13.73c1.69,2.89,4.82,4.58,7.71,4.58c1.44,0,3.13-0.48,4.58-1.2c4.33-2.65,5.78-8.19,3.13-12.53l-2.65-4.58l26.25-10.84 c3.37-1.45,5.54-4.58,5.54-8.19l0.48-16.48h3.44l10.53,21.3l-13.97,22.88c-1.69,2.89-1.93,6.26-0.24,9.15 c1.69,2.89,4.58,4.58,7.95,4.58h16.62c5.06,0,9.15-4.1,9.15-9.15c0-5.06-4.09-9.15-9.15-9.15h-0.48l8.19-13.25 c1.69-2.65,1.93-6.02,0.48-8.91l-8.6-17.44h45c4.62,0,8.39-3.78,8.39-8.39v-0.84C213.4,132.72,209.63,128.94,205.01,128.94z M177.77,126.29c-0.13,0.01-0.25,0.01-0.38,0.01c-2.57,0-4.73-2.01-4.93-4.58c-1.33-17.67-13.42-23.89-20.51-26.03 c-2.61-0.79-4.1-3.55-3.31-6.16c0.78-2.6,3.55-4.09,6.16-3.31c16.2,4.88,26.23,17.55,27.52,34.76 C182.54,123.71,180.49,126.09,177.77,126.29z"/>
+          <path d="M326.41,115.27c-4.65-4.65-4.65-12.29,0.17-17.1c4.65-4.65,12.45-4.82,17.27,0c4.82,4.82,4.82,12.45,0,17.27 C339.03,120.25,331.23,120.08,326.41,115.27z"/>
+          <path d="M345.42,194.06c0,5.73-4.69,10.42-10.42,10.42l0,0c-5.73,0-10.42-4.69-10.42-10.42v-57.18 c0-5.73,4.69-10.42,10.42-10.42h0c5.73,0,10.42,4.69,10.42,10.42V194.06z"/>
+          <path d="M524.27,115.27c-4.65-4.65-4.65-12.29,0.17-17.1c4.65-4.65,12.45-4.82,17.27,0s4.82,12.45,0,17.27 C536.89,120.25,529.09,120.08,524.27,115.27z"/>
+          <path d="M543.28,194.06c0,5.73-4.69,10.42-10.42,10.42l0,0c-5.73,0-10.42-4.69-10.42-10.42v-57.18 c0-5.73,4.69-10.42,10.42-10.42h0c5.73,0,10.42,4.69,10.42,10.42V194.06z"/>
+          <path d="M314.39,194.13c0,5.73-4.69,10.42-10.42,10.42l0,0c-5.73,0-10.42-4.69-10.42-10.42V99.58 c0-5.73,4.69-10.42,10.42-10.42h0c5.73,0,10.42,4.69,10.42,10.42V194.13z"/>
+          <path d="M265.37,112.27c1.28-1.96,3.17-3.51,5.85-4.11c1.42-0.3,2.92-0.38,4.17-0.46c2.02-0.13,4.01,0.19,5.77-0.06 c6.27-0.75,9.03-7.28,5.77-12.55c-1.76-2.76-4.26-4.27-7.28-5.02c-4.26-1.25-8.53-1.25-13.04-0.75 c-13.04,1.76-22.33,11.29-23.33,24.59c-0.18,2.95-0.23,5.76-0.25,8.63l-0.01,0.01v3.16v3.24h-9.95c-4.85,0-8.81,3.97-8.81,8.81 c0,4.85,3.97,8.81,8.81,8.81h9.95l0.14,47.71c0,5.73,4.69,10.42,10.42,10.42c5.73,0,10.42-4.69,10.42-10.42l0.01-47.57v-0.14h10.54 c4.85,0,8.81-3.97,8.81-8.81c0-4.85-3.97-8.81-8.81-8.81h-10.54v-12.95C264.02,114.68,264.65,113.37,265.37,112.27z"/>
+          <path d="M684.97,145.6c-2.26-8.28-6.53-14.8-14.57-18.31c-5.78-2.76-12.06-3.26-18.34-2.26 c-5.94,0.99-11.15,3.21-15.39,7.59V98.75c0-5.73-4.69-10.42-10.42-10.42c-5.73,0-10.42,4.69-10.42,10.42v95.84 c0,5.73,4.69,10.42,10.42,10.42c5.73,0,10.42-4.69,10.42-10.42v-39.1c0.84-3.86,2.57-7.06,5.84-9.38 c3.27-2.51,7.04-2.76,11.06-2.26c5.03,0.75,8.54,3.26,10.3,7.77c1.01,2.51,1.26,5.02,1.26,7.52c0,13.04,0,22.29,0,35.33 c0,5.77,4.52,10.53,10.55,10.53c5.78,0,10.55-4.76,10.55-10.53c0-14.3,0-24.8,0-39.34C686.23,151.87,685.72,148.61,684.97,145.6z"/>
+        </g>
+      </svg>
+      <span class="tag">Business Value Assessment</span>
     </div>
+    <div class="meta">Online Ordering · Marketplace comparison · v1.0</div>
+  </header>
 
-    <!-- TRANSFER TO SUBSCRIPTIONS (COMING SOON) -->
-    <div class="tile coming">
-      <div class="tile-head">
-        <div class="tile-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-        </div>
-        <span class="badge soon">Coming soon</span>
-      </div>
-      <h3 class="tile-title">Transfer to Subscriptions</h3>
-      <p class="tile-desc">Moving a commission-based customer to a lower-commission subscription. Shows the monthly and annual impact of the switch.</p>
-      <span class="tile-cta">In development</span>
-    </div>
+  <h1 id="pageTitle">Stop giving 30% to the marketplaces</h1>
+  <p class="lede" id="pageLede">See exactly how much a restaurant gets back when orders move from third-party marketplaces to Flipdish direct ordering. All Flipdish fees deducted — what's shown is real money the restaurant keeps.</p>
 
-    <!-- UBER DIRECT (COMING SOON) -->
-    <div class="tile coming">
-      <div class="tile-head">
-        <div class="tile-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-        </div>
-        <span class="badge soon">Coming soon</span>
-      </div>
-      <h3 class="tile-title">Uber Direct</h3>
-      <p class="tile-desc">Flipdish + Uber Direct vs marketplace delivery. Savings for the restaurant and the end customer. UK and Ireland markets.</p>
-      <span class="tile-cta">In development</span>
-    </div>
-
-    <!-- FOX DELIVERY (COMING SOON) -->
-    <div class="tile coming">
-      <div class="tile-head">
-        <div class="tile-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="17.5" r="3.5"/><circle cx="19" cy="17.5" r="3.5"/><path d="M12 17.5h-4l-3-6h7l3 6"/><path d="M19 17.5l-3-9h-4"/></svg>
-        </div>
-        <span class="badge soon">Coming soon</span>
-      </div>
-      <h3 class="tile-title">Fox Delivery</h3>
-      <p class="tile-desc">Flipdish + Fox Delivery vs marketplaces. Restaurant and end-customer cost savings for the Ireland market.</p>
-      <span class="tile-cta">In development</span>
-    </div>
-
-    <!-- PHONE AI (COMING SOON) -->
-    <div class="tile coming">
-      <div class="tile-head">
-        <div class="tile-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-        </div>
-        <span class="badge soon">Coming soon</span>
-      </div>
-      <h3 class="tile-title">Phone AI</h3>
-      <p class="tile-desc">Automated phone ordering — value of capturing missed calls and freeing staff from the phone during peak service.</p>
-      <span class="tile-cta">In development</span>
-    </div>
-
+  <div class="segmented" role="tablist">
+    <button class="active" data-view="own">Restaurant has own drivers</button>
+    <button data-view="no">Uses delivery service</button>
   </div>
 
-  <div class="internal-note">
-    <div class="internal-icon">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+  <div class="layout">
+
+    <!-- INPUTS -->
+    <div class="card">
+      <h2>Restaurant's numbers <span class="legend">editable</span></h2>
+
+      <div class="input-row">
+        <label>Market <span class="hint">sets currency &amp; VAT</span></label>
+        <select id="market">
+          <option value="UK">United Kingdom (£)</option>
+          <option value="IE">Ireland (€)</option>
+          <option value="US">United States ($)</option>
+        </select>
+      </div>
+
+      <div class="input-row">
+        <label>Monthly GMV from marketplaces <span class="hint">order value before fees</span></label>
+        <input id="gmv" type="number" value="5000">
+      </div>
+
+      <div class="input-row">
+        <label>Average order value (AOV) <span class="hint">marketplace + online avg</span></label>
+        <input id="aov" type="number" value="25">
+      </div>
+
+      <div class="input-row">
+        <label>VAT rate <span class="hint">applied to marketplace take</span></label>
+        <input id="vat" type="number" value="20" step="0.5">
+      </div>
+
+      <!-- TAB-SPECIFIC: own drivers -->
+      <div class="input-row own-drivers-only">
+        <label>Marketplace cut (own drivers) <span class="hint">typical: 10–15%</span></label>
+        <input id="mpRateOwn" type="number" value="12" step="0.5">
+      </div>
+      <div class="input-row own-drivers-only">
+        <label>% rerouted to Flipdish <span class="hint">orders that move from marketplaces</span></label>
+        <input id="convOwn" type="number" value="70" step="5">
+      </div>
+      <div class="input-row own-drivers-only">
+        <label>Order volume uplift <span class="hint">from Flipdish marketing &amp; loyalty</span></label>
+        <input id="upliftOwn" type="number" value="2" step="0.5">
+      </div>
+
+      <!-- TAB-SPECIFIC: no own drivers -->
+      <div class="input-row no-drivers-only">
+        <label>Marketplace cut (delivery service) <span class="hint">typical: 25–35%</span></label>
+        <input id="mpRateNo" type="number" value="30" step="0.5">
+      </div>
+      <div class="input-row no-drivers-only">
+        <label>% rerouted to Flipdish <span class="hint">lower when delivery still needed</span></label>
+        <input id="convNo" type="number" value="40" step="5">
+      </div>
+      <div class="input-row no-drivers-only">
+        <label>Order volume uplift <span class="hint">from Flipdish marketing &amp; loyalty</span></label>
+        <input id="upliftNo" type="number" value="2" step="0.5">
+      </div>
+
+      <details>
+        <summary>Advanced &mdash; Flipdish fees, subscription &amp; delivery</summary>
+
+        <div class="input-row own-drivers-only" style="margin-top:10px;">
+          <label>Flipdish processing fee % (own drivers) <span class="hint">on Flipdish-routed GMV</span></label>
+          <input id="fdFeeOwn" type="number" value="3.5" step="0.1">
+        </div>
+
+        <div class="input-row no-drivers-only" style="margin-top:10px;">
+          <label>Flipdish processing fee % (delivery service) <span class="hint">on Flipdish-routed GMV</span></label>
+          <input id="fdFeeNo" type="number" value="5.0" step="0.1">
+        </div>
+
+        <div class="input-row">
+          <label>Flipdish OO subscription <span class="hint">monthly, fixed</span></label>
+          <input id="fdSub" type="number" value="99">
+        </div>
+
+        <div class="input-row no-drivers-only">
+          <label>Avg Flipdish delivery cost per order <span class="hint">paid by restaurant, e.g. £5.31 / €5.31 / $5.50</span></label>
+          <input id="fdDelivery" type="number" value="5.31" step="0.01">
+        </div>
+      </details>
+
     </div>
+
+    <!-- RESULTS -->
     <div>
-      <strong>Internal pricing tools &mdash; Country Managers only</strong>
-      Online Ordering subscription vs commission modelling, POS rate sensitivity, and kiosk/POS discount recovery. Behind single sign-on. Coming soon.
+      <div class="hero">
+        <div class="label" id="heroLabel">Monthly revenue increase</div>
+        <div class="big" id="heroBig">—</div>
+        <div class="sub" id="heroSub">Net of all Flipdish fees, subscription and delivery costs</div>
+      </div>
+
+      <div class="detail-grid">
+        <div class="detail">
+          <div class="k">Annual increase</div>
+          <div class="v" id="k1">—</div>
+        </div>
+        <div class="detail">
+          <div class="k">Revenue today</div>
+          <div class="v" id="k2">—</div>
+        </div>
+        <div class="detail">
+          <div class="k">Revenue with Flipdish</div>
+          <div class="v" id="k3">—</div>
+        </div>
+      </div>
+
+      <div class="assume">
+        <strong>How we got there</strong>
+        <ul id="assumeList"></ul>
+      </div>
     </div>
+
   </div>
 
-</main>
+  <footer>
+    Flipdish Online Ordering Value Calculator &middot; Live calculation, nothing is saved
+  </footer>
 
-<footer>
-  Flipdish Business Value Calculators &middot; Built for the commercial team
-</footer>
+</div>
 
+<script>
+  // ---------- defaults by market ----------
+  const defaultsByMarket = {
+    UK: { vat: 20, sub: 99,  delivery: 5.31, currency: '£' },
+    IE: { vat: 23, sub: 99,  delivery: 5.31, currency: '€' },
+    US: { vat: 0,  sub: 99,  delivery: 5.50, currency: '$' }
+  };
+
+  let currentTab = 'own'; // 'own' or 'no'
+  let currency = '£';
+
+  // ---------- helpers ----------
+  const $ = id => document.getElementById(id);
+  const num = id => parseFloat($(id).value) || 0;
+  const fmtMoney = n => {
+    if (!isFinite(n)) return '—';
+    const sign = n < 0 ? '-' : '';
+    const abs = Math.abs(n);
+    return sign + currency + abs.toLocaleString(undefined, { maximumFractionDigits: 0 });
+  };
+  const fmtMoneyDecimal = n => {
+    if (!isFinite(n)) return '—';
+    const sign = n < 0 ? '-' : '';
+    const abs = Math.abs(n);
+    return sign + currency + abs.toLocaleString(undefined, { maximumFractionDigits: 0, minimumFractionDigits: 0 });
+  };
+  const fmtPct = n => (n).toFixed(1) + '%';
+  const fmtOrders = n => n.toLocaleString(undefined, { maximumFractionDigits: 0 });
+
+  // ---------- tab switching ----------
+  document.querySelectorAll('.segmented button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.segmented button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTab = btn.dataset.view;
+      document.body.classList.toggle('own-drivers-view', currentTab === 'own');
+      document.body.classList.toggle('no-drivers-view', currentTab === 'no');
+      calc();
+    });
+  });
+
+  // ---------- market change updates defaults ----------
+  $('market').addEventListener('change', () => {
+    const m = defaultsByMarket[$('market').value];
+    $('vat').value = m.vat;
+    $('fdSub').value = m.sub;
+    $('fdDelivery').value = m.delivery;
+    currency = m.currency;
+    calc();
+  });
+
+  // ---------- live recalculation ----------
+  document.querySelectorAll('input').forEach(el => el.addEventListener('input', calc));
+
+  function calc() {
+    // Set currency from market
+    currency = defaultsByMarket[$('market').value].currency;
+
+    // Shared
+    const gmv = num('gmv');
+    const aov = num('aov');
+    const vat = num('vat');
+    const fdSub = num('fdSub');
+
+    // Tab-specific picks
+    const isOwn = currentTab === 'own';
+    const mpRate = isOwn ? num('mpRateOwn') : num('mpRateNo');
+    const conv   = isOwn ? num('convOwn')   : num('convNo');
+    const uplift = isOwn ? num('upliftOwn') : num('upliftNo');
+    const fdFee  = isOwn ? num('fdFeeOwn')  : num('fdFeeNo');
+    const fdDelivery = isOwn ? 0 : num('fdDelivery');
+
+    // Marketplace effective rate including VAT
+    const mpEffective = (mpRate / 100) * (1 + vat / 100);
+
+    // ---- Marketplace-only (today) ----
+    const mpOrdersToday = aov > 0 ? gmv / aov : 0;
+    const mpCostToday = gmv * mpEffective;
+    const revenueToday = gmv - mpCostToday;
+
+    // ---- With Flipdish ----
+    const newGmv = gmv * (1 + uplift / 100);
+    const newOrders = aov > 0 ? newGmv / aov : 0;
+    const fdGmv = newGmv * (conv / 100);
+    const fdOrders = newOrders * (conv / 100);
+    const remainingMpGmv = newGmv * (1 - conv / 100);
+    const remainingMpOrders = newOrders * (1 - conv / 100);
+
+    const remainingMpCost = remainingMpGmv * mpEffective;
+    const fdProcessing = fdGmv * (fdFee / 100);
+    const fdDeliveryTotal = fdOrders * fdDelivery;
+    const fdTotal = fdProcessing + fdSub + fdDeliveryTotal;
+
+    const totalCost = remainingMpCost + fdTotal;
+    const revenueWithFD = newGmv - totalCost;
+
+    const monthlyIncrease = revenueWithFD - revenueToday;
+    const annualIncrease = monthlyIncrease * 12;
+
+    // ---- Render results ----
+    $('heroBig').textContent = fmtMoney(monthlyIncrease) + '/mo';
+    $('heroSub').textContent = isOwn
+      ? 'Net of Flipdish processing and subscription'
+      : 'Net of Flipdish processing, subscription and delivery costs';
+    $('k1').textContent = fmtMoney(annualIncrease) + '/yr';
+    $('k2').textContent = fmtMoney(revenueToday) + '/mo';
+    $('k3').textContent = fmtMoney(revenueWithFD) + '/mo';
+
+    // ---- Assumptions ----
+    const lines = [];
+    lines.push(`Total orders: <strong>${fmtOrders(newOrders)}</strong>/month — <strong>${fmtOrders(fdOrders)}</strong> via Flipdish, <strong>${fmtOrders(remainingMpOrders)}</strong> remain on marketplaces.`);
+    lines.push(`Marketplace effective cost: <strong>${fmtPct(mpEffective * 100)}</strong> (${fmtPct(mpRate)} cut + ${fmtPct(vat)} VAT) — costs the restaurant <strong>${fmtMoney(remainingMpCost)}/mo</strong> on remaining marketplace orders.`);
+    if (isOwn) {
+      lines.push(`Flipdish costs: <strong>${fmtMoney(fdProcessing)}</strong> processing (${fmtPct(fdFee)} of ${fmtMoney(fdGmv)}) + <strong>${fmtMoney(fdSub)}</strong> subscription = <strong>${fmtMoney(fdTotal)}/mo</strong>.`);
+    } else {
+      lines.push(`Flipdish costs: <strong>${fmtMoney(fdProcessing)}</strong> processing + <strong>${fmtMoney(fdSub)}</strong> subscription + <strong>${fmtMoney(fdDeliveryTotal)}</strong> delivery (${fmtOrders(fdOrders)} orders × ${currency}${fdDelivery.toFixed(2)}) = <strong>${fmtMoney(fdTotal)}/mo</strong>.`);
+    }
+    lines.push(`Order volume uplift of <strong>${fmtPct(uplift)}</strong> from Flipdish marketing &amp; loyalty included.`);
+    lines.push(`Restaurant keeps <strong>${fmtMoney(revenueWithFD)}</strong> with Flipdish vs <strong>${fmtMoney(revenueToday)}</strong> on marketplaces only — <strong>${fmtMoney(monthlyIncrease)}/mo</strong> more in their pocket.`);
+
+    $('assumeList').innerHTML = lines.map(l => '<li>' + l + '</li>').join('');
+  }
+
+  calc();
+</script>
 </body>
 </html>
