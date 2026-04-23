@@ -616,7 +616,7 @@
       </a>
 
       <!-- Hardware Discount Approval — unified POS / Kiosk / POS+Kiosk -->
-      <a class="tile" data-family="cross" href="internal/hardware-discount-approval/">
+      <a class="tile" data-family="cross" data-also="pos kiosk" href="internal/hardware-discount-approval/">
         <div class="tile-head">
           <div class="tile-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8l-8 8"/><circle cx="9" cy="9" r="1.5"/><circle cx="15" cy="15" r="1.5"/></svg>
@@ -637,7 +637,7 @@
       </a>
 
       <!-- POS + Web — Net Fee Sensitivity -->
-      <a class="tile" data-family="cross" href="internal/pos-web-net-fee-sensitivity/">
+      <a class="tile" data-family="cross" data-also="pos oo" href="internal/pos-web-net-fee-sensitivity/">
         <div class="tile-head">
           <div class="tile-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>
@@ -658,7 +658,7 @@
       </a>
 
       <!-- Current vs New Fee Impact — Renewal -->
-      <a class="tile" data-family="cross" href="internal/current-vs-new-fee-impact/">
+      <a class="tile" data-family="cross" data-also="pos oo kiosk" href="internal/current-vs-new-fee-impact/">
         <div class="tile-head">
           <div class="tile-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/><path d="M20.49 15a9 9 0 0 1-14.85 3.36L1 14"/></svg>
@@ -701,11 +701,23 @@
   const countExternal = document.getElementById('count-external');
   const countInternal = document.getElementById('count-internal');
 
+  // A tile matches a filter if its data-family equals the family, OR if its
+  // data-also list (space-separated) contains the family. This lets
+  // cross-product tiles surface under the individual product chips too —
+  // e.g. the Hardware Discount Approval tile shows up under POS and Kiosk
+  // filters, since the calculator has a POS mode and a Kiosk mode.
+  function tileMatches(tile, family) {
+    if (family === 'all') return true;
+    if (tile.dataset.family === family) return true;
+    const also = (tile.dataset.also || '').split(/\s+/).filter(Boolean);
+    return also.includes(family);
+  }
+
   function applyFilter(family) {
     // External: filter individual tiles
     let extShown = 0;
     externalTiles.forEach(t => {
-      const match = family === 'all' || t.dataset.family === family;
+      const match = tileMatches(t, family);
       t.style.display = match ? '' : 'none';
       if (match) extShown++;
     });
@@ -716,7 +728,7 @@
     // Internal: filter individual tiles too (no more family-group subdividers)
     let intShown = 0;
     internalTiles.forEach(t => {
-      const match = family === 'all' || t.dataset.family === family;
+      const match = tileMatches(t, family);
       t.style.display = match ? '' : 'none';
       if (match) intShown++;
     });
