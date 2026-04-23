@@ -537,7 +537,7 @@
         <label for="gmv">Monthly Kiosk GMV</label>
         <div class="input-wrap">
           <span class="prefix" id="gmvPrefix">£</span>
-          <input id="gmv" class="has-prefix" type="number" value="30000" step="500" min="0">
+          <input id="gmv" class="has-prefix" type="number" value="10000" step="500" min="0">
         </div>
       </div>
       <div class="input-cell">
@@ -565,7 +565,7 @@
         <label for="sub">Monthly Kiosk subscription</label>
         <div class="input-wrap">
           <span class="prefix" id="subPrefix">£</span>
-          <input id="sub" class="has-prefix" type="number" value="119" step="5" min="0">
+          <input id="sub" class="has-prefix" type="number" value="79" step="5" min="0">
         </div>
       </div>
       <div class="input-cell">
@@ -591,7 +591,7 @@
         <label for="hwList">Kiosk hardware list price</label>
         <div class="input-wrap">
           <span class="prefix" id="hwListPrefix">£</span>
-          <input id="hwList" class="has-prefix" type="number" value="1648" step="50" min="0">
+          <input id="hwList" class="has-prefix" type="number" value="1500" step="50" min="0">
         </div>
       </div>
     </div>
@@ -713,16 +713,16 @@
   const COUNTRIES = {
     UK: { currency: '£', currencyCode: 'GBP', name: 'United Kingdom',
           cardPct: 0.0070, cardFix: 0.006,
-          defaultHwList: 1648, defaultSub: 119 },
+          defaultHwList: 1500, defaultSub: 79 },
     IE: { currency: '€', currencyCode: 'EUR', name: 'Ireland',
           cardPct: 0.0052, cardFix: 0.008,
-          defaultHwList: 1648, defaultSub: 119 },
+          defaultHwList: 1500, defaultSub: 79 },
     US: { currency: '$', currencyCode: 'USD', name: 'United States',
           cardPct: 0.0255, cardFix: 0.018,
-          defaultHwList: 1648, defaultSub: 119 },
+          defaultHwList: 1500, defaultSub: 79 },
     ES: { currency: '€', currencyCode: 'EUR', name: 'Spain',
           cardPct: 0.0051, cardFix: 0.018,
-          defaultHwList: 1648, defaultSub: 119 }
+          defaultHwList: 1500, defaultSub: 79 }
   };
 
   const OPERATING_MARGIN_FACTOR = 0.75;
