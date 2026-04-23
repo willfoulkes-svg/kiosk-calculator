@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hardware Discount Approval — Flipdish Internal</title>
+<meta name="robots" content="noindex, nofollow">
+
+<!-- Password gate -->
+<script src="../auth.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Domine:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --flipdish-blue: #0074D9;
+    --flipdish-blue-dark: #064885;
+    --flipdish-blue-light: #E6F1FB;
+    --flipdish-blue-line: #BEDAF2;
+    --flipdish-dark: #1A1A1A;
+    --muted: #6B7280;
+    --bg: #F6F9FC;
+    --card: #FFFFFF;
+    --border: #E5E7EB;
+    --input-bg: #FFFBE6;
+    --input-border: #F0D26A;
+    --green-strong: #2E8B57;
+    --green-soft: #E6F4EC;
+    --amber-strong: #B8860B;
+    --amber-soft: #FFF6D6;
+    --red-strong: #C0392B;
+    --red-soft: #FBE9E7;
+    --internal: #064885;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg); color: var(--flipdish-dark);
+    line-height: 1.5; -webkit-font-smoothing: antialiased; font-weight: 400;
+  }
+  h1, h2, h3, .hero .big { font-family: 'Domine', Georgia, serif; }
+
+  .topbar {
+    background: #fff; border-bottom: 1px solid var(--border);
+    padding: 14px 28px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .topbar .brand { display: flex; align-items: center; gap: 12px; }
+  .topbar .brand svg { height: 28px; width: auto; display: block; }
+  .topbar-right { display: flex; align-items: center; gap: 14px; font-size: 13px; }
+  .internal-tag {
+    background: rgba(6,72,133,.10); color: var(--internal);
+    padding: 4px 10px; border-radius: 999px; font-size: 12px;
+    font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase;
+  }
+  .signout {
+    color: var(--muted); background: none; border: 0;
+    cursor: pointer; font: inherit; padding: 0;
+  }
+  .signout:hover { color: var(--flipdish-blue); text-decoration: underline; }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 28px 20px 48px; }
+
+  .back {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 500; color: var(--muted);
+    text-decoration: none; margin-bottom: 14px;
+  }
+  .back:hover { color: var(--flipdish-blue); }
+  .back svg { width: 14px; height: 14px; }
+
+  /* ---------- Product family pill (Cross-product · orange) ---------- */
+  :root { --fam: #D97706; --fam-soft: #FDECD3; }
+  .fam-pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--fam-soft); color: var(--fam);
+    padding: 5px 12px; border-radius: 999px;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.04em;
+    margin: 4px 0 16px; text-transform: uppercase;
+  }
+  .fam-pill::before {
+    content: ''; width: 8px; height: 8px;
+    border-radius: 999px; background: var(--fam);
+  }
+
+  h1 { font-size: 30px; margin: 0 0 6px; letter-spacing: -0.01em; font-weight: 700; color: var(--flipdish-blue-dark); }
+  .lede { color: var(--muted); margin: 0 0 24px; font-size: 15px; max-width: 760px; }
+
+  /* ---------- Mode bar (same visual as country bar, slightly beefier buttons) ---------- */
+  .mode-bar {
+    background: white; border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 18px; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .mode-bar-label {
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .mode-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+  .mode-btn {
+    background: white; border: 1.5px solid var(--border);
+    padding: 8px 16px; font: inherit;
+    font-size: 14px; font-weight: 600; color: var(--flipdish-dark);
+    border-radius: 999px; cursor: pointer; transition: all .15s ease;
+  }
+  .mode-btn:hover { border-color: var(--flipdish-blue); color: var(--flipdish-blue); }
+  .mode-btn.active {
+    background: var(--flipdish-blue-dark); border-color: var(--flipdish-blue-dark); color: white;
+  }
+
+  /* ---------- Country bar ---------- */
+  .country-bar {
+    background: white; border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 18px; margin-bottom: 18px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .country-bar-label {
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .country-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+  .country-btn {
+    background: white; border: 1.5px solid var(--border);
+    padding: 8px 16px; font: inherit;
+    font-size: 14px; font-weight: 600; color: var(--flipdish-dark);
+    border-radius: 999px; cursor: pointer; transition: all .15s ease;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .country-btn:hover { border-color: var(--flipdish-blue); color: var(--flipdish-blue); }
+  .country-btn.active {
+    background: var(--flipdish-blue-dark); border-color: var(--flipdish-blue-dark); color: white;
+  }
+
+  /* ---------- Mode visibility ---------- */
+  /* All mode-specific blocks are hidden by default, shown only when body has their mode */
+  .mode-pos-only, .mode-kiosk-only, .mode-combined-only { display: none; }
+  body.mode-pos .mode-pos-only,
+  body.mode-pos .mode-pos-or-combined { display: block; }
+  body.mode-kiosk .mode-kiosk-only { display: block; }
+  body.mode-combined .mode-combined-only,
+  body.mode-combined .mode-pos-or-combined { display: block; }
+
+  /* Show/hide country buttons by mode (US + ES only available for Kiosk) */
+  body.mode-pos .country-btn[data-country="US"],
+  body.mode-pos .country-btn[data-country="ES"],
+  body.mode-combined .country-btn[data-country="US"],
+  body.mode-combined .country-btn[data-country="ES"] {
+    display: none;
+  }
+
+  /* Math-ladder rows: CCEP rows only appear in POS / Combined */
+  .row.mode-pos-or-combined { display: none; }
+  body.mode-pos .row.mode-pos-or-combined,
+  body.mode-combined .row.mode-pos-or-combined { display: flex; }
+
+  /* ---------- Step labels ---------- */
+  .step {
+    display: flex; align-items: center; gap: 10px;
+    margin: 28px 0 14px;
+  }
+  .step .num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 999px;
+    background: var(--flipdish-blue-dark); color: white;
+    font-size: 13px; font-weight: 700;
+  }
+  .step .text {
+    font-family: 'Domine', Georgia, serif;
+    font-size: 18px; font-weight: 600; color: var(--flipdish-dark);
+  }
+  .step .text .sub {
+    font-family: 'Roboto', sans-serif;
+    font-size: 13px; font-weight: 400;
+    color: var(--muted); margin-left: 8px;
+  }
+
+  /* ---------- Calc card wrapper ---------- */
+  .calc-card {
+    background: white; border: 1px solid var(--border);
+    border-radius: 14px; padding: 22px 24px; margin-bottom: 18px;
+    box-shadow: 0 1px 2px rgba(10,31,51,.04);
+  }
+  .calc-card.shared-inputs {
+    border-color: var(--flipdish-blue-line); background: #FCFDFF;
+  }
+
+  .channel-block {
+    border: 1px dashed var(--flipdish-blue-line);
+    border-radius: 10px; padding: 14px 16px;
+    margin-top: 12px; background: #FBFDFF;
+  }
+  .channel-block .channel-title {
+    font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--flipdish-blue-dark);
+    margin-bottom: 10px;
+  }
+
+  /* ---------- Inputs ---------- */
+  .inputs-grid {
+    display: grid; grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 12px;
+  }
+  .inputs-grid + .inputs-grid { margin-top: 12px; }
+  .inputs-grid.cols-1 { grid-template-columns: 1fr; }
+  .inputs-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .input-cell { display: flex; flex-direction: column; }
+  .input-cell label {
+    font-size: 11px; font-weight: 700; margin-bottom: 4px;
+    text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);
+  }
+  .input-cell .input-wrap { position: relative; display: flex; align-items: center; }
+  .input-cell .prefix {
+    position: absolute; left: 12px;
+    color: var(--muted); font-size: 14px; font-weight: 600; pointer-events: none;
+  }
+  .input-cell .suffix {
+    position: absolute; right: 12px;
+    color: var(--muted); font-size: 13px; font-weight: 600; pointer-events: none;
+  }
+  .input-cell input, .input-cell select {
+    border: 1px solid var(--input-border); background: var(--input-bg);
+    padding: 10px 12px; border-radius: 8px;
+    font-size: 15px; font-weight: 600;
+    font-family: inherit; color: var(--flipdish-dark); width: 100%;
+  }
+  .input-cell input.has-prefix { padding-left: 26px; }
+  .input-cell input.has-suffix { padding-right: 30px; }
+  .input-cell input:focus, .input-cell select:focus {
+    outline: 2px solid var(--flipdish-blue); outline-offset: -1px;
+  }
+  .input-cell input.derived {
+    background: #F4F6F8; border-color: var(--border); color: var(--muted);
+  }
+  @media (max-width: 760px) { .inputs-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .inputs-grid { grid-template-columns: 1fr; } }
+
+  /* ---------- Hero result ---------- */
+  .hero {
+    background: linear-gradient(135deg, #E6F1FB 0%, #C6DEF3 100%);
+    border: 1px solid var(--flipdish-blue-line); border-radius: 12px;
+    padding: 22px 24px; margin: 6px 0 6px;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 24px; flex-wrap: wrap;
+  }
+  .hero.win { background: linear-gradient(135deg, #E6F4EC 0%, #C9E5D5 100%); border-color: #9DCDB1; }
+  .hero.warn { background: linear-gradient(135deg, #FFF6D6 0%, #F5E5A1 100%); border-color: #E6CD66; }
+  .hero.lose { background: linear-gradient(135deg, #FBE9E7 0%, #F5C6BE 100%); border-color: #E8A89B; }
+  .hero .label {
+    font-size: 12px; color: var(--flipdish-blue-dark); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .hero.win .label, .hero.win .big, .hero.win .sub { color: #1B5C36; }
+  .hero.warn .label, .hero.warn .big, .hero.warn .sub { color: #6B5500; }
+  .hero.lose .label, .hero.lose .big, .hero.lose .sub { color: #7A1E10; }
+  .hero .big {
+    font-size: 42px; font-weight: 700; color: var(--flipdish-blue-dark);
+    line-height: 1.1; margin: 4px 0 6px; letter-spacing: -0.02em;
+  }
+  .hero .sub { font-size: 13px; color: var(--flipdish-blue-dark); opacity: 0.85; }
+
+  /* ---------- Breakdown rows ---------- */
+  .breakdown-rows {
+    margin-top: 14px;
+    border-top: 1px dashed var(--border);
+    padding-top: 12px;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px 24px;
+  }
+  @media (max-width: 640px) { .breakdown-rows { grid-template-columns: 1fr; } }
+  .breakdown-rows .row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 13px; padding: 4px 0;
+  }
+  .breakdown-rows .row .name { color: var(--muted); }
+  .breakdown-rows .row .val { color: var(--flipdish-dark); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .breakdown-rows .row.subtract .val { color: var(--red-strong); }
+  .breakdown-rows .row.subtotal {
+    border-top: 1px solid var(--border);
+    margin-top: 6px; padding-top: 8px; font-size: 13.5px;
+  }
+  .breakdown-rows .row.subtotal .name { color: var(--flipdish-dark); font-weight: 700; }
+  .breakdown-rows .row.subtotal .val { color: var(--green-strong); font-weight: 700; }
+  .breakdown-rows .row.total {
+    border-top: 1px solid var(--border);
+    margin-top: 6px; padding-top: 8px; font-size: 14px;
+  }
+  .breakdown-rows .row.total .name { color: var(--flipdish-dark); font-weight: 700; }
+  .breakdown-rows .row.total .val { color: var(--flipdish-blue-dark); font-weight: 700; }
+  .breakdown-rows .row .row-help { color: var(--muted); font-weight: 400; font-size: 11px; margin-left: 6px; text-transform: none; letter-spacing: 0; }
+
+  /* Flash on change */
+  @keyframes valueFlash {
+    0%   { background-color: #FFF7D6; }
+    100% { background-color: transparent; }
+  }
+  .flash { animation: valueFlash 0.6s ease-out; border-radius: 4px; }
+
+  /* ---------- Verdict banner ---------- */
+  .verdict {
+    margin-top: 14px; padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 14px; line-height: 1.5;
+    border: 1px solid;
+  }
+  .verdict.green { background: var(--green-soft); border-color: #9DCDB1; color: #1B5C36; }
+  .verdict.amber { background: var(--amber-soft); border-color: #E6CD66; color: #6B5500; }
+  .verdict.red   { background: var(--red-soft);   border-color: #E8A89B; color: #7A1E10; }
+  .verdict strong { font-weight: 700; }
+
+  /* ---------- Note callout ---------- */
+  .note {
+    margin-top: 14px; padding: 10px 14px;
+    background: #F8FAFC;
+    border-left: 3px solid var(--flipdish-blue-line);
+    border-radius: 4px; font-size: 12px; color: var(--muted);
+  }
+  .note strong { color: var(--flipdish-dark); font-weight: 700; }
+
+  /* ---------- Tips ---------- */
+  .tips {
+    background: #F5FAFE;
+    border: 1px solid var(--flipdish-blue-line);
+    border-radius: 12px; padding: 18px 20px; margin-top: 28px;
+  }
+  .tips h2 {
+    font-family: 'Domine', Georgia, serif;
+    font-size: 16px; margin: 0 0 12px;
+    color: var(--flipdish-blue-dark); font-weight: 700;
+  }
+  .tips ol { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.55; color: #334155; }
+  .tips ol li { margin-bottom: 8px; }
+  .tips ol li:last-child { margin-bottom: 0; }
+  .tips strong { color: var(--flipdish-dark); }
+
+  footer {
+    margin-top: 28px; font-size: 12px; color: var(--muted); text-align: center;
+    padding-top: 20px; border-top: 1px solid var(--border);
+  }
+
+  @media (max-width: 640px) {
+    .topbar { padding: 12px 16px; }
+    .wrap { padding: 18px 14px 32px; }
+    h1 { font-size: 22px; }
+    .lede { font-size: 14px; }
+    .hero { padding: 16px 18px; }
+    .hero .big { font-size: 30px; }
+    .input-cell input, .input-cell select { font-size: 16px; }
+  }
+
+  /* ---------- Twin answer grid (Min Sales Price + Payback) ---------- */
+  .answer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 6px 0;
+  }
+  @media (max-width: 760px) {
+    .answer-grid { grid-template-columns: 1fr; }
+  }
+  .hero.hero-stack {
+    display: block;
+    padding: 24px 26px;
+    margin: 0;
+  }
+  .hero.hero-stack .big { margin: 6px 0 10px; }
+  .hero-supporting {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px dashed currentColor;
+    font-size: 13px;
+    opacity: 0.85;
+  }
+  .hero-supporting strong { font-weight: 700; }
+  .hero-input {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px dashed currentColor;
+  }
+  .hero-input label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+    color: inherit;
+    opacity: 0.9;
+  }
+  .hero-input label .muted {
+    text-transform: none;
+    font-weight: 400;
+    opacity: 0.75;
+    letter-spacing: 0;
+  }
+  .hero-input .input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .hero-input .prefix {
+    position: absolute;
+    left: 12px;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 600;
+    pointer-events: none;
+  }
+  .hero-input input {
+    border: 1px solid var(--input-border);
+    background: white;
+    padding: 10px 12px 10px 26px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: inherit;
+    color: var(--flipdish-dark);
+    width: 100%;
+  }
+  .hero-input input:focus {
+    outline: 2px solid var(--flipdish-blue);
+    outline-offset: -1px;
+  }
+
+  /* ---------- Collapsed math section ---------- */
+  .math-details {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin: 18px 0;
+    box-shadow: 0 1px 2px rgba(10,31,51,.04);
+  }
+  .math-details summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 14px 20px;
+    font-weight: 600;
+    color: var(--flipdish-blue-dark);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    user-select: none;
+  }
+  .math-details summary::-webkit-details-marker { display: none; }
+  .math-details summary::before {
+    content: '▸';
+    font-size: 12px;
+    color: var(--muted);
+    transition: transform .2s ease;
+    display: inline-block;
+  }
+  .math-details[open] summary::before { transform: rotate(90deg); }
+  .math-details summary:hover { color: var(--flipdish-blue); }
+  .math-details .math-content { padding: 6px 22px 20px; }
+  .math-details .math-content h3 {
+    font-size: 14px;
+    margin: 18px 0 6px;
+    color: var(--flipdish-blue-dark);
+    font-family: 'Domine', Georgia, serif;
+    font-weight: 700;
+  }
+  .math-details .math-content h3:first-child { margin-top: 0; }
+</style>
+</head>
+<body class="mode-pos">
+
+<header class="topbar">
+  <div class="brand">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 288" aria-label="Flipdish">
+      <text x="0" y="200" font-family="Domine, serif" font-weight="700" font-size="200" fill="#064885">Flipdish</text>
+    </svg>
+  </div>
+  <div class="topbar-right">
+    <span class="internal-tag">Internal</span>
+    <button class="signout" id="signoutBtn" title="Clear password and reload">Sign out</button>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <a href="../../" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    All calculators
+  </a>
+
+  <span class="fam-pill">Cross-product · Hardware discount</span>
+
+  <h1>Hardware Discount Approval</h1>
+  <p class="lede">Find the lowest hardware price the rep can charge while still paying back the discount within <strong>3 months</strong> of operating margin. Pick the deal type below, type the customer's numbers, and the floor appears live. Optionally type a proposed price to check how it fits.</p>
+
+  <!-- MODE SELECTOR -->
+  <div class="mode-bar">
+    <span class="mode-bar-label">Deal type</span>
+    <div class="mode-buttons" id="modeButtons">
+      <button class="mode-btn active" data-mode="pos">POS only</button>
+      <button class="mode-btn" data-mode="kiosk">Kiosk only</button>
+      <button class="mode-btn" data-mode="combined">POS + Kiosk</button>
+    </div>
+  </div>
+
+  <!-- COUNTRY SELECTOR -->
+  <div class="country-bar">
+    <span class="country-bar-label">Country</span>
+    <div class="country-buttons" id="countryButtons">
+      <button class="country-btn" data-country="UK">🇬🇧 United Kingdom</button>
+      <button class="country-btn" data-country="IE">🇮🇪 Ireland</button>
+      <button class="country-btn" data-country="US">🇺🇸 United States</button>
+      <button class="country-btn" data-country="ES">🇪🇸 Spain</button>
+    </div>
+  </div>
+
+  <!-- ===================================================== -->
+  <!-- STEP 1 — CUSTOMER PROFILE (mode-dependent)             -->
+  <!-- ===================================================== -->
+
+  <!-- POS ONLY -->
+  <div class="mode-pos-only">
+    <div class="step">
+      <span class="num">1</span>
+      <span class="text">Tell me about the customer <span class="sub">Drives Software Net Revenue / month</span></span>
+    </div>
+    <div class="calc-card shared-inputs">
+      <div class="inputs-grid">
+        <div class="input-cell">
+          <label for="pos-gmv">Monthly POS GMV</label>
+          <div class="input-wrap">
+            <span class="prefix" data-cur>£</span>
+            <input id="pos-gmv" class="has-prefix" type="number" value="10000" step="500" min="0">
+          </div>
+        </div>
+        <div class="input-cell">
+          <label for="pos-aov">Average order value</label>
+          <div class="input-wrap">
+            <span class="prefix" data-cur>£</span>
+            <input id="pos-aov" class="has-prefix" type="number" value="13" step="1" min="0">
+          </div>
+        </div>
+        <div class="input-cell">
+          <label for="pos-comm">POS processing fee <span style="text-transform:none;font-weight:400;color:var(--muted);">(what the merchant pays)</span></label>
+          <div class="input-wrap">
+            <input id="pos-comm" class="has-suffix" type="number" value="1.2" step="0.05" min="0">
+            <span class="suffix">%</span>
+          </div>
+        </div>
+        <div class="input-cell">
+          <label for="pos-merchant">POS transaction fee <span style="text-transform:none;font-weight:400;color:var(--muted);">(what the merchant pays)</span></label>
+          <div class="input-wrap">
+            <span class="prefix" data-cur>£</span>
+            <input id="pos-merchant" class="has-prefix" type="number" value="0.10" step="0.01" min="0">
+          </div>
+        </div>
+        <div class="input-cell">
+          <label for="pos-sub">Monthly POS subscription</label>
+          <div class="input-wrap">
+            <span class="prefix" data-cur>£</span>
+            <input id="pos-sub" class="has-prefix" type="number" value="99" step="5" min="0">
+          </div>
+        </div>
+        <div class="input-cell">
+          <label for="pos-orders">Estimated orders / month <span style="text-transform:none;font-weight:400;color:var(--muted);">(auto)</span></label>
+          <div class="input-wrap">
+            <input id="pos-orders" class="derived" type="text" value="—" readonly>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KIOSK ONLY -->
+  <div class="mode-kiosk-only">
+    <div class="step">
+      <span class="num">1</span>
+      <span class="text">Tell me about the customer <span class="sub">Drives Kiosk Software Net Revenue / month</span></span>
+    </div>
+    <div class="calc-card shared-inputs">
+      <div class="inputs-grid">
+        <div class="input-cell">
+          <label for="kiosk-gmv">Monthly Kiosk GMV</label>
+          <div class="input-wrap">
+            <span class="prefix" data-cur>£</span>
+            <input id="kiosk-gmv" class="has-prefix" type="number" value="10000" step="500" min="0">
+          </div>
+        </div>
+        <div class="input-cell">
+          <label for="kiosk-aov">Kiosk average order value</label>
+          <div class="input-wrap">
+            <span class="prefix" data-cur>£</span>
+            <input id="kiosk-aov" class="has-prefix" type="number" value="20" step="1" min="0">
+          </div>
+        </div>
+        <div class="input-cell">
+          <label for="kiosk-comm">Kiosk processing fee <span style="text-transform:none;font-weight:400;color:var(--muted);">(what the merchant pays)</span></label>
+          <div class="input-wrap">
+            <input id="kiosk-comm" class="has-suffix" type="number" value="1.5" step="0.05" min="0">
+            <span class="suffix">%</span>
+          </div>
+        </div>
+        <div class="input-cell">
+          <label for="kiosk-merchant">Kiosk transaction fee <span style="text-transform:none;font-weight:400;color:var(--muted);">(what the merchant pays)</span></label>
+          <div class="input-wrap">
+            <span class="prefix" data-cur>£</span>
+            <input id="kiosk-merchant" class="has-prefix" type="number" value="0.20" step="0.01" min="0">
+          </div>
+        </div>
+        <div class="input-cell">
+          <label for="kiosk-sub">Monthly Kiosk subscription</label>
+          <div class="input-wrap">
+            <span class="prefix" data-cur>£</span>
+            <input id="kiosk-sub" class="has-prefix" type="number" value="79" step="5" min="0">
+          </div>
+        </div>
+        <div class="input-cell">
+          <label for="kiosk-orders">Estimated orders / month <span style="text-transform:none;font-weight:400;color:var(--muted);">(auto)</span></label>
+          <div class="input-wrap">
+            <input id="kiosk-orders" class="derived" type="text" value="—" readonly>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMBINED -->
+  <div class="mode-combined-only">
+    <div class="step">
+      <span class="num">1</span>
+      <span class="text">Tell me about the store <span class="sub">Total on-premise GMV and how it splits between POS and Kiosk</span></span>
+    </div>
+    <div class="calc-card shared-inputs">
+      <div class="inputs-grid">
+        <div class="input-cell">
+          <label for="c-totalGmv">Total on-premise monthly GMV</label>
+          <div class="input-wrap">
+            <span class="prefix" data-cur>£</span>
+            <input id="c-totalGmv" class="has-prefix" type="number" value="10000" step="500" min="0">
+          </div>
+        </div>
+        <div class="input-cell">
+          <label for="c-kioskSharePct">Kiosk share of GMV <span style="text-transform:none;font-weight:400;color:var(--muted);">(load-bearing)</span></label>
+          <div class="input-wrap">
+            <input id="c-kioskSharePct" class="has-suffix" type="number" value="28" step="1" min="0" max="100">
+            <span class="suffix">%</span>
+          </div>
+        </div>
+        <div class="input-cell">
+          <label for="c-aov">Average order value <span style="text-transform:none;font-weight:400;color:var(--muted);">(both channels)</span></label>
+          <div class="input-wrap">
+            <span class="prefix" data-cur>£</span>
+            <input id="c-aov" class="has-prefix" type="number" value="13" step="1" min="0">
+          </div>
+        </div>
+        <div class="input-cell">
+          <label for="c-posGmv">POS GMV / mo <span style="text-transform:none;font-weight:400;color:var(--muted);">(auto)</span></label>
+          <div class="input-wrap">
+            <input id="c-posGmv" class="derived" type="text" value="—" readonly>
+          </div>
+        </div>
+        <div class="input-cell">
+          <label for="c-kioskGmv">Kiosk GMV / mo <span style="text-transform:none;font-weight:400;color:var(--muted);">(auto)</span></label>
+          <div class="input-wrap">
+            <input id="c-kioskGmv" class="derived" type="text" value="—" readonly>
+          </div>
+        </div>
+        <div class="input-cell">
+          <label for="c-totalOrders">Total orders / mo <span style="text-transform:none;font-weight:400;color:var(--muted);">(auto)</span></label>
+          <div class="input-wrap">
+            <input id="c-totalOrders" class="derived" type="text" value="—" readonly>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="num">2</span>
+      <span class="text">Set the rates <span class="sub">POS and Kiosk earn at different rates — both contribute to net revenue</span></span>
+    </div>
+    <div class="calc-card shared-inputs">
+      <div class="channel-block">
+        <div class="channel-title">POS channel</div>
+        <div class="inputs-grid cols-2">
+          <div class="input-cell">
+            <label for="c-posComm">POS processing fee <span style="text-transform:none;font-weight:400;color:var(--muted);">(% of POS GMV)</span></label>
+            <div class="input-wrap">
+              <input id="c-posComm" class="has-suffix" type="number" value="1.2" step="0.05" min="0">
+              <span class="suffix">%</span>
+            </div>
+          </div>
+          <div class="input-cell">
+            <label for="c-posMerchant">POS transaction fee <span style="text-transform:none;font-weight:400;color:var(--muted);">(per POS order)</span></label>
+            <div class="input-wrap">
+              <span class="prefix" data-cur>£</span>
+              <input id="c-posMerchant" class="has-prefix" type="number" value="0.10" step="0.01" min="0">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="channel-block">
+        <div class="channel-title">Kiosk channel</div>
+        <div class="inputs-grid cols-2">
+          <div class="input-cell">
+            <label for="c-kioskComm">Kiosk processing fee <span style="text-transform:none;font-weight:400;color:var(--muted);">(% of Kiosk GMV)</span></label>
+            <div class="input-wrap">
+              <input id="c-kioskComm" class="has-suffix" type="number" value="1.5" step="0.05" min="0">
+              <span class="suffix">%</span>
+            </div>
+          </div>
+          <div class="input-cell">
+            <label for="c-kioskMerchant">Kiosk transaction fee <span style="text-transform:none;font-weight:400;color:var(--muted);">(per Kiosk order)</span></label>
+            <div class="input-wrap">
+              <span class="prefix" data-cur>£</span>
+              <input id="c-kioskMerchant" class="has-prefix" type="number" value="0.20" step="0.01" min="0">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="inputs-grid cols-2" style="margin-top:14px;">
+        <div class="input-cell">
+          <label for="c-combinedSub">Combined monthly subscription <span style="text-transform:none;font-weight:400;color:var(--muted);">(POS + Kiosk bundle)</span></label>
+          <div class="input-wrap">
+            <span class="prefix" data-cur>£</span>
+            <input id="c-combinedSub" class="has-prefix" type="number" value="159" step="5" min="0">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================== -->
+  <!-- STEP 2/3 — HARDWARE (mode-dependent)                   -->
+  <!-- ===================================================== -->
+
+  <!-- POS hardware -->
+  <div class="mode-pos-only">
+    <div class="step">
+      <span class="num">2</span>
+      <span class="text">Tell me about the hardware <span class="sub">List price and any approved subsidy</span></span>
+    </div>
+    <div class="calc-card shared-inputs">
+      <div class="inputs-grid cols-2">
+        <div class="input-cell">
+          <label for="pos-hwList">POS hardware list price</label>
+          <div class="input-wrap">
+            <span class="prefix" data-cur>£</span>
+            <input id="pos-hwList" class="has-prefix" type="number" value="799" step="10" min="0">
+          </div>
+        </div>
+        <div class="input-cell">
+          <label for="pos-subsidy"><span class="subsidyLabel">CCEP</span> approved amount <span style="text-transform:none;font-weight:400;color:var(--muted);">(leave 0 if not approved)</span></label>
+          <div class="input-wrap">
+            <span class="prefix" data-cur>£</span>
+            <input id="pos-subsidy" class="has-prefix" type="number" value="0" step="10" min="0">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kiosk hardware -->
+  <div class="mode-kiosk-only">
+    <div class="step">
+      <span class="num">2</span>
+      <span class="text">Tell me about the hardware <span class="sub">Kiosk hardware list price · no CCEP/CCH on Kiosk-only deals</span></span>
+    </div>
+    <div class="calc-card shared-inputs">
+      <div class="inputs-grid cols-1">
+        <div class="input-cell">
+          <label for="kiosk-hwList">Kiosk hardware list price</label>
+          <div class="input-wrap">
+            <span class="prefix" data-cur>£</span>
+            <input id="kiosk-hwList" class="has-prefix" type="number" value="1500" step="50" min="0">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Combined hardware -->
+  <div class="mode-combined-only">
+    <div class="step">
+      <span class="num">3</span>
+      <span class="text">Tell me about the hardware <span class="sub">Combined POS + Kiosk list price and any approved CCEP/CCH</span></span>
+    </div>
+    <div class="calc-card shared-inputs">
+      <div class="inputs-grid cols-2">
+        <div class="input-cell">
+          <label for="c-hwList">Combined hardware list price <span style="text-transform:none;font-weight:400;color:var(--muted);">(POS + Kiosk total)</span></label>
+          <div class="input-wrap">
+            <span class="prefix" data-cur>£</span>
+            <input id="c-hwList" class="has-prefix" type="number" value="2298" step="50" min="0">
+          </div>
+        </div>
+        <div class="input-cell">
+          <label for="c-subsidy"><span class="subsidyLabel">CCEP</span> approved amount <span style="text-transform:none;font-weight:400;color:var(--muted);">(applies to POS only — leave 0 if not approved)</span></label>
+          <div class="input-wrap">
+            <span class="prefix" data-cur>£</span>
+            <input id="c-subsidy" class="has-prefix" type="number" value="0" step="50" min="0">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================== -->
+  <!-- THE ANSWERS — Twin hero (shared across modes)          -->
+  <!-- ===================================================== -->
+  <div class="step">
+    <span class="num" id="answersStepNum">3</span>
+    <span class="text">The answers <span class="sub">Floor price always lit · payback lights up when you type a proposed price</span></span>
+  </div>
+
+  <div class="answer-grid">
+    <!-- LEFT: Minimum Sales Price (always lit) -->
+    <div class="hero hero-stack win" id="minPriceHero">
+      <div class="label">Minimum sales price</div>
+      <div class="big" id="heroMinPrice">—</div>
+      <div class="sub">Don't sell below this. Below this price the discount takes longer than 3 months to pay back at operating margin.</div>
+      <div class="hero-supporting" id="heroSupportLine">Leaves room for up to <strong id="heroSupportMaxDiscount">—</strong> of discount off the list.</div>
+    </div>
+
+    <!-- RIGHT: Payback period (traffic light, with proposed sales price input nested) -->
+    <div class="hero hero-stack warn" id="paybackHero">
+      <div class="label">Payback period</div>
+      <div class="big" id="paybackHeroValue">—</div>
+      <div class="sub" id="paybackHeroSub">Type a price below to check how it fits.</div>
+      <div class="hero-input">
+        <label for="salesPrice">Got a price in mind? <span class="muted">Type it to check.</span></label>
+        <div class="input-wrap">
+          <span class="prefix" data-cur>£</span>
+          <input id="salesPrice" class="has-prefix" type="number" placeholder="e.g. 600" step="10" min="0">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Verdict banner -->
+  <div class="verdict" id="verdict">—</div>
+
+  <!-- ===================================================== -->
+  <!-- COLLAPSED MATH — full ladder for sense-checking        -->
+  <!-- ===================================================== -->
+  <details class="math-details">
+    <summary>Show me the math</summary>
+    <div class="math-content">
+
+      <h3>How the maximum discount is calculated</h3>
+      <div class="breakdown-rows">
+        <div class="row subtotal"><span class="name">Net Fees / mo <span class="row-help">(rates after card cost)</span></span><span class="val" id="netFees">—</span></div>
+        <div class="row"><span class="name">+ Subscription revenue</span><span class="val" id="revSub">—</span></div>
+        <div class="row total"><span class="name">= Software Net Revenue / mo</span><span class="val" id="totalSnr">—</span></div>
+        <div class="row"><span class="name">× 0.75 <span class="row-help">(Finance's 25% cost-to-serve haircut)</span></span><span class="val">0.75</span></div>
+        <div class="row total"><span class="name">= Operating margin / mo</span><span class="val" id="opMargin">—</span></div>
+        <div class="row"><span class="name">× 3 months <span class="row-help">(max payback — rounded down to whole £ for safety)</span></span><span class="val">3</span></div>
+        <div class="row total"><span class="name">= Maximum discount allowed</span><span class="val" id="maxDiscountRow">—</span></div>
+      </div>
+
+      <h3>How the minimum sales price is calculated</h3>
+      <div class="breakdown-rows">
+        <div class="row"><span class="name">Hardware list price</span><span class="val" id="hwListTotal">—</span></div>
+        <div class="row subtract mode-pos-or-combined"><span class="name">− <span class="subsidyName">CCEP</span> approved</span><span class="val" id="subsidyTotal">—</span></div>
+        <div class="row subtract"><span class="name">− Maximum discount allowed</span><span class="val" id="maxDiscountRow2">—</span></div>
+        <div class="row total"><span class="name">= Minimum sales price <span class="row-help">(do not go below this)</span></span><span class="val" id="minPriceRow">—</span></div>
+      </div>
+
+      <h3>How the payback period is calculated <span style="font-family:'Roboto',sans-serif;font-weight:400;font-size:12px;color:var(--muted);">(uses your proposed price)</span></h3>
+      <div class="breakdown-rows">
+        <div class="row"><span class="name">Hardware list price</span><span class="val" id="hwListTotal2">—</span></div>
+        <div class="row subtract mode-pos-or-combined"><span class="name">− <span class="subsidyName">CCEP</span> approved</span><span class="val" id="subsidyTotal2">—</span></div>
+        <div class="row subtract"><span class="name">− Proposed sales price</span><span class="val" id="salesPriceShown">—</span></div>
+        <div class="row total"><span class="name">= Discount being given</span><span class="val" id="discountGiven">—</span></div>
+        <div class="row"><span class="name">÷ Operating margin / mo</span><span class="val" id="opMarginShown">—</span></div>
+        <div class="row total"><span class="name">= Payback period <span class="row-help">(months — at operating margin)</span></span><span class="val" id="paybackMonths">—</span></div>
+      </div>
+
+      <div class="note">
+        <strong>Note on the formula:</strong> Maximum discount and payback both use <strong>Operating Margin</strong> (Software Net Revenue × 0.75) — the 25% deduction is Finance's standard haircut for cost-to-serve. <strong id="ccepNote">CCEP (UK) / CCH (IE)</strong> applies to POS hardware only — a Kiosk-only deal doesn't qualify for the Coca-Cola subsidy. Confirm with Finance if the deal is borderline.
+      </div>
+    </div>
+  </details>
+
+  <!-- TIPS -->
+  <div class="tips">
+    <h2>How to use this</h2>
+    <ol>
+      <li><strong>Pick the deal type.</strong> POS only, Kiosk only, or POS + Kiosk combined. The inputs, countries and rules adjust to match.</li>
+      <li><strong>Pick the country.</strong> Card processing costs differ between countries. Kiosk-only deals are available in UK, IE, US and ES; POS and Combined deals are UK and IE only.</li>
+      <li><strong>Step 1 — customer.</strong> For POS or Kiosk, type monthly GMV, AOV, processing and transaction fees, and subscription. For Combined, type total on-premise GMV, Kiosk share, AOV, and per-channel rates. These drive Software Net Revenue per month.</li>
+      <li><strong>Hardware.</strong> Type the hardware list price. On POS and Combined deals, type any approved CCEP (UK) or CCH (IE) subsidy amount — otherwise leave it at 0. <strong>Kiosk-only deals don't qualify for CCEP/CCH.</strong></li>
+      <li><strong>Read the floor.</strong> The big number on the left is the lowest sales price the rep can charge. Don't sell below it.</li>
+      <li><strong>(Optional) Check a price.</strong> If the rep has a number in mind, type it into "Got a price in mind?" on the right. The payback period lights up green / amber / red — green is comfortable, amber is at the limit, red is over.</li>
+      <li><strong>Why 0.75 in the math?</strong> Finance applies a 25% cost-to-serve haircut, so the calculator approves discounts off real margin, not gross revenue. Click "Show me the math" if you want to see the full ladder.</li>
+    </ol>
+  </div>
+
+  <footer>
+    Flipdish Hardware Discount Approval Calculator · Internal · Live calculation, nothing is saved · v1.0
+    <br><span id="rates-updated-line"></span>
+  </footer>
+
+</div>
+
+<script>
+  // ====================================================================
+  // ⚙️  EDIT HERE IF RATES OR DEFAULTS CHANGE
+  // --------------------------------------------------------------------
+  // cardPct = % card processing cost on each transaction (decimal, 0.0070 = 0.70%)
+  // cardFix = fixed per-order card processing cost (local currency)
+  // subsidyName = 'CCEP' (UK) or 'CCH' (IE); US/ES have no subsidy
+  // MODES: 'pos' | 'kiosk' | 'combined'
+  //
+  // NOTE: US and ES card processing rates are placeholders from the OO calc.
+  // Confirm in-person (POS/Kiosk) rates with Finance before relying on US/ES numbers.
+  // ====================================================================
+  const RATES_LAST_UPDATED = '2026-04-23';
+
+  const COUNTRIES = {
+    UK: { currency: '£', currencyCode: 'GBP', name: 'United Kingdom',
+          cardPct: 0.0070, cardFix: 0.006, subsidyName: 'CCEP' },
+    IE: { currency: '€', currencyCode: 'EUR', name: 'Ireland',
+          cardPct: 0.0052, cardFix: 0.008, subsidyName: 'CCH' },
+    US: { currency: '$', currencyCode: 'USD', name: 'United States',
+          cardPct: 0.0255, cardFix: 0.018, subsidyName: null },
+    ES: { currency: '€', currencyCode: 'EUR', name: 'Spain',
+          cardPct: 0.0051, cardFix: 0.018, subsidyName: null }
+  };
+
+  // Which countries each mode supports
+  const MODE_COUNTRIES = {
+    pos:      ['UK', 'IE'],
+    kiosk:    ['UK', 'IE', 'US', 'ES'],
+    combined: ['UK', 'IE']
+  };
+
+  // Default values by mode + country, applied on mode switch or country switch
+  // (Only hardware / subscription defaults need resetting — customer profile
+  //  inputs like GMV/AOV are preserved across switches.)
+  const DEFAULTS = {
+    pos: {
+      UK: { hwList: 799,  sub: 99 },
+      IE: { hwList: 799,  sub: 99 }
+    },
+    kiosk: {
+      UK: { hwList: 1500, sub: 79 },
+      IE: { hwList: 1500, sub: 79 },
+      US: { hwList: 1500, sub: 79 },
+      ES: { hwList: 1500, sub: 79 }
+    },
+    combined: {
+      UK: { hwList: 2298, sub: 159 },
+      IE: { hwList: 2298, sub: 159 }
+    }
+  };
+
+  const OPERATING_MARGIN_FACTOR = 0.75;
+  const PAYBACK_TARGET_MONTHS   = 3;
+  // ====================================================================
+  // End of editable config
+  // ====================================================================
+
+  let activeMode    = 'pos';
+  let activeCountry = 'UK';
+  let isInitializing = true;
+
+  const $  = id => document.getElementById(id);
+  const $$ = sel => document.querySelectorAll(sel);
+  const num = id => parseFloat($(id).value) || 0;
+
+  function clampInput(id, min, max) {
+    const el = $(id);
+    if (!el || el.value === '') return;
+    const v = parseFloat(el.value);
+    if (isNaN(v)) return;
+    if (min != null && v < min) el.value = min;
+    if (max != null && v > max) el.value = max;
+  }
+
+  function fmtMoney(n, decimals) {
+    if (!isFinite(n)) return '—';
+    const c = COUNTRIES[activeCountry].currency;
+    const sign = n < 0 ? '-' : '';
+    const abs = Math.abs(n);
+    const opts = decimals != null
+      ? { minimumFractionDigits: decimals, maximumFractionDigits: decimals }
+      : { maximumFractionDigits: 0 };
+    return sign + c + abs.toLocaleString(undefined, opts);
+  }
+
+  function setText(el, newText, flash) {
+    if (!el) return;
+    const changed = el.textContent !== newText;
+    if (changed) el.textContent = newText;
+    if (changed && !isInitializing && flash) {
+      el.classList.remove('flash');
+      void el.offsetWidth;
+      el.classList.add('flash');
+    }
+  }
+
+  function updateCurrencyPrefixes() {
+    const c = COUNTRIES[activeCountry].currency;
+    $$('[data-cur]').forEach(el => { el.textContent = c; });
+  }
+
+  function updateSubsidyLabels() {
+    const co = COUNTRIES[activeCountry];
+    const name = co.subsidyName || 'CCEP';  // fallback label text (rows hidden for non-subsidy countries anyway)
+    $$('.subsidyLabel, .subsidyName').forEach(el => { el.textContent = name; });
+  }
+
+  // ====================================================================
+  // CALCULATOR — one function, branches on activeMode
+  // ====================================================================
+  function calc() {
+    const co = COUNTRIES[activeCountry];
+
+    // Per-mode inputs → { netFees, revSub, hwList, subsidy, salesPrice }
+    let netFees, revSub, hwList, subsidy, salesPrice;
+
+    if (activeMode === 'pos') {
+      const gmv      = num('pos-gmv');
+      const aov      = num('pos-aov');
+      const commPct  = num('pos-comm') / 100;
+      const merchant = num('pos-merchant');
+      revSub         = num('pos-sub');
+      const orders   = aov > 0 ? gmv / aov : 0;
+      const revComm      = gmv * commPct;
+      const revMerchant  = orders * merchant;
+      const cardCost     = (gmv * co.cardPct) + (orders * co.cardFix);
+      netFees     = revComm + revMerchant - cardCost;
+      hwList      = num('pos-hwList');
+      subsidy     = num('pos-subsidy');
+      $('pos-orders').value = Math.round(orders).toLocaleString();
+    }
+    else if (activeMode === 'kiosk') {
+      const gmv      = num('kiosk-gmv');
+      const aov      = num('kiosk-aov');
+      const commPct  = num('kiosk-comm') / 100;
+      const merchant = num('kiosk-merchant');
+      revSub         = num('kiosk-sub');
+      const orders   = aov > 0 ? gmv / aov : 0;
+      const revComm      = gmv * commPct;
+      const revMerchant  = orders * merchant;
+      const cardCost     = (gmv * co.cardPct) + (orders * co.cardFix);
+      netFees     = revComm + revMerchant - cardCost;
+      hwList      = num('kiosk-hwList');
+      subsidy     = 0;  // Kiosk-only deals don't qualify for CCEP/CCH
+      $('kiosk-orders').value = Math.round(orders).toLocaleString();
+    }
+    else { // combined
+      const totalGmv      = num('c-totalGmv');
+      const kioskSharePct = Math.min(100, Math.max(0, num('c-kioskSharePct')));
+      const aov           = num('c-aov');
+      const kioskGmv      = totalGmv * (kioskSharePct / 100);
+      const posGmv        = totalGmv - kioskGmv;
+      const posOrders     = aov > 0 ? posGmv   / aov : 0;
+      const kioskOrders   = aov > 0 ? kioskGmv / aov : 0;
+      const totalOrders   = posOrders + kioskOrders;
+      const posCommPct    = num('c-posComm') / 100;
+      const posMerchFee   = num('c-posMerchant');
+      const kioskCommPct  = num('c-kioskComm') / 100;
+      const kioskMerchFee = num('c-kioskMerchant');
+      revSub              = num('c-combinedSub');
+      const posRevenue    = (posGmv * posCommPct) + (posOrders * posMerchFee);
+      const kioskRevenue  = (kioskGmv * kioskCommPct) + (kioskOrders * kioskMerchFee);
+      const cardCost      = (totalGmv * co.cardPct) + (totalOrders * co.cardFix);
+      netFees       = posRevenue + kioskRevenue - cardCost;
+      hwList        = num('c-hwList');
+      subsidy       = num('c-subsidy');
+      // Update auto fields
+      const kioskPctDisplay = Math.round(kioskSharePct);
+      const posPctDisplay   = 100 - kioskPctDisplay;
+      $('c-posGmv').value      = fmtMoney(posGmv, 0)   + '  (' + posPctDisplay   + '%)';
+      $('c-kioskGmv').value    = fmtMoney(kioskGmv, 0) + '  (' + kioskPctDisplay + '%)';
+      $('c-totalOrders').value = Math.round(totalOrders).toLocaleString();
+    }
+
+    salesPrice = num('salesPrice');
+
+    // Shared math ladder (same for all 3 modes)
+    const snrMonthly = netFees + revSub;
+    const opMargin   = snrMonthly * OPERATING_MARGIN_FACTOR;
+
+    const listAfterSub  = Math.max(0, hwList - subsidy);
+    const maxDiscount   = Math.max(0, Math.floor(opMargin * PAYBACK_TARGET_MONTHS));
+    const minSalesPrice = Math.max(0, listAfterSub - maxDiscount);
+
+    const discountGiven = Math.max(0, listAfterSub - salesPrice);
+    let paybackMonths = null;
+    if (discountGiven <= 0) {
+      paybackMonths = 0;
+    } else if (opMargin > 0) {
+      paybackMonths = discountGiven / opMargin;
+    } // else null = op margin ≤ 0
+
+    // ====================================================================
+    // RENDER — math ladders
+    // ====================================================================
+    setText($('netFees'),        fmtMoney(netFees, 2) + '/mo', true);
+    setText($('revSub'),         fmtMoney(revSub, 2),          true);
+    setText($('totalSnr'),       fmtMoney(snrMonthly, 2) + '/mo', true);
+    setText($('opMargin'),       fmtMoney(opMargin, 2) + '/mo', true);
+    setText($('maxDiscountRow'), fmtMoney(maxDiscount, 0),     true);
+
+    setText($('hwListTotal'),     fmtMoney(hwList, 0),        true);
+    setText($('subsidyTotal'),    fmtMoney(subsidy, 0),       true);
+    setText($('maxDiscountRow2'), fmtMoney(maxDiscount, 0),   true);
+    setText($('minPriceRow'),     fmtMoney(minSalesPrice, 0), true);
+
+    setText($('hwListTotal2'),    fmtMoney(hwList, 0),         true);
+    setText($('subsidyTotal2'),   fmtMoney(subsidy, 0),        true);
+    setText($('salesPriceShown'), fmtMoney(salesPrice, 0),     true);
+    setText($('discountGiven'),   fmtMoney(discountGiven, 0),  true);
+    setText($('opMarginShown'),   fmtMoney(opMargin, 2) + '/mo', true);
+
+    // HEADLINE HEROES
+    setText($('heroMinPrice'),           fmtMoney(minSalesPrice, 0), true);
+    setText($('heroSupportMaxDiscount'), fmtMoney(maxDiscount, 0),   true);
+    // Support line wording — "(after CCEP)" only on POS/Combined
+    const subsidyName = co.subsidyName || 'CCEP';
+    const supportSuffix = (activeMode === 'kiosk')
+      ? ''
+      : ' (after ' + subsidyName + ')';
+    const heroSupport = $('heroSupportLine');
+    if (heroSupport) {
+      heroSupport.innerHTML = 'Leaves room for up to <strong id="heroSupportMaxDiscount">' +
+        fmtMoney(maxDiscount, 0) + '</strong> of discount off the list' + supportSuffix + '.';
+    }
+
+    // Verdict + payback banner
+    let verdictText, verdictClass, paybackText, paybackSubText, heroClass;
+    let minHeroClass = 'win';
+
+    if (subsidy >= hwList && hwList > 0 && activeMode !== 'kiosk') {
+      paybackText = '0 months';
+      paybackSubText = `Subsidy already covers the full ${fmtMoney(hwList, 0)} list price.`;
+      const combinedNote = (activeMode === 'combined')
+        ? 'it should normally cover only the POS portion of hardware, not the full combined list'
+        : 'it should normally cover part of the hardware, not all of it';
+      verdictText = `<strong>${subsidyName} subsidy (${fmtMoney(subsidy, 0)}) is at or above the hardware list price (${fmtMoney(hwList, 0)}).</strong> Double-check the subsidy figure — ${combinedNote}. If correct, no rep discount is needed.`;
+      verdictClass = 'amber';
+      heroClass = 'warn';
+      minHeroClass = 'warn';
+    } else if (opMargin <= 0) {
+      paybackText = '∞';
+      paybackSubText = 'Operating margin is zero or negative — a discount can never pay back.';
+      verdictText = '<strong>Do not approve any discount.</strong> This customer\'s operating margin is zero or negative — Flipdish loses money on the subscription before any hardware discount. Rework the rates, sub or volume before considering hardware terms.';
+      verdictClass = 'red';
+      heroClass = 'lose';
+      minHeroClass = 'lose';
+    } else if (salesPrice === 0) {
+      paybackText = '—';
+      paybackSubText = 'Type a proposed price below to check how it fits.';
+      verdictText = `<strong>Lowest you can charge: ${fmtMoney(minSalesPrice, 0)}.</strong> That uses the full <strong>${fmtMoney(maxDiscount, 0)}</strong> of discount and pays back in roughly ${PAYBACK_TARGET_MONTHS} months. Charge more to bank headroom, or type a proposed price into the box on the right to check it.`;
+      verdictClass = 'amber';
+      heroClass = 'warn';
+    } else if (discountGiven <= 0) {
+      paybackText = '0 months';
+      paybackSubText = 'No discount being given — nothing to pay back.';
+      const afterSub = (activeMode === 'kiosk') ? '' : ' (after ' + subsidyName + ')';
+      verdictText = `<strong>Approve.</strong> The proposed sales price covers the list${afterSub}. No discount is being given. There's room to discount up to <strong>${fmtMoney(maxDiscount, 0)}</strong> (down to <strong>${fmtMoney(minSalesPrice, 0)}</strong>) if the deal needs sweetening.`;
+      verdictClass = 'green';
+      heroClass = 'win';
+    } else {
+      paybackText = paybackMonths.toFixed(1) + ' months';
+      paybackSubText = `${fmtMoney(discountGiven, 0)} discount ÷ ${fmtMoney(opMargin, 0)}/mo operating margin.`;
+      if (paybackMonths < PAYBACK_TARGET_MONTHS - 0.05) {
+        const headroom = maxDiscount - discountGiven;
+        verdictText = `<strong>Approve.</strong> Discount of <strong>${fmtMoney(discountGiven, 0)}</strong> pays back in <strong>${paybackMonths.toFixed(1)} months</strong> — comfortably under the ${PAYBACK_TARGET_MONTHS}-month limit. Headroom of <strong>${fmtMoney(headroom, 0)}</strong> available if needed.`;
+        verdictClass = 'green';
+        heroClass = 'win';
+      } else if (paybackMonths <= PAYBACK_TARGET_MONTHS + 0.05) {
+        verdictText = `<strong>OK to approve, at the limit.</strong> Discount of <strong>${fmtMoney(discountGiven, 0)}</strong> pays back in <strong>${paybackMonths.toFixed(1)} months</strong> — right at the ${PAYBACK_TARGET_MONTHS}-month cap. Within bounds, but no headroom for further discount.`;
+        verdictClass = 'amber';
+        heroClass = 'warn';
+      } else {
+        const overBy = discountGiven - maxDiscount;
+        verdictText = `<strong>Do not approve as proposed.</strong> Discount of <strong>${fmtMoney(discountGiven, 0)}</strong> would take <strong>${paybackMonths.toFixed(1)} months</strong> to pay back — over the ${PAYBACK_TARGET_MONTHS}-month limit. Reduce the discount by <strong>${fmtMoney(overBy, 0)}</strong> (raise sales price to <strong>${fmtMoney(minSalesPrice, 0)}</strong> or higher) to stay within bounds. If the deal needs to go through as is, escalate for sign-off.`;
+        verdictClass = 'red';
+        heroClass = 'lose';
+      }
+    }
+
+    setText($('paybackMonths'),    paybackText,    true);
+    setText($('paybackHeroValue'), paybackText,    true);
+    setText($('paybackHeroSub'),   paybackSubText, false);
+
+    const minPriceHero = $('minPriceHero');
+    minPriceHero.classList.remove('win', 'warn', 'lose');
+    minPriceHero.classList.add(minHeroClass);
+
+    const paybackHero = $('paybackHero');
+    paybackHero.classList.remove('win', 'warn', 'lose');
+    paybackHero.classList.add(heroClass);
+
+    const verdictEl = $('verdict');
+    verdictEl.classList.remove('green', 'amber', 'red');
+    verdictEl.classList.add(verdictClass);
+    verdictEl.innerHTML = verdictText;
+  }
+
+  // ====================================================================
+  // MODE SWITCHING
+  // ====================================================================
+  function setMode(mode) {
+    if (!MODE_COUNTRIES[mode]) return;
+    activeMode = mode;
+
+    // Body class drives section visibility
+    document.body.classList.remove('mode-pos', 'mode-kiosk', 'mode-combined');
+    document.body.classList.add('mode-' + mode);
+
+    // Button highlight
+    $$('.mode-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.mode === mode);
+    });
+
+    // If current country isn't valid for this mode, fall back to UK
+    if (!MODE_COUNTRIES[mode].includes(activeCountry)) {
+      activeCountry = 'UK';
+    }
+
+    // "The answers" step number depends on mode (POS/Kiosk have 3 steps, Combined has 4)
+    $('answersStepNum').textContent = (mode === 'combined') ? '4' : '3';
+
+    // Re-apply country + defaults (resets hardware/sub for the new mode)
+    applyCountryDefaults();
+    calc();
+  }
+
+  // ====================================================================
+  // COUNTRY SWITCHING
+  // ====================================================================
+  function setCountry(code) {
+    if (!COUNTRIES[code]) return;
+    if (!MODE_COUNTRIES[activeMode].includes(code)) return;
+    activeCountry = code;
+    applyCountryDefaults();
+    calc();
+  }
+
+  function applyCountryDefaults() {
+    // Highlight active country button
+    $$('.country-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.country === activeCountry);
+    });
+    updateCurrencyPrefixes();
+    updateSubsidyLabels();
+
+    // Reset hardware + subscription + subsidy to this mode+country's defaults
+    const d = DEFAULTS[activeMode][activeCountry];
+    if (activeMode === 'pos') {
+      $('pos-hwList').value  = d.hwList;
+      $('pos-sub').value     = d.sub;
+      $('pos-subsidy').value = 0;
+    } else if (activeMode === 'kiosk') {
+      $('kiosk-hwList').value = d.hwList;
+      $('kiosk-sub').value    = d.sub;
+    } else {
+      $('c-hwList').value      = d.hwList;
+      $('c-combinedSub').value = d.sub;
+      $('c-subsidy').value     = 0;
+    }
+  }
+
+  // ====================================================================
+  // WIRE UP
+  // ====================================================================
+  $$('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => setMode(btn.dataset.mode));
+  });
+  $$('.country-btn').forEach(btn => {
+    btn.addEventListener('click', () => setCountry(btn.dataset.country));
+  });
+
+  // Clamp + recalc on every input change. Kiosk share is the only 0-100 input.
+  const INPUT_BOUNDS = {
+    // POS mode
+    'pos-gmv':      { min: 0 },
+    'pos-aov':      { min: 0 },
+    'pos-comm':     { min: 0 },
+    'pos-merchant': { min: 0 },
+    'pos-sub':      { min: 0 },
+    'pos-hwList':   { min: 0 },
+    'pos-subsidy':  { min: 0 },
+    // Kiosk mode
+    'kiosk-gmv':      { min: 0 },
+    'kiosk-aov':      { min: 0 },
+    'kiosk-comm':     { min: 0 },
+    'kiosk-merchant': { min: 0 },
+    'kiosk-sub':      { min: 0 },
+    'kiosk-hwList':   { min: 0 },
+    // Combined mode
+    'c-totalGmv':      { min: 0 },
+    'c-kioskSharePct': { min: 0, max: 100 },
+    'c-aov':           { min: 0 },
+    'c-posComm':       { min: 0 },
+    'c-posMerchant':   { min: 0 },
+    'c-kioskComm':     { min: 0 },
+    'c-kioskMerchant': { min: 0 },
+    'c-combinedSub':   { min: 0 },
+    'c-hwList':        { min: 0 },
+    'c-subsidy':       { min: 0 },
+    // Shared
+    salesPrice: { min: 0 }
+  };
+  Object.keys(INPUT_BOUNDS).forEach(id => {
+    const b = INPUT_BOUNDS[id];
+    const el = $(id);
+    if (!el) return;
+    el.addEventListener('input', () => {
+      clampInput(id, b.min, b.max);
+      calc();
+    });
+  });
+
+  document.getElementById('signoutBtn').addEventListener('click', function () {
+    try { sessionStorage.removeItem('fdInternalAuth'); } catch (e) {}
+    location.reload();
+  });
+
+  // ====================================================================
+  // INIT
+  // ====================================================================
+  function init() {
+    setMode('pos');    // default mode
+    const ratesLine = $('rates-updated-line');
+    if (ratesLine) {
+      ratesLine.textContent = 'Card processing rates last updated ' + RATES_LAST_UPDATED;
+    }
+    isInitializing = false;
+  }
+  init();
+</script>
+
+</body>
+</html>
