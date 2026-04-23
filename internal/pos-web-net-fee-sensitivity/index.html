@@ -248,26 +248,51 @@
   .summary-row.total .name { color: var(--flipdish-dark); font-weight: 700; }
   .summary-row.total .val { color: var(--flipdish-blue-dark); font-weight: 700; }
 
-  /* ---------- Priority callout ---------- */
-  .priority-callout {
-    background: #FFF9E6; border: 1px solid #F0D26A;
-    border-left: 4px solid #D89F08;
-    border-radius: 10px; padding: 16px 18px; margin: 16px 0 6px;
+  /* ---------- Lever comparison (under priority hero) ---------- */
+  .lever-compare {
+    margin-top: 14px; padding-top: 14px;
+    border-top: 1px dashed var(--border);
   }
-  .priority-callout h4 {
-    margin: 0 0 10px; font-family: 'Domine', Georgia, serif;
-    font-size: 14px; color: #8A6D08; font-weight: 700;
-  }
-  .priority-callout .row {
+  .lever-row {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 5px 0; font-size: 13.5px;
+    padding: 6px 0; font-size: 14px;
   }
-  .priority-callout .row .lever { color: var(--flipdish-dark); }
-  .priority-callout .row .impact { font-weight: 700; color: var(--flipdish-blue-dark); font-variant-numeric: tabular-nums; }
-  .priority-callout .row.winner { background: rgba(46,139,87,.08); padding: 6px 10px; border-radius: 6px; margin-top: 4px; }
-  .priority-callout .row.winner .lever { font-weight: 700; color: #1B5C36; }
-  .priority-callout .row.winner .impact { color: #1B5C36; }
-  .priority-callout .tldr { font-size: 13px; color: var(--muted); margin-top: 10px; font-style: italic; }
+  .lever-row .lever-name { color: var(--flipdish-dark); }
+  .lever-row .lever-impact {
+    font-weight: 700; color: var(--flipdish-blue-dark);
+    font-variant-numeric: tabular-nums;
+  }
+  .lever-tldr {
+    font-size: 13px; color: var(--muted); margin-top: 10px; font-style: italic;
+  }
+
+  /* ---------- Impact strip (demoted Net Fee change) ---------- */
+  .impact-strip {
+    display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 0;
+    border: 1px solid var(--border); border-radius: 10px;
+    overflow: hidden; margin-bottom: 16px;
+  }
+  @media (max-width: 680px) { .impact-strip { grid-template-columns: 1fr; } }
+  .impact-cell {
+    padding: 14px 16px; background: #F8FAFC;
+    border-right: 1px solid var(--border);
+  }
+  .impact-cell:last-child { border-right: 0; }
+  @media (max-width: 680px) {
+    .impact-cell { border-right: 0; border-bottom: 1px solid var(--border); }
+    .impact-cell:last-child { border-bottom: 0; }
+  }
+  .impact-cell--wide { background: #FCFDFF; }
+  .impact-label {
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .impact-val {
+    font-family: 'Domine', Georgia, serif;
+    font-size: 22px; font-weight: 700; color: var(--flipdish-blue-dark);
+    margin-top: 4px; font-variant-numeric: tabular-nums;
+  }
+  .impact-sub { font-size: 13px; color: var(--flipdish-dark); margin-top: 6px; line-height: 1.45; }
 
   /* ---------- Matrix table ---------- */
   .matrix-wrap {
@@ -371,7 +396,7 @@
 
   <h1>POS + Web Net Fee Sensitivity</h1>
   <p class="lede">
-    A customer runs on both <strong>Online Ordering</strong> and <strong>in-store POS</strong>. How much extra Software Net Revenue would a rate change unlock, and which lever (OO commission vs POS processing) is worth pulling first? Change the New pricing, check the hero, and the matrix shows every combination at a glance.
+    A customer runs on both <strong>Online Ordering</strong> and <strong>in-store POS</strong>. Which lever &mdash; OO commission or POS processing &mdash; is worth pulling first, and how much extra Software Net Revenue would it unlock? Change the New pricing, see which lever earns more per +0.1%, and use the matrix to compare every combination at a glance.
   </p>
 
   <!-- COUNTRY SELECTOR -->
@@ -521,23 +546,60 @@
   </div>
 
   <!-- ===================================================== -->
-  <!-- HERO + BREAKDOWN                                       -->
+  <!-- HERO: WHERE TO PRIORITISE                              -->
   <!-- ===================================================== -->
   <div class="step">
     <span class="num">3</span>
-    <span class="text">Net Fee impact <span class="sub">What the change is worth to Flipdish</span></span>
+    <span class="text">Where to prioritise price increases <span class="sub">Which lever is worth pulling first for this customer</span></span>
   </div>
 
   <div class="calc-card">
-    <div class="hero" id="hero">
+    <div class="hero" id="priorityHero">
       <div>
-        <div class="label" id="heroLabel">Total SNR uplift</div>
-        <div class="big" id="heroMonthly">—</div>
-        <div class="sub" id="heroSub">From current to new pricing, combined across OO + POS + sub</div>
+        <div class="label" id="priorityLabel">Pull this lever first</div>
+        <div class="big" id="priorityBig">—</div>
+        <div class="sub" id="prioritySub">Per +0.1% rate change</div>
       </div>
       <div class="secondary">
-        <div class="label-sec">Per year</div>
-        <div class="big-sec" id="heroAnnual">—</div>
+        <div class="label-sec" id="priorityOtherLabel">Other lever</div>
+        <div class="big-sec" id="priorityOther">—</div>
+      </div>
+    </div>
+
+    <div class="lever-compare" id="leverCompare">
+      <div class="lever-row" id="leverOORow">
+        <span class="lever-name">Every <strong>+0.1%</strong> on OO commission</span>
+        <span class="lever-impact" id="leverOO">—</span>
+      </div>
+      <div class="lever-row" id="leverPOSRow">
+        <span class="lever-name">Every <strong>+0.1%</strong> on POS processing</span>
+        <span class="lever-impact" id="leverPOS">—</span>
+      </div>
+      <div class="lever-tldr" id="leverTldr">—</div>
+    </div>
+  </div>
+
+  <!-- ===================================================== -->
+  <!-- NET FEE IMPACT (DEMOTED)                               -->
+  <!-- ===================================================== -->
+  <div class="step">
+    <span class="num">4</span>
+    <span class="text">Net Fee impact of your proposed change <span class="sub">What the current → new move is worth to Flipdish</span></span>
+  </div>
+
+  <div class="calc-card">
+    <div class="impact-strip" id="impactStrip">
+      <div class="impact-cell">
+        <div class="impact-label">Monthly SNR change</div>
+        <div class="impact-val" id="heroMonthly">—</div>
+      </div>
+      <div class="impact-cell">
+        <div class="impact-label">Annual SNR change</div>
+        <div class="impact-val" id="heroAnnual">—</div>
+      </div>
+      <div class="impact-cell impact-cell--wide">
+        <div class="impact-label" id="heroLabel">Summary</div>
+        <div class="impact-sub" id="heroSub">From current to new pricing, combined across OO + POS + sub</div>
       </div>
     </div>
 
@@ -559,30 +621,13 @@
         <div class="summary-row total"><span class="name">= Total SNR / mo</span><span class="val" id="newTotalSnr">—</span></div>
       </div>
     </div>
-
-    <div class="priority-callout">
-      <h4>Where to prioritise price increases</h4>
-      <div class="row" id="leverOORow">
-        <span class="lever">Every <strong>+0.1%</strong> on OO commission</span>
-        <span class="impact" id="leverOO">—</span>
-      </div>
-      <div class="row" id="leverPOSRow">
-        <span class="lever">Every <strong>+0.1%</strong> on POS processing</span>
-        <span class="impact" id="leverPOS">—</span>
-      </div>
-      <div class="row winner" id="leverWinnerRow">
-        <span class="lever" id="leverWinner">—</span>
-        <span class="impact" id="leverWinnerImpact">—</span>
-      </div>
-      <div class="tldr" id="leverTldr">—</div>
-    </div>
   </div>
 
   <!-- ===================================================== -->
   <!-- SENSITIVITY MATRIX                                     -->
   <!-- ===================================================== -->
   <div class="step">
-    <span class="num">4</span>
+    <span class="num">5</span>
     <span class="text">Sensitivity matrix <span class="sub">Total SNR change vs current, at every combo of OO and POS rates</span></span>
   </div>
 
@@ -759,26 +804,22 @@
     const delta = nw.total - cur.total;
     const annual = delta * 12;
 
-    setText($('heroMonthly'), fmtMoneySigned(delta) + '/mo', true);
-    setText($('heroAnnual'),  fmtMoneySigned(annual) + '/yr', true);
-
-    const hero = $('hero');
-    hero.classList.remove('win','lose');
-    if (delta > 0.5) hero.classList.add('win');
-    else if (delta < -0.5) hero.classList.add('lose');
+    // ---------- Net Fee impact strip (demoted) ----------
+    setText($('heroMonthly'), fmtMoneySigned(delta), true);
+    setText($('heroAnnual'),  fmtMoneySigned(annual), true);
 
     if (delta > 0.5) {
       $('heroLabel').textContent = 'Total SNR uplift';
-      $('heroSub').textContent = `New pricing earns Flipdish ${fmtMoneySigned(delta, 2)}/mo more on this customer (${I.co.name})`;
+      $('heroSub').textContent = `New pricing earns Flipdish ${fmtMoneySigned(delta, 2)}/mo more on this customer (${I.co.name}).`;
     } else if (delta < -0.5) {
       $('heroLabel').textContent = 'Total SNR drop';
-      $('heroSub').textContent = `New pricing earns Flipdish ${fmtMoney(Math.abs(delta), 2)}/mo less on this customer (${I.co.name})`;
+      $('heroSub').textContent = `New pricing earns Flipdish ${fmtMoney(Math.abs(delta), 2)}/mo less on this customer (${I.co.name}).`;
     } else {
       $('heroLabel').textContent = 'Roughly the same';
-      $('heroSub').textContent = `New pricing ≈ current — no material SNR change for Flipdish (${I.co.name})`;
+      $('heroSub').textContent = `New pricing ≈ current — no material SNR change for Flipdish (${I.co.name}).`;
     }
 
-    // ---------- Where to prioritise ----------
+    // ---------- Where to prioritise — PRIMARY HERO ----------
     // Each +0.1% on OO commission = +0.001 × ooGmv per month
     // Each +0.1% on POS processing = +0.001 × posGmv per month
     const leverOO  = I.ooGmv * 0.001;
@@ -786,25 +827,40 @@
     setText($('leverOO'),  fmtMoneySigned(leverOO, 2)  + '/mo', true);
     setText($('leverPOS'), fmtMoneySigned(leverPOS, 2) + '/mo', true);
 
-    const winnerEl = $('leverWinner');
-    const winnerImpactEl = $('leverWinnerImpact');
-    const tldr = $('leverTldr');
+    const priorityHero = $('priorityHero');
+    priorityHero.classList.remove('win','lose');
+
     if (leverOO <= 0 && leverPOS <= 0) {
-      winnerEl.textContent = 'No GMV on either channel — enter GMV above';
-      winnerImpactEl.textContent = '—';
-      tldr.textContent = '';
+      priorityHero.classList.remove('win','lose');
+      $('priorityLabel').textContent = 'Not enough data';
+      $('priorityBig').textContent = '—';
+      $('prioritySub').textContent = 'Enter OO and/or POS GMV above to see which lever moves the needle.';
+      $('priorityOtherLabel').textContent = 'Other lever';
+      $('priorityOther').textContent = '—';
+      $('leverTldr').textContent = '';
     } else if (leverOO > leverPOS) {
-      winnerEl.textContent = `Prioritise OO commission — ${fmtMoneySigned(leverOO - leverPOS, 2)}/mo more per +0.1% than POS`;
-      winnerImpactEl.textContent = fmtMoneySigned(leverOO, 2) + '/mo per +0.1%';
-      tldr.textContent = `This customer's OO GMV (${fmtMoney(I.ooGmv, 0)}) is larger than their POS GMV (${fmtMoney(I.posGmv, 0)}), so each basis point of OO commission is worth more.`;
+      priorityHero.classList.add('win');
+      $('priorityLabel').textContent = 'Pull this lever first — OO commission';
+      $('priorityBig').textContent = fmtMoneySigned(leverOO, 2) + '/mo';
+      $('prioritySub').textContent = `Per +0.1% on OO commission. That's ${fmtMoneySigned(leverOO - leverPOS, 2)}/mo more than the same change on POS.`;
+      $('priorityOtherLabel').textContent = 'POS processing (+0.1%)';
+      $('priorityOther').textContent = fmtMoneySigned(leverPOS, 2) + '/mo';
+      $('leverTldr').textContent = `This customer's OO GMV (${fmtMoney(I.ooGmv, 0)}) is larger than their POS GMV (${fmtMoney(I.posGmv, 0)}), so each basis point of OO commission is worth more.`;
     } else if (leverPOS > leverOO) {
-      winnerEl.textContent = `Prioritise POS processing — ${fmtMoneySigned(leverPOS - leverOO, 2)}/mo more per +0.1% than OO`;
-      winnerImpactEl.textContent = fmtMoneySigned(leverPOS, 2) + '/mo per +0.1%';
-      tldr.textContent = `This customer's POS GMV (${fmtMoney(I.posGmv, 0)}) is larger than their OO GMV (${fmtMoney(I.ooGmv, 0)}), so each basis point of POS processing is worth more.`;
+      priorityHero.classList.add('win');
+      $('priorityLabel').textContent = 'Pull this lever first — POS processing';
+      $('priorityBig').textContent = fmtMoneySigned(leverPOS, 2) + '/mo';
+      $('prioritySub').textContent = `Per +0.1% on POS processing. That's ${fmtMoneySigned(leverPOS - leverOO, 2)}/mo more than the same change on OO.`;
+      $('priorityOtherLabel').textContent = 'OO commission (+0.1%)';
+      $('priorityOther').textContent = fmtMoneySigned(leverOO, 2) + '/mo';
+      $('leverTldr').textContent = `This customer's POS GMV (${fmtMoney(I.posGmv, 0)}) is larger than their OO GMV (${fmtMoney(I.ooGmv, 0)}), so each basis point of POS processing is worth more.`;
     } else {
-      winnerEl.textContent = 'Even split — equal impact per +0.1% on either lever';
-      winnerImpactEl.textContent = fmtMoneySigned(leverOO, 2) + '/mo per +0.1%';
-      tldr.textContent = 'OO and POS GMV are equal here, so the leverage is identical.';
+      $('priorityLabel').textContent = 'Even split — either lever works';
+      $('priorityBig').textContent = fmtMoneySigned(leverOO, 2) + '/mo';
+      $('prioritySub').textContent = 'Same impact per +0.1% on either rate — OO and POS GMV are equal.';
+      $('priorityOtherLabel').textContent = 'Other lever';
+      $('priorityOther').textContent = fmtMoneySigned(leverPOS, 2) + '/mo';
+      $('leverTldr').textContent = 'OO and POS GMV are equal here, so the leverage is identical.';
     }
 
     renderMatrix(I);
