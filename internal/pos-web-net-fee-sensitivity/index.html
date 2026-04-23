@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>POS + Web Net Fee Sensitivity — Flipdish Internal</title>
+<meta name="robots" content="noindex, nofollow">
+
+<!-- Password gate -->
+<script src="../auth.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Domine:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --flipdish-blue: #0074D9;
+    --flipdish-blue-dark: #064885;
+    --flipdish-blue-light: #E6F1FB;
+    --flipdish-blue-line: #BEDAF2;
+    --flipdish-dark: #1A1A1A;
+    --muted: #6B7280;
+    --bg: #F6F9FC;
+    --card: #FFFFFF;
+    --border: #E5E7EB;
+    --input-bg: #FFFBE6;
+    --input-border: #F0D26A;
+    --green-strong: #2E8B57;
+    --green-soft: #E6F4EC;
+    --red-strong: #C0392B;
+    --red-soft: #FBE9E7;
+    --internal: #064885;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--flipdish-dark);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    font-weight: 400;
+  }
+  h1, h2, h3, .hero .big { font-family: 'Domine', Georgia, serif; }
+
+  /* ---------- Topbar ---------- */
+  .topbar {
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    padding: 14px 28px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .topbar .brand { display: flex; align-items: center; gap: 12px; }
+  .topbar .brand svg { height: 28px; width: auto; display: block; }
+  .topbar-right { display: flex; align-items: center; gap: 14px; font-size: 13px; }
+  .internal-tag {
+    background: rgba(6,72,133,.10);
+    color: var(--internal);
+    padding: 4px 10px; border-radius: 999px;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.4px; text-transform: uppercase;
+  }
+  .signout {
+    color: var(--muted); background: none; border: 0; cursor: pointer;
+    font: inherit; padding: 0;
+  }
+  .signout:hover { color: var(--flipdish-blue); text-decoration: underline; }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 20px 48px; }
+
+  .back {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 500; color: var(--muted);
+    text-decoration: none; margin-bottom: 14px;
+  }
+  .back:hover { color: var(--flipdish-blue); }
+  .back svg { width: 14px; height: 14px; }
+
+  h1 { font-size: 30px; margin: 0 0 6px; letter-spacing: -0.01em;
+       font-weight: 700; color: var(--flipdish-blue-dark); }
+  .lede { color: var(--muted); margin: 0 0 24px; font-size: 15px; max-width: 860px; }
+
+  /* ---------- Country bar ---------- */
+  .country-bar {
+    background: white; border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 18px; margin-bottom: 18px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .country-bar-label {
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .country-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+  .country-btn {
+    background: white; border: 1.5px solid var(--border);
+    padding: 8px 16px; font: inherit; font-size: 14px; font-weight: 600;
+    color: var(--flipdish-dark); border-radius: 999px; cursor: pointer;
+    transition: all .15s ease;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .country-btn:hover { border-color: var(--flipdish-blue); color: var(--flipdish-blue); }
+  .country-btn.active {
+    background: var(--flipdish-blue-dark);
+    border-color: var(--flipdish-blue-dark); color: white;
+  }
+
+  /* ---------- Step labels ---------- */
+  .step {
+    display: flex; align-items: center; gap: 10px; margin: 28px 0 14px;
+  }
+  .step .num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 999px;
+    background: var(--flipdish-blue-dark); color: white;
+    font-size: 13px; font-weight: 700;
+  }
+  .step .num.shared {
+    background: white; color: var(--flipdish-blue-dark);
+    border: 2px solid var(--flipdish-blue-dark);
+  }
+  .step .text {
+    font-family: 'Domine', Georgia, serif;
+    font-size: 18px; font-weight: 600; color: var(--flipdish-dark);
+  }
+  .step .text .sub {
+    font-family: 'Roboto', sans-serif;
+    font-size: 13px; font-weight: 400;
+    color: var(--muted); margin-left: 8px;
+  }
+
+  /* ---------- Calc card wrapper ---------- */
+  .calc-card {
+    background: white; border: 1px solid var(--border);
+    border-radius: 14px; padding: 22px 24px; margin-bottom: 18px;
+    box-shadow: 0 1px 2px rgba(10,31,51,.04);
+  }
+  .calc-card.shared-inputs {
+    border-color: var(--flipdish-blue-line);
+    background: #FCFDFF;
+  }
+
+  .section-title {
+    font-family: 'Domine', Georgia, serif;
+    font-size: 15px; font-weight: 700;
+    color: var(--flipdish-blue-dark);
+    margin: 0 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--flipdish-blue-line);
+  }
+  .section-title + .inputs-grid { margin-top: 8px; }
+  .section-title.top-spaced { margin-top: 20px; }
+
+  /* ---------- Inputs ---------- */
+  .inputs-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 12px;
+  }
+  .inputs-grid + .inputs-grid { margin-top: 12px; }
+  .input-cell { display: flex; flex-direction: column; }
+  .input-cell label {
+    font-size: 11px; font-weight: 700; margin-bottom: 4px;
+    text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);
+  }
+  .input-cell .input-wrap { position: relative; display: flex; align-items: center; }
+  .input-cell .prefix {
+    position: absolute; left: 12px; color: var(--muted);
+    font-size: 14px; font-weight: 600; pointer-events: none;
+  }
+  .input-cell .suffix {
+    position: absolute; right: 12px; color: var(--muted);
+    font-size: 13px; font-weight: 600; pointer-events: none;
+  }
+  .input-cell input {
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    padding: 10px 12px; border-radius: 8px;
+    font-size: 15px; font-weight: 600; font-family: inherit;
+    color: var(--flipdish-dark); width: 100%;
+  }
+  .input-cell input.has-prefix { padding-left: 26px; }
+  .input-cell input.has-suffix { padding-right: 30px; }
+  .input-cell input:focus { outline: 2px solid var(--flipdish-blue); outline-offset: -1px; }
+  .input-cell input.derived {
+    background: #F4F6F8; border-color: var(--border); color: var(--muted);
+  }
+  @media (max-width: 760px) { .inputs-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .inputs-grid { grid-template-columns: 1fr; } }
+
+  /* ---------- Hero result ---------- */
+  .hero {
+    background: linear-gradient(135deg, #E6F1FB 0%, #C6DEF3 100%);
+    border: 1px solid var(--flipdish-blue-line);
+    border-radius: 12px; padding: 22px 24px;
+    margin: 6px 0 6px;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 24px; flex-wrap: wrap;
+  }
+  .hero.win { background: linear-gradient(135deg, #E6F4EC 0%, #C9E5D5 100%); border-color: #9DCDB1; }
+  .hero.lose { background: linear-gradient(135deg, #FBE9E7 0%, #F5C6BE 100%); border-color: #E8A89B; }
+  .hero .label {
+    font-size: 12px; color: var(--flipdish-blue-dark); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .hero.win .label, .hero.win .big, .hero.win .sub,
+  .hero.win .secondary .big-sec, .hero.win .secondary .label-sec { color: #1B5C36; }
+  .hero.lose .label, .hero.lose .big, .hero.lose .sub,
+  .hero.lose .secondary .big-sec, .hero.lose .secondary .label-sec { color: #7A1E10; }
+  .hero .big {
+    font-size: 42px; font-weight: 700; color: var(--flipdish-blue-dark);
+    line-height: 1.1; margin: 4px 0 6px; letter-spacing: -0.02em;
+  }
+  .hero .sub { font-size: 13px; color: var(--flipdish-blue-dark); opacity: 0.85; }
+  .hero .secondary { text-align: right; }
+  .hero .secondary .big-sec {
+    font-family: 'Domine', Georgia, serif;
+    font-size: 28px; font-weight: 700; color: var(--flipdish-blue-dark);
+    line-height: 1.1;
+  }
+  .hero .secondary .label-sec {
+    font-size: 11px; color: var(--flipdish-blue-dark); font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.85;
+  }
+
+  /* ---------- Two-column summary ---------- */
+  .two-col {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    margin: 18px 0 6px;
+  }
+  @media (max-width: 760px) { .two-col { grid-template-columns: 1fr; } }
+  .summary-card {
+    background: #F8FAFC; border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px;
+  }
+  .summary-card h4 {
+    margin: 0 0 10px; font-family: 'Domine', Georgia, serif;
+    font-size: 14px; color: var(--flipdish-blue-dark); font-weight: 700;
+  }
+  .summary-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 13px; padding: 3px 0;
+  }
+  .summary-row .name { color: var(--muted); }
+  .summary-row .val { color: var(--flipdish-dark); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .summary-row.total {
+    border-top: 1px solid var(--border); margin-top: 6px; padding-top: 8px; font-size: 14px;
+  }
+  .summary-row.total .name { color: var(--flipdish-dark); font-weight: 700; }
+  .summary-row.total .val { color: var(--flipdish-blue-dark); font-weight: 700; }
+
+  /* ---------- Priority callout ---------- */
+  .priority-callout {
+    background: #FFF9E6; border: 1px solid #F0D26A;
+    border-left: 4px solid #D89F08;
+    border-radius: 10px; padding: 16px 18px; margin: 16px 0 6px;
+  }
+  .priority-callout h4 {
+    margin: 0 0 10px; font-family: 'Domine', Georgia, serif;
+    font-size: 14px; color: #8A6D08; font-weight: 700;
+  }
+  .priority-callout .row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 5px 0; font-size: 13.5px;
+  }
+  .priority-callout .row .lever { color: var(--flipdish-dark); }
+  .priority-callout .row .impact { font-weight: 700; color: var(--flipdish-blue-dark); font-variant-numeric: tabular-nums; }
+  .priority-callout .row.winner { background: rgba(46,139,87,.08); padding: 6px 10px; border-radius: 6px; margin-top: 4px; }
+  .priority-callout .row.winner .lever { font-weight: 700; color: #1B5C36; }
+  .priority-callout .row.winner .impact { color: #1B5C36; }
+  .priority-callout .tldr { font-size: 13px; color: var(--muted); margin-top: 10px; font-style: italic; }
+
+  /* ---------- Matrix table ---------- */
+  .matrix-wrap {
+    margin-top: 10px; overflow-x: auto;
+    border: 1px solid var(--border); border-radius: 10px; background: white;
+  }
+  .matrix-title {
+    font-family: 'Domine', Georgia, serif;
+    font-size: 14px; font-weight: 600;
+    color: var(--flipdish-blue-dark); margin: 18px 0 6px;
+  }
+  .matrix-help { font-size: 12px; color: var(--muted); margin: 0 0 8px; }
+  table.matrix {
+    border-collapse: collapse; width: 100%;
+    font-size: 11px; font-variant-numeric: tabular-nums;
+  }
+  table.matrix th, table.matrix td {
+    padding: 5px 7px; text-align: right;
+    border-bottom: 1px solid #F0F2F5; white-space: nowrap;
+  }
+  table.matrix thead th {
+    background: #F8FAFC; color: var(--flipdish-blue-dark);
+    font-weight: 700; border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; text-align: center;
+  }
+  table.matrix tbody th {
+    background: #F8FAFC; color: var(--muted);
+    font-weight: 700; text-align: right;
+    border-right: 1px solid var(--border);
+    position: sticky; left: 0;
+  }
+  table.matrix .corner {
+    background: #F8FAFC; color: var(--muted);
+    font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.06em; text-align: left; font-weight: 700;
+  }
+  table.matrix tbody tr:hover td { background: #F5FAFE; }
+  table.matrix td.win { background: var(--green-soft); color: #1B5C36; font-weight: 600; }
+  table.matrix td.lose { background: var(--red-soft); color: #7A1E10; font-weight: 600; }
+  table.matrix td.selected {
+    outline: 2.5px solid var(--flipdish-blue); outline-offset: -2px;
+    background: #DEEBFA; color: var(--flipdish-blue-dark); font-weight: 700;
+  }
+
+  /* Flash on change */
+  @keyframes valueFlash { 0%{background-color:#FFF7D6;} 100%{background-color:transparent;} }
+  .flash { animation: valueFlash 0.6s ease-out; border-radius: 4px; }
+
+  /* ---------- Tips ---------- */
+  .tips {
+    background: #F5FAFE; border: 1px solid var(--flipdish-blue-line);
+    border-radius: 12px; padding: 18px 20px; margin-top: 28px;
+  }
+  .tips h2 {
+    font-family: 'Domine', Georgia, serif;
+    font-size: 16px; margin: 0 0 12px;
+    color: var(--flipdish-blue-dark); font-weight: 700;
+  }
+  .tips ol { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.55; color: #334155; }
+  .tips ol li { margin-bottom: 8px; }
+  .tips ol li:last-child { margin-bottom: 0; }
+  .tips strong { color: var(--flipdish-dark); }
+
+  footer {
+    margin-top: 28px; font-size: 12px; color: var(--muted); text-align: center;
+    padding-top: 20px; border-top: 1px solid var(--border);
+  }
+
+  @media (max-width: 640px) {
+    .topbar { padding: 12px 16px; }
+    .wrap { padding: 18px 14px 32px; }
+    h1 { font-size: 22px; }
+    .lede { font-size: 14px; }
+    .hero { padding: 16px 18px; }
+    .hero .big { font-size: 30px; }
+    .hero .secondary .big-sec { font-size: 20px; }
+    .input-cell input { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 288" aria-label="Flipdish">
+      <text x="0" y="200" font-family="Domine, serif" font-weight="700" font-size="200" fill="#064885">Flipdish</text>
+    </svg>
+  </div>
+  <div class="topbar-right">
+    <span class="internal-tag">Internal</span>
+    <button class="signout" id="signoutBtn" title="Clear password and reload">Sign out</button>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <a href="../../" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    All calculators
+  </a>
+
+  <h1>POS + Web Net Fee Sensitivity</h1>
+  <p class="lede">
+    A customer runs on both <strong>Online Ordering</strong> and <strong>in-store POS</strong>. How much extra Software Net Revenue would a rate change unlock, and which lever (OO commission vs POS processing) is worth pulling first? Change the New pricing, check the hero, and the matrix shows every combination at a glance.
+  </p>
+
+  <!-- COUNTRY SELECTOR -->
+  <div class="country-bar">
+    <span class="country-bar-label">Country</span>
+    <div class="country-buttons" id="countryButtons">
+      <button class="country-btn" data-country="UK">🇬🇧 United Kingdom</button>
+      <button class="country-btn" data-country="IE">🇮🇪 Ireland</button>
+      <button class="country-btn" data-country="US">🇺🇸 United States</button>
+      <button class="country-btn" data-country="ES">🇪🇸 Spain</button>
+    </div>
+  </div>
+
+  <!-- ===================================================== -->
+  <!-- CURRENT PRICING                                        -->
+  <!-- ===================================================== -->
+  <div class="step">
+    <span class="num">1</span>
+    <span class="text">Current pricing &amp; customer profile <span class="sub">What they pay today and how much they do</span></span>
+  </div>
+
+  <div class="calc-card">
+    <h3 class="section-title">Subscription</h3>
+    <div class="inputs-grid">
+      <div class="input-cell">
+        <label>Current monthly subscription</label>
+        <div class="input-wrap">
+          <span class="prefix" id="oldSubPrefix">£</span>
+          <input id="oldSub" class="has-prefix" type="number" value="99" step="5" min="0">
+        </div>
+      </div>
+      <div class="input-cell">
+        <label>New monthly subscription</label>
+        <div class="input-wrap">
+          <span class="prefix" id="newSubPrefix">£</span>
+          <input id="newSub" class="has-prefix" type="number" value="149" step="5" min="0">
+        </div>
+      </div>
+      <div></div>
+    </div>
+
+    <h3 class="section-title top-spaced">Online Ordering</h3>
+    <div class="inputs-grid">
+      <div class="input-cell">
+        <label>OO monthly GMV</label>
+        <div class="input-wrap">
+          <span class="prefix" id="ooGmvPrefix">£</span>
+          <input id="ooGmv" class="has-prefix" type="number" value="20000" step="500" min="0">
+        </div>
+      </div>
+      <div class="input-cell">
+        <label>OO AOV</label>
+        <div class="input-wrap">
+          <span class="prefix" id="ooAovPrefix">£</span>
+          <input id="ooAov" class="has-prefix" type="number" value="25" step="1" min="0">
+        </div>
+      </div>
+      <div class="input-cell">
+        <label>OO end-user fee / order</label>
+        <div class="input-wrap">
+          <span class="prefix" id="ooEufeePrefix">£</span>
+          <input id="ooEufee" class="has-prefix" type="number" value="0.80" step="0.05" min="0">
+        </div>
+      </div>
+      <div class="input-cell">
+        <label>Current OO commission %</label>
+        <div class="input-wrap">
+          <input id="oldOoComm" class="has-suffix" type="number" value="5.0" step="0.1" min="0">
+          <span class="suffix">%</span>
+        </div>
+      </div>
+      <div class="input-cell">
+        <label>OO orders / month <span style="text-transform:none;font-weight:400;color:var(--muted);">(auto)</span></label>
+        <div class="input-wrap">
+          <input id="ooOrders" class="derived" type="text" value="—" readonly>
+        </div>
+      </div>
+      <div></div>
+    </div>
+
+    <h3 class="section-title top-spaced">In-store POS</h3>
+    <div class="inputs-grid">
+      <div class="input-cell">
+        <label>POS monthly GMV</label>
+        <div class="input-wrap">
+          <span class="prefix" id="posGmvPrefix">£</span>
+          <input id="posGmv" class="has-prefix" type="number" value="50000" step="500" min="0">
+        </div>
+      </div>
+      <div class="input-cell">
+        <label>POS AOV</label>
+        <div class="input-wrap">
+          <span class="prefix" id="posAovPrefix">£</span>
+          <input id="posAov" class="has-prefix" type="number" value="35" step="1" min="0">
+        </div>
+      </div>
+      <div class="input-cell">
+        <label>POS transaction fee (merchant pays)</label>
+        <div class="input-wrap">
+          <span class="prefix" id="posMerchantPrefix">£</span>
+          <input id="posMerchant" class="has-prefix" type="number" value="0.10" step="0.01" min="0">
+        </div>
+      </div>
+      <div class="input-cell">
+        <label>Current POS processing %</label>
+        <div class="input-wrap">
+          <input id="oldPosProc" class="has-suffix" type="number" value="1.2" step="0.05" min="0">
+          <span class="suffix">%</span>
+        </div>
+      </div>
+      <div class="input-cell">
+        <label>POS orders / month <span style="text-transform:none;font-weight:400;color:var(--muted);">(auto)</span></label>
+        <div class="input-wrap">
+          <input id="posOrders" class="derived" type="text" value="—" readonly>
+        </div>
+      </div>
+      <div></div>
+    </div>
+  </div>
+
+  <!-- ===================================================== -->
+  <!-- NEW PRICING (CHANGE RATES ONLY)                        -->
+  <!-- ===================================================== -->
+  <div class="step">
+    <span class="num">2</span>
+    <span class="text">New rates — where you're thinking of moving them <span class="sub">Subscription change is in the box above</span></span>
+  </div>
+
+  <div class="calc-card">
+    <div class="inputs-grid">
+      <div class="input-cell">
+        <label>New OO commission %</label>
+        <div class="input-wrap">
+          <input id="newOoComm" class="has-suffix" type="number" value="6.0" step="0.1" min="0">
+          <span class="suffix">%</span>
+        </div>
+      </div>
+      <div class="input-cell">
+        <label>New POS processing %</label>
+        <div class="input-wrap">
+          <input id="newPosProc" class="has-suffix" type="number" value="1.4" step="0.05" min="0">
+          <span class="suffix">%</span>
+        </div>
+      </div>
+      <div></div>
+    </div>
+  </div>
+
+  <!-- ===================================================== -->
+  <!-- HERO + BREAKDOWN                                       -->
+  <!-- ===================================================== -->
+  <div class="step">
+    <span class="num">3</span>
+    <span class="text">Net Fee impact <span class="sub">What the change is worth to Flipdish</span></span>
+  </div>
+
+  <div class="calc-card">
+    <div class="hero" id="hero">
+      <div>
+        <div class="label" id="heroLabel">Total SNR uplift</div>
+        <div class="big" id="heroMonthly">—</div>
+        <div class="sub" id="heroSub">From current to new pricing, combined across OO + POS + sub</div>
+      </div>
+      <div class="secondary">
+        <div class="label-sec">Per year</div>
+        <div class="big-sec" id="heroAnnual">—</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="summary-card">
+        <h4>Current Software Net Revenue</h4>
+        <div class="summary-row"><span class="name">OO revenue (comm + eufee)</span><span class="val" id="curOoRev">—</span></div>
+        <div class="summary-row"><span class="name">POS revenue (proc + txn)</span><span class="val" id="curPosRev">—</span></div>
+        <div class="summary-row"><span class="name">Subscription</span><span class="val" id="curSubRev">—</span></div>
+        <div class="summary-row"><span class="name">− Card processing cost</span><span class="val" id="curCardCost">—</span></div>
+        <div class="summary-row total"><span class="name">= Total SNR / mo</span><span class="val" id="curTotalSnr">—</span></div>
+      </div>
+      <div class="summary-card">
+        <h4>New Software Net Revenue</h4>
+        <div class="summary-row"><span class="name">OO revenue (comm + eufee)</span><span class="val" id="newOoRev">—</span></div>
+        <div class="summary-row"><span class="name">POS revenue (proc + txn)</span><span class="val" id="newPosRev">—</span></div>
+        <div class="summary-row"><span class="name">Subscription</span><span class="val" id="newSubRev">—</span></div>
+        <div class="summary-row"><span class="name">− Card processing cost</span><span class="val" id="newCardCost">—</span></div>
+        <div class="summary-row total"><span class="name">= Total SNR / mo</span><span class="val" id="newTotalSnr">—</span></div>
+      </div>
+    </div>
+
+    <div class="priority-callout">
+      <h4>Where to prioritise price increases</h4>
+      <div class="row" id="leverOORow">
+        <span class="lever">Every <strong>+0.1%</strong> on OO commission</span>
+        <span class="impact" id="leverOO">—</span>
+      </div>
+      <div class="row" id="leverPOSRow">
+        <span class="lever">Every <strong>+0.1%</strong> on POS processing</span>
+        <span class="impact" id="leverPOS">—</span>
+      </div>
+      <div class="row winner" id="leverWinnerRow">
+        <span class="lever" id="leverWinner">—</span>
+        <span class="impact" id="leverWinnerImpact">—</span>
+      </div>
+      <div class="tldr" id="leverTldr">—</div>
+    </div>
+  </div>
+
+  <!-- ===================================================== -->
+  <!-- SENSITIVITY MATRIX                                     -->
+  <!-- ===================================================== -->
+  <div class="step">
+    <span class="num">4</span>
+    <span class="text">Sensitivity matrix <span class="sub">Total SNR change vs current, at every combo of OO and POS rates</span></span>
+  </div>
+
+  <div class="calc-card">
+    <div class="matrix-title">Monthly SNR change vs current pricing</div>
+    <p class="matrix-help">
+      Rows = OO commission (2.0% → 7.5%). Columns = POS processing (0.40% → 1.50%). Cell = monthly SNR change from moving <em>from your current rates</em> to that combo (plus the new subscription).
+      <strong style="color:#1B5C36;">Green</strong> = better than current. <strong style="color:#7A1E10;">Red</strong> = worse. The cell matching your New OO + New POS is highlighted in blue.
+    </p>
+    <div class="matrix-wrap">
+      <table class="matrix" id="matrix"></table>
+    </div>
+  </div>
+
+  <!-- TIPS -->
+  <div class="tips">
+    <h2>How to use this in a commercial conversation</h2>
+    <ol>
+      <li><strong>Pick the country first.</strong> Card processing costs differ significantly — US and UK in particular. If the country is wrong, the Net Fee numbers are wrong.</li>
+      <li><strong>Fill in the customer profile once.</strong> Two sets of volumes (OO GMV/AOV, POS GMV/AOV), their current commission + processing rates, and the two per-order fees (OO end-user fee, POS transaction fee). Orders are calculated for you.</li>
+      <li><strong>Enter the new rates you're thinking about.</strong> New OO commission, new POS processing, new subscription. The hero shows the monthly + annual uplift.</li>
+      <li><strong>"Where to prioritise price increases"</strong> tells you — for this specific customer — which lever moves the needle more per +0.1%. Use this to decide which rate to push on first in renewal talks.</li>
+      <li><strong>The matrix</strong> shows the full solution space. The blue-highlighted cell is your current plan; green cells are better, red cells are worse. Useful when you're negotiating trade-offs ("can we give them back 0.1% OO if we gain 0.2% POS?").</li>
+      <li><strong>Note:</strong> this is a rate-sensitivity tool, not a margin guardrail. For discount approval, use the POS or Kiosk Discount Approval calculators.</li>
+    </ol>
+  </div>
+
+  <footer>
+    Flipdish POS + Web Net Fee Sensitivity · Internal · Live calculation, nothing is saved · v1.0
+    <br><span id="rates-updated-line"></span>
+  </footer>
+
+</div>
+
+<script>
+  // ====================================================================
+  // ⚙️  EDIT HERE IF CARD PROCESSING RATES CHANGE
+  // --------------------------------------------------------------------
+  // Two sets of rates per country — one for OO, one for POS — because
+  // Flipdish's card processor charges differently for online vs in-person.
+  // ooCardPct / ooCardFix : Online Ordering (card-not-present)
+  // posCardPct / posCardFix : In-store POS (card-present)
+  //
+  // US/ES POS rates are PLACEHOLDERS copied from OO until Finance
+  // confirms the final rates for those markets.
+  // ====================================================================
+  const RATES_LAST_UPDATED = '2026-04-23';
+
+  const COUNTRIES = {
+    UK: { currency: '£', name: 'United Kingdom',
+          ooCardPct: 0.0064, ooCardFix: 0.016,
+          posCardPct: 0.0070, posCardFix: 0.006 },
+    IE: { currency: '€', name: 'Ireland',
+          ooCardPct: 0.0048, ooCardFix: 0.018,
+          posCardPct: 0.0052, posCardFix: 0.008 },
+    US: { currency: '$', name: 'United States',
+          ooCardPct: 0.0255, ooCardFix: 0.018,
+          posCardPct: 0.0255, posCardFix: 0.018 },
+    ES: { currency: '€', name: 'Spain',
+          ooCardPct: 0.0051, ooCardFix: 0.018,
+          posCardPct: 0.0051, posCardFix: 0.018 }
+  };
+  // ====================================================================
+
+  let activeCountry = 'UK';
+  let isInitializing = true;
+
+  const $ = id => document.getElementById(id);
+  const num = id => parseFloat($(id).value) || 0;
+
+  function fmtMoney(n, decimals) {
+    if (!isFinite(n)) return '—';
+    const c = COUNTRIES[activeCountry].currency;
+    const sign = n < 0 ? '-' : '';
+    const abs = Math.abs(n);
+    const opts = decimals != null
+      ? { minimumFractionDigits: decimals, maximumFractionDigits: decimals }
+      : { maximumFractionDigits: 0 };
+    return sign + c + abs.toLocaleString(undefined, opts);
+  }
+  function fmtMoneySigned(n, decimals) {
+    if (!isFinite(n)) return '—';
+    const c = COUNTRIES[activeCountry].currency;
+    const sign = n > 0 ? '+' : (n < 0 ? '-' : '');
+    const abs = Math.abs(n);
+    const opts = decimals != null
+      ? { minimumFractionDigits: decimals, maximumFractionDigits: decimals }
+      : { maximumFractionDigits: 0 };
+    return sign + c + abs.toLocaleString(undefined, opts);
+  }
+
+  function setText(el, t, flash) {
+    if (!el) return;
+    const changed = el.textContent !== t;
+    if (changed) el.textContent = t;
+    if (changed && !isInitializing && flash) {
+      el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+    }
+  }
+
+  function updateCurrencyPrefixes() {
+    const c = COUNTRIES[activeCountry].currency;
+    ['oldSubPrefix','newSubPrefix',
+     'ooGmvPrefix','ooAovPrefix','ooEufeePrefix',
+     'posGmvPrefix','posAovPrefix','posMerchantPrefix']
+      .forEach(id => { if ($(id)) $(id).textContent = c; });
+  }
+
+  // ====================================================================
+  // CORE MATH
+  // --------------------------------------------------------------------
+  // SNR = OO revenue + POS revenue + subscription − card processing cost
+  // OO revenue         = ooGmv * ooComm + ooOrders * ooEufee
+  // POS revenue        = posGmv * posProc + posOrders * posMerchant
+  // card processing    = ooGmv*ooCardPct + ooOrders*ooCardFix
+  //                    + posGmv*posCardPct + posOrders*posCardFix
+  // ====================================================================
+  function readInputs() {
+    const co = COUNTRIES[activeCountry];
+    const ooGmv   = num('ooGmv');
+    const ooAov   = num('ooAov');
+    const ooEufee = num('ooEufee');
+    const posGmv   = num('posGmv');
+    const posAov   = num('posAov');
+    const posMerchant = num('posMerchant');
+    return {
+      co,
+      ooGmv, ooAov, ooEufee,
+      ooOrders: ooAov > 0 ? ooGmv / ooAov : 0,
+      posGmv, posAov, posMerchant,
+      posOrders: posAov > 0 ? posGmv / posAov : 0,
+      oldSub:    num('oldSub'),
+      newSub:    num('newSub'),
+      oldOoComm: num('oldOoComm') / 100,
+      newOoComm: num('newOoComm') / 100,
+      oldPosProc: num('oldPosProc') / 100,
+      newPosProc: num('newPosProc') / 100,
+    };
+  }
+
+  // Given commission rates + sub, return the SNR components and total
+  function snrScenario(I, ooComm, posProc, sub) {
+    const ooRev  = I.ooGmv * ooComm + I.ooOrders * I.ooEufee;
+    const posRev = I.posGmv * posProc + I.posOrders * I.posMerchant;
+    const cardCost =
+        I.ooGmv  * I.co.ooCardPct  + I.ooOrders  * I.co.ooCardFix
+      + I.posGmv * I.co.posCardPct + I.posOrders * I.co.posCardFix;
+    const total = ooRev + posRev + sub - cardCost;
+    return { ooRev, posRev, sub, cardCost, total };
+  }
+
+  function calc() {
+    const I = readInputs();
+
+    // Orders displayed
+    $('ooOrders').value  = Math.round(I.ooOrders).toLocaleString();
+    $('posOrders').value = Math.round(I.posOrders).toLocaleString();
+
+    const cur = snrScenario(I, I.oldOoComm, I.oldPosProc, I.oldSub);
+    const nw  = snrScenario(I, I.newOoComm, I.newPosProc, I.newSub);
+
+    setText($('curOoRev'),   fmtMoney(cur.ooRev, 2), true);
+    setText($('curPosRev'),  fmtMoney(cur.posRev, 2), true);
+    setText($('curSubRev'),  fmtMoney(cur.sub, 2), true);
+    setText($('curCardCost'),fmtMoney(cur.cardCost, 2), true);
+    setText($('curTotalSnr'),fmtMoney(cur.total, 2) + '/mo', true);
+
+    setText($('newOoRev'),   fmtMoney(nw.ooRev, 2), true);
+    setText($('newPosRev'),  fmtMoney(nw.posRev, 2), true);
+    setText($('newSubRev'),  fmtMoney(nw.sub, 2), true);
+    setText($('newCardCost'),fmtMoney(nw.cardCost, 2), true);
+    setText($('newTotalSnr'),fmtMoney(nw.total, 2) + '/mo', true);
+
+    const delta = nw.total - cur.total;
+    const annual = delta * 12;
+
+    setText($('heroMonthly'), fmtMoneySigned(delta) + '/mo', true);
+    setText($('heroAnnual'),  fmtMoneySigned(annual) + '/yr', true);
+
+    const hero = $('hero');
+    hero.classList.remove('win','lose');
+    if (delta > 0.5) hero.classList.add('win');
+    else if (delta < -0.5) hero.classList.add('lose');
+
+    if (delta > 0.5) {
+      $('heroLabel').textContent = 'Total SNR uplift';
+      $('heroSub').textContent = `New pricing earns Flipdish ${fmtMoneySigned(delta, 2)}/mo more on this customer (${I.co.name})`;
+    } else if (delta < -0.5) {
+      $('heroLabel').textContent = 'Total SNR drop';
+      $('heroSub').textContent = `New pricing earns Flipdish ${fmtMoney(Math.abs(delta), 2)}/mo less on this customer (${I.co.name})`;
+    } else {
+      $('heroLabel').textContent = 'Roughly the same';
+      $('heroSub').textContent = `New pricing ≈ current — no material SNR change for Flipdish (${I.co.name})`;
+    }
+
+    // ---------- Where to prioritise ----------
+    // Each +0.1% on OO commission = +0.001 × ooGmv per month
+    // Each +0.1% on POS processing = +0.001 × posGmv per month
+    const leverOO  = I.ooGmv * 0.001;
+    const leverPOS = I.posGmv * 0.001;
+    setText($('leverOO'),  fmtMoneySigned(leverOO, 2)  + '/mo', true);
+    setText($('leverPOS'), fmtMoneySigned(leverPOS, 2) + '/mo', true);
+
+    const winnerEl = $('leverWinner');
+    const winnerImpactEl = $('leverWinnerImpact');
+    const tldr = $('leverTldr');
+    if (leverOO <= 0 && leverPOS <= 0) {
+      winnerEl.textContent = 'No GMV on either channel — enter GMV above';
+      winnerImpactEl.textContent = '—';
+      tldr.textContent = '';
+    } else if (leverOO > leverPOS) {
+      winnerEl.textContent = `Prioritise OO commission — ${fmtMoneySigned(leverOO - leverPOS, 2)}/mo more per +0.1% than POS`;
+      winnerImpactEl.textContent = fmtMoneySigned(leverOO, 2) + '/mo per +0.1%';
+      tldr.textContent = `This customer's OO GMV (${fmtMoney(I.ooGmv, 0)}) is larger than their POS GMV (${fmtMoney(I.posGmv, 0)}), so each basis point of OO commission is worth more.`;
+    } else if (leverPOS > leverOO) {
+      winnerEl.textContent = `Prioritise POS processing — ${fmtMoneySigned(leverPOS - leverOO, 2)}/mo more per +0.1% than OO`;
+      winnerImpactEl.textContent = fmtMoneySigned(leverPOS, 2) + '/mo per +0.1%';
+      tldr.textContent = `This customer's POS GMV (${fmtMoney(I.posGmv, 0)}) is larger than their OO GMV (${fmtMoney(I.ooGmv, 0)}), so each basis point of POS processing is worth more.`;
+    } else {
+      winnerEl.textContent = 'Even split — equal impact per +0.1% on either lever';
+      winnerImpactEl.textContent = fmtMoneySigned(leverOO, 2) + '/mo per +0.1%';
+      tldr.textContent = 'OO and POS GMV are equal here, so the leverage is identical.';
+    }
+
+    renderMatrix(I);
+  }
+
+  // ====================================================================
+  // SENSITIVITY MATRIX
+  //   Rows: OO commission 2.0% → 7.5% step 0.5%
+  //   Cols: POS processing 0.40% → 1.50% step 0.1%
+  //   Cell value: total SNR delta vs current (including new sub)
+  //   = OO+POS revenue at (row, col) + new sub − card cost − current total
+  // ====================================================================
+  function renderMatrix(I) {
+    const ooRows = [];
+    for (let r = 2.0; r <= 7.505; r += 0.5) ooRows.push(Math.round(r * 10) / 10);
+    const posCols = [];
+    for (let c = 0.40; c <= 1.505; c += 0.1) posCols.push(Math.round(c * 100) / 100);
+
+    // Find the cell closest to the user's New OO + New POS
+    const curOoPct  = I.newOoComm * 100;
+    const curPosPct = I.newPosProc * 100;
+    const nearestOo = ooRows.reduce((p, c) =>
+      Math.abs(c - curOoPct) < Math.abs(p - curOoPct) ? c : p, ooRows[0]);
+    const nearestPos = posCols.reduce((p, c) =>
+      Math.abs(c - curPosPct) < Math.abs(p - curPosPct) ? c : p, posCols[0]);
+
+    const cur = snrScenario(I, I.oldOoComm, I.oldPosProc, I.oldSub);
+    const curTotal = cur.total;
+
+    let html = '<thead><tr><th class="corner">OO % \\ POS %</th>';
+    posCols.forEach(c => { html += `<th>${c.toFixed(2)}%</th>`; });
+    html += '</tr></thead><tbody>';
+
+    ooRows.forEach(r => {
+      html += `<tr><th>${r.toFixed(1)}%</th>`;
+      posCols.forEach(c => {
+        const scen = snrScenario(I, r/100, c/100, I.newSub);
+        const delta = scen.total - curTotal;
+        const cls = delta > 0.5 ? 'win' : (delta < -0.5 ? 'lose' : '');
+        const isSel = (r === nearestOo && c === nearestPos) ? ' selected' : '';
+        const sign = delta > 0 ? '+' : (delta < 0 ? '-' : '');
+        html += `<td class="${cls}${isSel}">${sign}${COUNTRIES[activeCountry].currency}${Math.abs(Math.round(delta))}</td>`;
+      });
+      html += '</tr>';
+    });
+    html += '</tbody>';
+    $('matrix').innerHTML = html;
+  }
+
+  // ====================================================================
+  // COUNTRY SWITCHING
+  // ====================================================================
+  function setCountry(code) {
+    if (!COUNTRIES[code]) return;
+    activeCountry = code;
+    document.querySelectorAll('.country-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.country === code);
+    });
+    updateCurrencyPrefixes();
+    calc();
+  }
+
+  // ====================================================================
+  // WIRE UP
+  // ====================================================================
+  document.querySelectorAll('.country-btn').forEach(btn => {
+    btn.addEventListener('click', () => setCountry(btn.dataset.country));
+  });
+
+  ['oldSub','newSub',
+   'ooGmv','ooAov','ooEufee','oldOoComm','newOoComm',
+   'posGmv','posAov','posMerchant','oldPosProc','newPosProc']
+    .forEach(id => $(id).addEventListener('input', calc));
+
+  document.getElementById('signoutBtn').addEventListener('click', function () {
+    try { sessionStorage.removeItem('fdInternalAuth'); } catch (e) {}
+    location.reload();
+  });
+
+  function init() {
+    setCountry('UK');
+    const ratesLine = $('rates-updated-line');
+    if (ratesLine) ratesLine.textContent = 'Card processing rates last updated ' + RATES_LAST_UPDATED;
+    isInitializing = false;
+  }
+  init();
+</script>
+
+</body>
+</html>
