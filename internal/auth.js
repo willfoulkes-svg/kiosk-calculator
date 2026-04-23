@@ -10,9 +10,66 @@
   var SESSION_KEY = 'fdInternalAuth';
   var PASSWORD    = 'Flipdish';
 
-  // If this tab has already been unlocked, do nothing.
+  // --------------------------------------------------------------
+  // Log-out pill — injected once the tab is unlocked. Clicking it
+  // clears the session and drops the user back on the hub.
+  // --------------------------------------------------------------
+  function injectLogoutPill() {
+    // Guard: body not ready yet (rare, but possible if auth.js is
+    // loaded with a bare <script src>) — try again once DOM is ready.
+    if (!document.body) {
+      document.addEventListener('DOMContentLoaded', injectLogoutPill);
+      return;
+    }
+    // Don't double-inject.
+    if (document.getElementById('fd-logout-btn')) return;
+
+    var style = document.createElement('style');
+    style.id = 'fd-logout-style';
+    style.textContent = [
+      '#fd-logout-btn{',
+      '  position:fixed;bottom:16px;right:16px;z-index:2147483646;',
+      '  display:inline-flex;align-items:center;gap:6px;',
+      '  padding:8px 14px;font-size:12px;font-weight:500;',
+      '  font-family:Roboto,-apple-system,BlinkMacSystemFont,sans-serif;',
+      '  background:#fff;color:#5A6A7A;border:1px solid #E1E8EF;',
+      '  border-radius:999px;cursor:pointer;',
+      '  box-shadow:0 2px 6px rgba(10,31,51,.08);',
+      '  transition:color .15s ease,border-color .15s ease,box-shadow .15s ease;',
+      '}',
+      '#fd-logout-btn:hover{color:#0A1F33;border-color:#0A1F33;box-shadow:0 3px 10px rgba(10,31,51,.12);}',
+      '#fd-logout-btn svg{width:14px;height:14px;}',
+      '@media (max-width:600px){#fd-logout-btn{bottom:12px;right:12px;padding:7px 12px;font-size:11px;}}'
+    ].join('');
+    document.head.appendChild(style);
+
+    var btn = document.createElement('button');
+    btn.id = 'fd-logout-btn';
+    btn.type = 'button';
+    btn.setAttribute('aria-label', 'Log out of internal calculators');
+    btn.innerHTML = [
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">',
+      '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>',
+      '<polyline points="16 17 21 12 16 7"/>',
+      '<line x1="21" y1="12" x2="9" y2="12"/>',
+      '</svg>',
+      'Log out'
+    ].join('');
+    btn.addEventListener('click', function () {
+      try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
+      // Internal calcs live at /internal/{name}/ — the hub is two levels up.
+      window.location.href = '../../';
+    });
+    document.body.appendChild(btn);
+  }
+
+  // If this tab has already been unlocked, skip the gate — just drop
+  // the log-out pill on the page.
   try {
-    if (sessionStorage.getItem(SESSION_KEY) === '1') return;
+    if (sessionStorage.getItem(SESSION_KEY) === '1') {
+      injectLogoutPill();
+      return;
+    }
   } catch (e) { /* sessionStorage blocked — fall through and ask anyway */ }
 
   function buildGate() {
@@ -110,6 +167,7 @@
         try { sessionStorage.setItem(SESSION_KEY, '1'); } catch (e) {}
         overlay.remove();
         style.remove();
+        injectLogoutPill();
       } else {
         err.textContent = 'Wrong password — try again.';
         input.value = '';
