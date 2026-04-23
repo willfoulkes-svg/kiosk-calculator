@@ -320,15 +320,15 @@
 
   /* Internal section visuals */
   .internal-section {
-    margin-top: 40px;
-    padding-top: 28px;
+    margin-top: 36px;
+    padding-top: 24px;
     border-top: 1px solid var(--border);
   }
   .internal-header {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
     flex-wrap: wrap;
   }
   .internal-header .lock-icon {
@@ -352,47 +352,38 @@
   .internal-subheader {
     font-size: 13px;
     color: var(--muted);
-    margin: 0 0 20px 48px;
+    margin: 0 0 16px 48px;
   }
 
-  /* Family group label (inside Internal) */
-  .family-group {
-    margin-top: 26px;
-  }
-  .family-group:first-child { margin-top: 0; }
-  .family-label {
-    display: flex;
+  /* Small family tag shown in place of the old family-label — sits next to
+     the Internal badge in the tile head, so each card still names its family
+     without needing a big section label per group. */
+  .fam-tag {
+    display: inline-flex;
     align-items: center;
-    gap: 10px;
-    font-family: 'Domine', serif;
-    font-size: 13px;
-    font-weight: 600;
+    gap: 5px;
+    background: var(--fam-soft);
     color: var(--fam);
-    margin: 0 0 12px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    padding: 3px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
   }
-  .family-label::before {
+  .fam-tag::before {
     content: '';
-    flex: 0 0 22px;
-    height: 3px;
+    width: 6px; height: 6px;
+    border-radius: 999px;
     background: var(--fam);
-    border-radius: 2px;
   }
-  .family-label .family-sub {
-    font-family: 'Roboto', sans-serif;
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--muted);
-    text-transform: none;
-    letter-spacing: 0.02em;
+  .badge-stack {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-end;
   }
-  .family-group[data-family="oo"]       { --fam: var(--fam-oo); }
-  .family-group[data-family="pos"]      { --fam: var(--fam-pos); }
-  .family-group[data-family="kiosk"]    { --fam: var(--fam-kiosk); }
-  .family-group[data-family="combined"] { --fam: var(--fam-combined); }
-  .family-group[data-family="cross"]    { --fam: var(--fam-cross); }
-  .family-group[data-family="phone"]    { --fam: var(--fam-phone); }
 
   /* Empty state (when filter matches nothing in a section) */
   .empty-state {
@@ -579,155 +570,157 @@
       <h2>Internal calculators</h2>
       <span class="section-count" id="count-internal">7</span>
     </div>
-    <p class="internal-subheader">Flipdish staff only — login required · grouped by product family</p>
+    <p class="internal-subheader">Flipdish staff only — login required · use filter chips above to narrow by product family</p>
 
-    <!-- Online Ordering family -->
-    <div class="family-group" data-family="oo">
-      <h3 class="family-label">Online Ordering <span class="family-sub">UK · IE · US · ES</span></h3>
-      <div class="grid">
-        <a class="tile" data-family="oo" href="internal/online-ordering/">
-          <div class="tile-head">
-            <div class="tile-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            </div>
+    <div class="grid" id="grid-internal">
+
+      <!-- Online Ordering — SNR -->
+      <a class="tile" data-family="oo" href="internal/online-ordering/">
+        <div class="tile-head">
+          <div class="tile-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div class="badge-stack">
             <span class="badge internal">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               Internal
             </span>
+            <span class="fam-tag">Online Ordering</span>
           </div>
-          <h3 class="tile-title">Online Ordering — SNR</h3>
-          <p class="tile-desc">Two pricing tools in one: Total Fee Calculator and Sub vs Commission-Only comparison. UK, Ireland, USA, Spain.</p>
-          <span class="tile-cta">Open calculator
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </span>
-        </a>
-      </div>
-    </div>
+        </div>
+        <h3 class="tile-title">Online Ordering — SNR</h3>
+        <p class="tile-desc">Two pricing tools in one: Total Fee Calculator and Sub vs Commission-Only comparison. UK, Ireland, USA, Spain.</p>
+        <span class="tile-cta">Open calculator
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
+      </a>
 
-    <!-- POS family -->
-    <div class="family-group" data-family="pos">
-      <h3 class="family-label">POS <span class="family-sub">UK · IE</span></h3>
-      <div class="grid">
-        <a class="tile" data-family="pos" href="internal/pos-total-fee/">
-          <div class="tile-head">
-            <div class="tile-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="7" y1="15" x2="9" y2="15"/><line x1="13" y1="15" x2="17" y2="15"/></svg>
-            </div>
+      <!-- POS — Total Fee -->
+      <a class="tile" data-family="pos" href="internal/pos-total-fee/">
+        <div class="tile-head">
+          <div class="tile-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="7" y1="15" x2="9" y2="15"/><line x1="13" y1="15" x2="17" y2="15"/></svg>
+          </div>
+          <div class="badge-stack">
             <span class="badge internal">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               Internal
             </span>
+            <span class="fam-tag">POS</span>
           </div>
-          <h3 class="tile-title">POS — Total Fee</h3>
-          <p class="tile-desc">Monthly Software Net Revenue from a POS deal. Shows what Flipdish actually keeps after card processing cost.</p>
-          <span class="tile-cta">Open calculator
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </span>
-        </a>
+        </div>
+        <h3 class="tile-title">POS — Total Fee</h3>
+        <p class="tile-desc">Monthly Software Net Revenue from a POS deal. Shows what Flipdish actually keeps after card processing cost.</p>
+        <span class="tile-cta">Open calculator
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
+      </a>
 
-        <a class="tile" data-family="pos" href="internal/pos-discount-approval/">
-          <div class="tile-head">
-            <div class="tile-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8l-8 8"/><circle cx="9" cy="9" r="1.5"/><circle cx="15" cy="15" r="1.5"/></svg>
-            </div>
+      <!-- POS — Discount Approval -->
+      <a class="tile" data-family="pos" href="internal/pos-discount-approval/">
+        <div class="tile-head">
+          <div class="tile-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8l-8 8"/><circle cx="9" cy="9" r="1.5"/><circle cx="15" cy="15" r="1.5"/></svg>
+          </div>
+          <div class="badge-stack">
             <span class="badge internal">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               Internal
             </span>
+            <span class="fam-tag">POS</span>
           </div>
-          <h3 class="tile-title">POS — Discount Approval</h3>
-          <p class="tile-desc">Maximum allowable hardware discount and minimum sales price. CCEP/CCH subsidy supported.</p>
-          <span class="tile-cta">Open calculator
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </span>
-        </a>
-      </div>
-    </div>
+        </div>
+        <h3 class="tile-title">POS — Discount Approval</h3>
+        <p class="tile-desc">Maximum allowable hardware discount and minimum sales price. CCEP/CCH subsidy supported.</p>
+        <span class="tile-cta">Open calculator
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
+      </a>
 
-    <!-- Kiosk family -->
-    <div class="family-group" data-family="kiosk">
-      <h3 class="family-label">Kiosk <span class="family-sub">UK · IE · US · ES</span></h3>
-      <div class="grid">
-        <a class="tile" data-family="kiosk" href="internal/kiosk-discount-approval/">
-          <div class="tile-head">
-            <div class="tile-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="14" rx="2"/><path d="M9 21h6"/><path d="M12 17v4"/><circle cx="12" cy="10" r="2"/></svg>
-            </div>
+      <!-- Kiosk — Discount Approval -->
+      <a class="tile" data-family="kiosk" href="internal/kiosk-discount-approval/">
+        <div class="tile-head">
+          <div class="tile-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="14" rx="2"/><path d="M9 21h6"/><path d="M12 17v4"/><circle cx="12" cy="10" r="2"/></svg>
+          </div>
+          <div class="badge-stack">
             <span class="badge internal">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               Internal
             </span>
+            <span class="fam-tag">Kiosk</span>
           </div>
-          <h3 class="tile-title">Kiosk — Discount Approval</h3>
-          <p class="tile-desc">Kiosk-only hardware deal. Max discount and minimum sales price, no CCEP/CCH (Kiosk-only deals don't qualify).</p>
-          <span class="tile-cta">Open calculator
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </span>
-        </a>
-      </div>
-    </div>
+        </div>
+        <h3 class="tile-title">Kiosk — Discount Approval</h3>
+        <p class="tile-desc">Kiosk-only hardware deal. Max discount and minimum sales price, no CCEP/CCH (Kiosk-only deals don't qualify).</p>
+        <span class="tile-cta">Open calculator
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
+      </a>
 
-    <!-- POS + Kiosk Combined family -->
-    <div class="family-group" data-family="combined">
-      <h3 class="family-label">POS + Kiosk Combined <span class="family-sub">UK · IE</span></h3>
-      <div class="grid">
-        <a class="tile" data-family="combined" href="internal/pos-kiosk-discount-approval/">
-          <div class="tile-head">
-            <div class="tile-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="9" height="12" rx="1"/><rect x="13" y="3" width="9" height="15" rx="1"/><path d="M5.5 21h2"/><path d="M16.5 21h2"/></svg>
-            </div>
+      <!-- POS + Kiosk — Discount Approval -->
+      <a class="tile" data-family="combined" href="internal/pos-kiosk-discount-approval/">
+        <div class="tile-head">
+          <div class="tile-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="9" height="12" rx="1"/><rect x="13" y="3" width="9" height="15" rx="1"/><path d="M5.5 21h2"/><path d="M16.5 21h2"/></svg>
+          </div>
+          <div class="badge-stack">
             <span class="badge internal">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               Internal
             </span>
+            <span class="fam-tag">POS + Kiosk</span>
           </div>
-          <h3 class="tile-title">POS + Kiosk — Discount Approval</h3>
-          <p class="tile-desc">Combined POS + Kiosk hardware on one deal. One verdict across both ladders and subs (POS gets CCEP/CCH, Kiosk doesn't).</p>
-          <span class="tile-cta">Open calculator
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </span>
-        </a>
-      </div>
-    </div>
+        </div>
+        <h3 class="tile-title">POS + Kiosk — Discount Approval</h3>
+        <p class="tile-desc">Combined POS + Kiosk hardware on one deal. One verdict across both ladders and subs (POS gets CCEP/CCH, Kiosk doesn't).</p>
+        <span class="tile-cta">Open calculator
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
+      </a>
 
-    <!-- Cross-product pricing & renewal family -->
-    <div class="family-group" data-family="cross">
-      <h3 class="family-label">Cross-product pricing &amp; renewal <span class="family-sub">UK · IE · US · ES</span></h3>
-      <div class="grid">
-        <a class="tile" data-family="cross" href="internal/pos-web-net-fee-sensitivity/">
-          <div class="tile-head">
-            <div class="tile-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>
-            </div>
+      <!-- POS + Web — Net Fee Sensitivity -->
+      <a class="tile" data-family="cross" href="internal/pos-web-net-fee-sensitivity/">
+        <div class="tile-head">
+          <div class="tile-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>
+          </div>
+          <div class="badge-stack">
             <span class="badge internal">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               Internal
             </span>
+            <span class="fam-tag">Cross-product</span>
           </div>
-          <h3 class="tile-title">POS + Web — Net Fee Sensitivity</h3>
-          <p class="tile-desc">Customer on both OO and POS. Which lever (OO commission vs POS processing) earns more per +0.1% — plus a full sensitivity matrix.</p>
-          <span class="tile-cta">Open calculator
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </span>
-        </a>
+        </div>
+        <h3 class="tile-title">POS + Web — Net Fee Sensitivity</h3>
+        <p class="tile-desc">Customer on both OO and POS. Which lever (OO commission vs POS processing) earns more per +0.1% — plus a full sensitivity matrix.</p>
+        <span class="tile-cta">Open calculator
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
+      </a>
 
-        <a class="tile" data-family="cross" href="internal/current-vs-new-fee-impact/">
-          <div class="tile-head">
-            <div class="tile-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/><path d="M20.49 15a9 9 0 0 1-14.85 3.36L1 14"/></svg>
-            </div>
+      <!-- Current vs New Fee Impact — Renewal -->
+      <a class="tile" data-family="cross" href="internal/current-vs-new-fee-impact/">
+        <div class="tile-head">
+          <div class="tile-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/><path d="M20.49 15a9 9 0 0 1-14.85 3.36L1 14"/></svg>
+          </div>
+          <div class="badge-stack">
             <span class="badge internal">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               Internal
             </span>
+            <span class="fam-tag">Cross-product</span>
           </div>
-          <h3 class="tile-title">Current vs New Fee Impact — Renewal</h3>
-          <p class="tile-desc">Renewal tool. Enter current vs proposed pricing across POS, OO and Kiosk. Shows per-product and grand-total monthly + annual SNR change.</p>
-          <span class="tile-cta">Open calculator
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </span>
-        </a>
-      </div>
+        </div>
+        <h3 class="tile-title">Current vs New Fee Impact — Renewal</h3>
+        <p class="tile-desc">Renewal tool. Enter current vs proposed pricing across POS, OO and Kiosk. Shows per-product and grand-total monthly + annual SNR change.</p>
+        <span class="tile-cta">Open calculator
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
+      </a>
+
     </div>
 
     <div class="empty-state" id="empty-internal" style="display:none;">No internal calculators match that filter.</div>
@@ -743,7 +736,7 @@
   // Filter chip behavior
   const chips = document.querySelectorAll('.chip');
   const externalTiles = document.querySelectorAll('#grid-external .tile');
-  const familyGroups = document.querySelectorAll('.family-group');
+  const internalTiles = document.querySelectorAll('#grid-internal .tile');
   const emptyExternal = document.getElementById('empty-external');
   const emptyInternal = document.getElementById('empty-internal');
   const sectionExternal = document.getElementById('section-external');
@@ -763,12 +756,12 @@
     countExternal.textContent = extShown;
     sectionExternal.classList.toggle('section-hidden', extShown === 0 && family !== 'all');
 
-    // Internal: filter whole family groups
+    // Internal: filter individual tiles too (no more family-group subdividers)
     let intShown = 0;
-    familyGroups.forEach(g => {
-      const match = family === 'all' || g.dataset.family === family;
-      g.style.display = match ? '' : 'none';
-      if (match) intShown += g.querySelectorAll('.tile').length;
+    internalTiles.forEach(t => {
+      const match = family === 'all' || t.dataset.family === family;
+      t.style.display = match ? '' : 'none';
+      if (match) intShown++;
     });
     emptyInternal.style.display = intShown === 0 ? 'block' : 'none';
     countInternal.textContent = intShown;
