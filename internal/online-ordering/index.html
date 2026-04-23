@@ -87,6 +87,29 @@
   .back:hover { color: var(--flipdish-blue); }
   .back svg { width: 14px; height: 14px; }
 
+  /* ---------- Product family pill ---------- */
+  :root { --fam: #0074D9; --fam-soft: #E6F1FB; }
+  .fam-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--fam-soft);
+    color: var(--fam);
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    margin: 4px 0 16px;
+    text-transform: uppercase;
+  }
+  .fam-pill::before {
+    content: '';
+    width: 8px; height: 8px;
+    border-radius: 999px;
+    background: var(--fam);
+  }
+
   h1 {
     font-size: 30px; margin: 0 0 6px; letter-spacing: -0.01em;
     font-weight: 700; color: var(--flipdish-blue-dark);
@@ -431,6 +454,8 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     All calculators
   </a>
+
+  <span class="fam-pill">Online Ordering</span>
 
   <h1>Online Ordering — Software Net Revenue</h1>
   <p class="lede">Two internal pricing tools sharing one set of inputs. Set the country and the customer profile once at the top — both calculators below update instantly.</p>
