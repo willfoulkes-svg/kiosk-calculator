@@ -119,19 +119,6 @@
     color: white;
   }
 
-  .segmented {
-    display: inline-flex; background: #F1F2F4; border-radius: 10px; padding: 4px;
-    margin-bottom: 22px;
-  }
-  .segmented button {
-    border: 0; background: transparent; padding: 8px 16px; font-size: 13px; font-weight: 600;
-    border-radius: 7px; cursor: pointer; color: var(--muted); font-family: inherit;
-  }
-  .segmented button.active {
-    background: white; color: var(--flipdish-dark);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  }
-
   .layout { display: grid; grid-template-columns: 1fr 1.25fr; gap: 20px; align-items: start; }
   @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
 
@@ -265,9 +252,25 @@
     color: var(--flipdish-blue-dark); margin-left: 6px;
   }
 
-  /* tab-specific input visibility */
-  body.no-drivers-view .own-drivers-only { display: none !important; }
-  body.own-drivers-view .no-drivers-only { display: none !important; }
+  /* "For restaurants with their own drivers" callout */
+  .scope-note {
+    background: var(--flipdish-blue-light);
+    border: 1px solid var(--flipdish-blue-line);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin: 0 0 18px;
+    font-size: 13.5px;
+    color: var(--flipdish-blue-dark);
+    line-height: 1.55;
+  }
+  .scope-note strong { color: var(--flipdish-blue-dark); }
+  .scope-note a {
+    color: var(--flipdish-blue);
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+  }
+  .scope-note a:hover { color: var(--flipdish-blue-dark); }
 
   /* Mobile */
   @media (max-width: 640px) {
@@ -285,8 +288,6 @@
     .brand svg { height: 28px; }
     .brand .tag { display: none; }
     .meta { font-size: 11px; width: 100%; }
-    .segmented { width: 100%; display: flex; }
-    .segmented button { flex: 1; text-align: center; }
     .input-row label { flex-wrap: wrap; }
     .input-row input, .input-row select { font-size: 16px; } /* iOS zoom prevention */
   }
@@ -296,7 +297,7 @@
   }
 </style>
 </head>
-<body class="own-drivers-view">
+<body>
 <div class="wrap">
 
   <a href="../" class="back">
@@ -329,7 +330,14 @@
   </header>
 
   <h1 id="pageTitle">Stop giving 30% to the marketplaces</h1>
-  <p class="lede" id="pageLede">See exactly how much a restaurant gets back when orders move from third-party marketplaces to Flipdish direct ordering. All Flipdish fees deducted — what's shown is real money the restaurant keeps.</p>
+  <p class="lede" id="pageLede">See exactly how much a restaurant with its own delivery drivers gets back when orders move from third-party marketplaces to Flipdish direct ordering. All Flipdish fees deducted — what's shown is real money the restaurant keeps.</p>
+
+  <div class="scope-note">
+    <strong>This calculator is for restaurants with their own delivery drivers.</strong>
+    If the restaurant needs a delivery partner, use the
+    <a href="../uber-direct/">Flipdish + Uber Direct</a> calculator (UK · IE · US)
+    or the <a href="../fox-delivery/">Flipdish + Fox Delivery</a> calculator (Ireland).
+  </div>
 
   <!-- COUNTRY SELECTOR -->
   <div class="country-bar">
@@ -339,11 +347,6 @@
       <button class="country-btn" data-country="IE">🇮🇪 Ireland</button>
       <button class="country-btn" data-country="US">🇺🇸 United States</button>
     </div>
-  </div>
-
-  <div class="segmented" role="tablist">
-    <button class="active" data-view="own">Restaurant has drivers</button>
-    <button data-view="no">Restaurant needs delivery</button>
   </div>
 
   <div class="layout">
@@ -367,55 +370,30 @@
         <input id="vat" type="number" value="20" step="0.5">
       </div>
 
-      <!-- TAB-SPECIFIC: own drivers -->
-      <div class="input-row own-drivers-only">
-        <label>Marketplace cut (own drivers) <span class="hint">typical: 10–15%</span></label>
-        <input id="mpRateOwn" type="number" value="12" step="0.5">
+      <div class="input-row">
+        <label>Marketplace cut <span class="hint">typical: 10–15% when restaurant delivers</span></label>
+        <input id="mpRate" type="number" value="12" step="0.5">
       </div>
-      <div class="input-row own-drivers-only">
+      <div class="input-row">
         <label>% captured by Flipdish <span class="hint">orders that move from marketplaces</span></label>
-        <input id="convOwn" type="number" value="70" step="5">
+        <input id="conv" type="number" value="70" step="5">
       </div>
-      <div class="input-row own-drivers-only">
+      <div class="input-row">
         <label>Order volume uplift <span class="hint">from Flipdish marketing &amp; loyalty</span></label>
-        <input id="upliftOwn" type="number" value="2" step="0.5">
-      </div>
-
-      <!-- TAB-SPECIFIC: no own drivers -->
-      <div class="input-row no-drivers-only">
-        <label>Marketplace cut (delivery service) <span class="hint">typical: 25–35%</span></label>
-        <input id="mpRateNo" type="number" value="30" step="0.5">
-      </div>
-      <div class="input-row no-drivers-only">
-        <label>% captured by Flipdish <span class="hint">lower when delivery still needed</span></label>
-        <input id="convNo" type="number" value="40" step="5">
-      </div>
-      <div class="input-row no-drivers-only">
-        <label>Order volume uplift <span class="hint">from Flipdish marketing &amp; loyalty</span></label>
-        <input id="upliftNo" type="number" value="2" step="0.5">
+        <input id="uplift" type="number" value="2" step="0.5">
       </div>
 
       <details>
-        <summary>Advanced &mdash; Flipdish fees, subscription &amp; delivery</summary>
+        <summary>Advanced &mdash; Flipdish fees &amp; subscription</summary>
 
-        <div class="input-row own-drivers-only" style="margin-top:10px;">
+        <div class="input-row" style="margin-top:10px;">
           <label>Flipdish processing fee % <span class="hint">on Flipdish-routed GMV</span></label>
-          <input id="fdFeeOwn" type="number" value="3.5" step="0.1">
-        </div>
-
-        <div class="input-row no-drivers-only" style="margin-top:10px;">
-          <label>Flipdish processing fee % <span class="hint">on Flipdish-routed GMV</span></label>
-          <input id="fdFeeNo" type="number" value="5.0" step="0.1">
+          <input id="fdFee" type="number" value="3.5" step="0.1">
         </div>
 
         <div class="input-row">
           <label>Flipdish Online Ordering subscription <span class="hint">monthly, fixed</span></label>
           <input id="fdSub" type="number" value="99">
-        </div>
-
-        <div class="input-row no-drivers-only">
-          <label>Avg delivery cost per order <span class="hint">paid by restaurant, e.g. £5.31 / €5.31 / $5.50</span></label>
-          <input id="fdDelivery" type="number" value="5.31" step="0.01">
         </div>
       </details>
 
@@ -426,7 +404,7 @@
       <div class="hero">
         <div class="label" id="heroLabel">Additional annual revenue</div>
         <div class="big" id="heroBig">—</div>
-        <div class="sub" id="heroSub">Net of all Flipdish fees, subscription and delivery costs</div>
+        <div class="sub" id="heroSub">Net of Flipdish processing and subscription</div>
       </div>
 
       <div class="detail-grid">
@@ -464,7 +442,6 @@
           <div class="breakdown-row"><span>Marketplace take (remaining)</span><span id="b-fd-mpcost">—</span></div>
           <div class="breakdown-row"><span id="b-fd-processing-label">Flipdish processing</span><span id="b-fd-processing">—</span></div>
           <div class="breakdown-row"><span>Flipdish Online Ordering subscription</span><span id="b-fd-sub">—</span></div>
-          <div class="breakdown-row no-drivers-only"><span>Delivery cost</span><span id="b-fd-delivery">—</span></div>
           <div class="breakdown-row total"><span>Restaurant keeps</span><span id="b-fd-keep">—</span></div>
         </div>
 
@@ -486,12 +463,11 @@
 <script>
   // ---------- defaults by market ----------
   const defaultsByMarket = {
-    UK: { vat: 20, sub: 99,  delivery: 5.31, currency: '£' },
-    IE: { vat: 23, sub: 99,  delivery: 5.31, currency: '€' },
-    US: { vat: 0,  sub: 99,  delivery: 5.50, currency: '$' }
+    UK: { vat: 20, sub: 99, currency: '£' },
+    IE: { vat: 23, sub: 99, currency: '€' },
+    US: { vat: 0,  sub: 99, currency: '$' }
   };
 
-  let currentTab = 'own'; // 'own' or 'no'
   let currency = '£';
 
   // ---------- helpers ----------
@@ -512,18 +488,6 @@
   const fmtPct = n => (n).toFixed(1) + '%';
   const fmtOrders = n => n.toLocaleString(undefined, { maximumFractionDigits: 0 });
 
-  // ---------- tab switching ----------
-  document.querySelectorAll('.segmented button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.segmented button').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentTab = btn.dataset.view;
-      document.body.classList.toggle('own-drivers-view', currentTab === 'own');
-      document.body.classList.toggle('no-drivers-view', currentTab === 'no');
-      calc();
-    });
-  });
-
   // ---------- country selector ----------
   let activeCountry = 'UK';
   function setCountry(code) {
@@ -534,7 +498,6 @@
     const m = defaultsByMarket[code];
     $('vat').value = m.vat;
     $('fdSub').value = m.sub;
-    $('fdDelivery').value = m.delivery;
     currency = m.currency;
     calc();
   }
@@ -549,19 +512,15 @@
     // Set currency from active country
     currency = defaultsByMarket[activeCountry].currency;
 
-    // Shared
-    const gmv = num('gmv');
-    const aov = num('aov');
-    const vat = num('vat');
-    const fdSub = num('fdSub');
-
-    // Tab-specific picks
-    const isOwn = currentTab === 'own';
-    const mpRate = isOwn ? num('mpRateOwn') : num('mpRateNo');
-    const conv   = isOwn ? num('convOwn')   : num('convNo');
-    const uplift = isOwn ? num('upliftOwn') : num('upliftNo');
-    const fdFee  = isOwn ? num('fdFeeOwn')  : num('fdFeeNo');
-    const fdDelivery = isOwn ? 0 : num('fdDelivery');
+    // Inputs
+    const gmv    = num('gmv');
+    const aov    = num('aov');
+    const vat    = num('vat');
+    const fdSub  = num('fdSub');
+    const mpRate = num('mpRate');
+    const conv   = num('conv');
+    const uplift = num('uplift');
+    const fdFee  = num('fdFee');
 
     // Marketplace effective rate including VAT
     const mpEffective = (mpRate / 100) * (1 + vat / 100);
@@ -581,8 +540,7 @@
 
     const remainingMpCost = remainingMpGmv * mpEffective;
     const fdProcessing = fdGmv * (fdFee / 100);
-    const fdDeliveryTotal = fdOrders * fdDelivery;
-    const fdTotal = fdProcessing + fdSub + fdDeliveryTotal;
+    const fdTotal = fdProcessing + fdSub;
 
     const totalCost = remainingMpCost + fdTotal;
     const revenueWithFD = newGmv - totalCost;
@@ -595,9 +553,7 @@
 
     // ---- Render headline (annual) + detail cards ----
     $('heroBig').textContent = fmtMoney(annualIncrease) + '/yr';
-    $('heroSub').textContent = isOwn
-      ? 'Net of Flipdish processing and subscription'
-      : 'Net of Flipdish processing, subscription and delivery costs';
+    $('heroSub').textContent = 'Net of Flipdish processing and subscription';
     $('k1').textContent = fmtMoney(monthlyIncrease) + '/mo';
     $('k2').textContent = fmtMoney(revenueToday) + '/mo';
     $('k3').textContent = fmtMoney(revenueWithFD) + '/mo';
@@ -621,7 +577,6 @@
     $('b-fd-processing-label').textContent = `Flipdish processing (${fmtPct(fdFee)})`;
     $('b-fd-processing').textContent = '-' + fmtMoney(fdProcessing);
     $('b-fd-sub').textContent = '-' + fmtMoney(fdSub);
-    $('b-fd-delivery').textContent = '-' + fmtMoney(fdDeliveryTotal) + ' (' + fmtOrders(fdOrders) + ' × ' + currency + fdDelivery.toFixed(2) + ')';
     $('b-fd-keep').textContent = fmtMoney(revenueWithFD) + '/mo';
 
     // ---- Breakdown: Result ----
