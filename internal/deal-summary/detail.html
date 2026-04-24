@@ -1346,9 +1346,13 @@
     else list[idx] = prospect;
     if (saveAll(list)) {
       flashSaved();
-      // Keep URL in sync so user can bookmark / refresh
+      // Keep URL in sync so user can bookmark / refresh.
+      // Wrapped in try/catch because sandboxed preview iframes (e.g. about:srcdoc)
+      // block replaceState with a SecurityError. Harmless to skip in that case.
       if (window.history && window.history.replaceState && !getQueryParam('id')) {
-        window.history.replaceState({}, '', '?id=' + encodeURIComponent(prospect.id));
+        try {
+          window.history.replaceState({}, '', '?id=' + encodeURIComponent(prospect.id));
+        } catch (e) { /* sandboxed preview — ignore */ }
       }
     }
   }
