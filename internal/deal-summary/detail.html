@@ -591,6 +591,19 @@
     <span class="text">What are we pricing?<span class="sub">Flip on the Flipdish products in scope for this deal</span></span>
   </div>
 
+  <!-- Natural-language scope helper -->
+  <div class="card" id="nlScopeCard" style="margin-bottom: 14px;">
+    <label for="nlScopeText" style="display: block; font-size: 13px; font-weight: 600; color: var(--flipdish-dark); margin-bottom: 6px;">
+      💬 What are they buying? <span style="font-weight: 400; color: var(--muted);">— type in plain English, we'll tick the matching products</span>
+    </label>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: stretch;">
+      <input type="text" id="nlScopeText" placeholder='e.g. "Web, App, Kiosk, POS with inventory &amp; KDS, and 1 handheld"' style="flex: 1; min-width: 260px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; font-family: inherit;" />
+      <button type="button" id="nlScopeBtn" style="padding: 10px 18px; background: var(--flipdish-primary); color: #fff; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 14px;">Find products</button>
+      <button type="button" id="nlScopeClearBtn" style="padding: 10px 14px; background: #fff; color: var(--flipdish-dark); border: 1px solid var(--border); border-radius: 10px; font-weight: 500; cursor: pointer; font-size: 13px;">Clear all</button>
+    </div>
+    <p id="nlScopeFeedback" style="margin: 10px 0 0; font-size: 13px; color: var(--muted); min-height: 1.2em;"></p>
+  </div>
+
   <div class="card">
     <p style="margin: 0 0 14px; font-size: 13px; color: var(--muted);">
       Flip a toggle <strong>on</strong> to add a product to this deal. Its "current setup" and "Flipdish proposal" blocks will appear below. Everything defaults to off — only pick the products you're actually pitching.
@@ -609,6 +622,7 @@
           <label style="font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em;">Subscription tier</label>
           <div style="display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap;">
             <button type="button" class="country-btn ooSubType-btn" data-subtype="web">Web only</button>
+            <button type="button" class="country-btn ooSubType-btn" data-subtype="app">App only</button>
             <button type="button" class="country-btn ooSubType-btn" data-subtype="webapp">Web + App</button>
           </div>
         </div>
@@ -672,10 +686,30 @@
       </div>
     </div>
 
-    <!-- Placeholder for future add-ons -->
-    <div style="margin-top: 14px; padding: 12px 14px; background: #FAFBFC; border: 1px dashed var(--border); border-radius: 10px; font-size: 13px; color: var(--muted); text-align: center;">
-      <strong style="color: var(--flipdish-dark);">+ Add another product</strong> <span style="opacity: 0.7;">· coming soon — will read live from the Flipdish price book (Inventory Management, Customer Feedback, KDS, Reputation Management, Phone Marketing, and more).</span>
+    <p style="margin: 14px 0 0; padding-top: 12px; border-top: 1px dashed var(--border); font-size: 12px; color: var(--muted);">
+      Need Inventory, KDS, Reputation Management, AI Phone, Handheld, or anything else? Scroll down — <strong>every subscription and hardware item from the Flipdish price book</strong> is in the Add-ons &amp; Hardware shelves below.
+    </p>
+  </div>
+
+  <!-- ========== ADD-ONS SHELF ========== -->
+  <div class="card" id="addonsCard" style="margin-top: 14px;">
+    <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; gap: 12px; flex-wrap: wrap;">
+      <div>
+        <div style="font-size: 15px; font-weight: 700; color: var(--flipdish-dark);">Add-ons <span style="font-weight: 400; font-size: 12px; color: var(--muted);">· monthly subscriptions — charged per site</span></div>
+        <div style="font-size: 12px; color: var(--muted); margin-top: 2px;">Tick what's in scope. Standard price shown is the list rate per site. These add to Flipdish monthly SNR — they don't compete with an incumbent (pure new revenue).</div>
+      </div>
+      <input type="search" id="addonSearch" placeholder="Filter… e.g. 'feedback' or 'reputation'" style="padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; min-width: 220px; font-family: inherit;" />
     </div>
+    <div id="addonGroupsContainer"></div>
+  </div>
+
+  <!-- ========== HARDWARE SHELF ========== -->
+  <div class="card" id="hardwareCard" style="margin-top: 14px;">
+    <div style="margin-bottom: 10px;">
+      <div style="font-size: 15px; font-weight: 700; color: var(--flipdish-dark);">Hardware <span style="font-weight: 400; font-size: 12px; color: var(--muted);">· one-off cost × quantity</span></div>
+      <div style="font-size: 12px; color: var(--muted); margin-top: 2px;">Enter a quantity for each hardware item the customer needs. One-off revenue — feeds the Year-1 total, not monthly SNR.</div>
+    </div>
+    <div id="hardwareListContainer"></div>
   </div>
 
   <!-- ================= STEP 3 — THEIR CURRENT SETUP ================= -->
@@ -1073,7 +1107,7 @@
       <div class="hero emphasis">
         <div class="hero-label">Year-1 total value</div>
         <div class="hero-value" id="heroYear1">—</div>
-        <div class="hero-sub">Monthly Flipdish revenue × 12</div>
+        <div class="hero-sub" id="heroYear1Sub">Monthly Flipdish revenue × 12</div>
       </div>
     </div>
     <!-- Optional amber tile — only shown when new revenue > 0 -->
@@ -1167,7 +1201,99 @@
   var ccyMap = { UK: '£', IE: '€', ES: '€', US: '$' };
 
   // ====================================================================
-  // Per-market price table — Phase 1 defaults.
+  // Full product catalogue — sourced from "Flipdish Price Books - Products & Prices".
+  // Used by Section 2 to render the add-on + hardware shelves and by the
+  // natural-language "What are they buying?" parser.
+  //
+  // Product shape:
+  //   { id, label, hint?, type: 'monthly'|'one_off',
+  //     price: { UK, IE, US, ES } (monthly £/€/$ or one-off £/€/$),
+  //     perSite: bool (true = multiply by prospect.locations),
+  //     qtyField: bool (true = show quantity input in UI),
+  //     keywords: [lowercase strings] (for NL parser) }
+  //
+  // Role note: OO/POS/Kiosk/QROP/FMM remain "core" products with their own
+  // detailed today-vs-Flipdish comparison blocks. Everything here is an
+  // "add-on" (pure new revenue — no incumbent comparison) or "hardware"
+  // (one-off cost). All contribute to Flipdish monthly SNR or Year-1 totals.
+  // ====================================================================
+  var CATALOG = {
+    groups: [
+      {
+        id: 'pos_addons', label: 'POS Add-ons', hint: 'Enhance the POS you\'re pitching',
+        products: [
+          { id: 'kds',             label: 'Kitchen Display System (KDS)',     type: 'monthly', perSite: true, price: { UK:20, IE:20, US:25, ES:20 }, keywords: ['kds', 'kitchen display', 'kitchen screen'] },
+          { id: 'inventory',       label: 'Inventory Management',             type: 'monthly', perSite: true, price: { UK:40, IE:40, US:50, ES:40 }, keywords: ['inventory', 'stock management', 'stock control'] },
+          { id: 'health_safety',   label: 'Health and Food Safety',           type: 'monthly', perSite: true, price: { UK:20, IE:20, US:25, ES:20 }, keywords: ['health safety', 'food safety', 'haccp', 'food hygiene'] },
+          { id: 'om_physical',     label: 'Order Management — Physical Store', type: 'monthly', perSite: true, price: { UK:40, IE:40, US:50, ES:40 }, keywords: ['order management physical', 'order management'] },
+          { id: 'om_virtual',      label: 'Order Management — Virtual Brand', type: 'monthly', perSite: true, price: { UK:10, IE:10, US:15, ES:10 }, keywords: ['virtual brand', 'virtual kitchen', 'dark kitchen', 'ghost kitchen'] },
+          { id: 'pos_register',    label: 'Additional POS Register',          type: 'monthly', perSite: false, qtyField: true, price: { UK:20, IE:20, US:25, ES:20 }, keywords: ['additional register', 'extra register', 'second till', 'extra till'] },
+          { id: 'caller_id',       label: 'Caller ID',                        type: 'monthly', perSite: true, price: { UK:10, IE:10, US:15, ES:10 }, keywords: ['caller id'] }
+        ]
+      },
+      {
+        id: 'marketing', label: 'Marketing & Customer Engagement', hint: 'Grow and retain customers',
+        products: [
+          { id: 'rep_growth',        label: 'Reputation Management — Growth',       type: 'monthly', perSite: true, price: { UK:39,  IE:39,  US:49,  ES:39 },  keywords: ['reputation growth', 'reviews growth', 'reputation management growth'] },
+          { id: 'rep_growth_sms',    label: 'Reputation Management — Growth (SMS)', type: 'monthly', perSite: true, price: { UK:99,  IE:99,  US:119, ES:99 },  keywords: ['reputation sms', 'sms reviews'] },
+          { id: 'rep_professional',  label: 'Reputation Management — Professional', type: 'monthly', perSite: true, price: { UK:99,  IE:99,  US:119, ES:99 },  keywords: ['reputation professional'] },
+          { id: 'rep_advanced',      label: 'Reputation Management — Advanced',     type: 'monthly', perSite: true, price: { UK:149, IE:149, US:179, ES:149 }, keywords: ['reputation advanced'] },
+          { id: 'phone_marketing',   label: 'Flipdish Phone Marketing',             type: 'monthly', perSite: true, price: { UK:19,  IE:19,  US:25,  ES:19 },  keywords: ['phone marketing'] },
+          { id: 'ai_phone',          label: 'Flipdish AI Phone Agent',              type: 'monthly', perSite: true, price: { UK:99,  IE:99,  US:119, ES:99 },  keywords: ['ai phone', 'ai agent', 'phone agent', 'voice ai', 'ai phone agent'] },
+          { id: 'feedback_app',      label: 'Customer Feedback App',                type: 'monthly', perSite: true, price: { UK:19,  IE:19,  US:25,  ES:19 },  keywords: ['feedback app', 'customer feedback app'] },
+          { id: 'feedback_messaging',label: 'Customer Feedback Messaging',          type: 'monthly', perSite: true, price: { UK:25,  IE:25,  US:30,  ES:25 },  keywords: ['feedback messaging', 'sms feedback', 'customer feedback messaging'] }
+        ]
+      },
+      {
+        id: 'ops', label: 'Operations & Integrations', hint: 'Back-office, delivery, integrations',
+        products: [
+          { id: 'driver_management',      label: 'Driver Management',                    type: 'monthly', perSite: true, price: { UK:69, IE:69, US:89, ES:69 }, keywords: ['driver management', 'delivery drivers', 'own drivers'] },
+          { id: 'daily_disbursements',    label: 'Daily Disbursements',                  type: 'monthly', perSite: true, price: { UK:15, IE:15, US:19, ES:15 }, keywords: ['daily payout', 'daily disbursements', 'fast payout'] },
+          { id: 'menu_edit_support',      label: 'Menu Edit Support',                    type: 'monthly', perSite: true, price: { UK:19, IE:19, US:25, ES:19 }, keywords: ['menu support', 'menu edits', 'menu edit support'] },
+          { id: 'digital_signage',        label: 'Digital Signage System',               type: 'monthly', perSite: true, price: { UK:15, IE:15, US:19, ES:15 }, keywords: ['digital signage', 'menu board', 'in-store screen'] },
+          { id: 'third_party_delivery',   label: '3rd Party Delivery Integration',       type: 'monthly', perSite: true, price: { UK:20, IE:20, US:25, ES:20 }, keywords: ['uber eats', 'deliveroo', 'just eat', '3rd party delivery', 'aggregator'] },
+          { id: 'direct_pos_integration', label: 'Direct 3rd Party POS Integration',     type: 'monthly', perSite: true, price: { UK:40, IE:40, US:50, ES:40 }, keywords: ['3rd party pos integration', 'toast integration', 'square integration'] },
+          { id: 'uber_direct',            label: 'Uber Direct Integration',              type: 'monthly', perSite: true, price: { UK:20, IE:20, US:25, ES:20 }, keywords: ['uber direct'] }
+        ]
+      },
+      {
+        id: 'hardware', label: 'Hardware', hint: 'One-off cost × qty',
+        products: [
+          { id: 'hw_k2',              label: 'Kiosk — K2 24" Floor Standing',        type: 'one_off', qtyField: true, price: { UK:1299, IE:1299, US:1599, ES:1299 }, keywords: ['kiosk hardware', 'k2', 'floor standing kiosk', 'free standing kiosk'] },
+          { id: 'hw_t2',              label: 'Kiosk — T2 15.6" Desktop',             type: 'one_off', qtyField: true, price: { UK:500,  IE:500,  US:650,  ES:500 },  keywords: ['t2 kiosk', 'desktop kiosk', 'countertop kiosk'] },
+          { id: 'hw_pos_d3',          label: 'Desktop POS — D3 Pro',                 type: 'one_off', qtyField: true, price: { UK:449,  IE:449,  US:599,  ES:449 },  keywords: ['pos terminal', 'd3', 'desktop pos', 'pos hardware'] },
+          { id: 'hw_pos_starter_kit', label: 'Desktop POS Starter Kit',              type: 'one_off', qtyField: true, price: { UK:799,  IE:799,  US:999,  ES:799 },  keywords: ['pos starter kit', 'starter kit'] },
+          { id: 'hw_handheld',        label: 'Handheld POS — V3 Mix',                type: 'one_off', qtyField: true, price: { UK:379,  IE:379,  US:499,  ES:379 },  keywords: ['handheld', 'v3', 'handheld pos', 'mobile pos'] },
+          { id: 'hw_kds_screen',      label: 'KDS Screen — 21.5" Android',           type: 'one_off', qtyField: true, price: { UK:550,  IE:550,  US:699,  ES:550 },  keywords: ['kds screen', 'kitchen display screen', 'kitchen screen hardware'] },
+          { id: 'hw_wisepos',         label: 'Card Reader — WisePOS E',              type: 'one_off', qtyField: true, price: { UK:220,  IE:220,  US:280,  ES:220 },  keywords: ['wisepos', 'card reader'] },
+          { id: 'hw_printer',         label: 'Receipt Printer — Star TSP143IV',      type: 'one_off', qtyField: true, price: { UK:250,  IE:250,  US:319,  ES:250 },  keywords: ['receipt printer', 'star micronics', 'thermal printer'] },
+          { id: 'hw_cash_drawer',     label: 'Cash Drawer (410mm)',                  type: 'one_off', qtyField: true, price: { UK:45,   IE:45,   US:59,   ES:45 },   keywords: ['cash drawer', 'till drawer'] }
+        ]
+      }
+    ]
+  };
+
+  // Quick lookup: catalogue-id -> product
+  var CATALOG_BY_ID = (function () {
+    var map = {};
+    CATALOG.groups.forEach(function (g) { g.products.forEach(function (p) { map[p.id] = p; }); });
+    return map;
+  })();
+
+  // Keyword map for the "core" 5 toggles (OO/POS/Kiosk/QROP/FMM) — so the
+  // natural-language parser can flip them on as well as the add-ons.
+  var CORE_KEYWORDS = [
+    { toggleId: 'includeOO',    subtype: 'web',    keywords: ['web only', 'website only', 'web ordering only', 'just web'] },
+    { toggleId: 'includeOO',    subtype: 'app',    keywords: ['app only', 'mobile app only', 'just app', 'just the app'] },
+    { toggleId: 'includeOO',    subtype: 'webapp', keywords: ['web and app', 'web+app', 'web + app', 'webapp', 'online ordering', 'web', 'app', 'ordering app', 'website'] },
+    { toggleId: 'includePOS',   keywords: ['pos', 'point of sale', 'till', 'register', 'pos pro'] },
+    { toggleId: 'includeKiosk', keywords: ['kiosk', 'kiosks', 'self service', 'self-service', 'self service ordering'] },
+    { toggleId: 'includeQROP',  keywords: ['qrop', 'qr order', 'qr pay', 'qr order and pay', 'table qr', 'table ordering', 'qr code ordering'] },
+    { toggleId: 'includeFMM',   keywords: ['fmm', 'flipdish managed marketing', 'managed marketing', 'google ads', 'paid ads'] }
+  ];
+
+  // ====================================================================
+  // Per-market price table — Phase 1 defaults (core 5 products).
   // Pulled from "Flipdish Price Books - Products & Prices" Google Sheet.
   // Commercial fees (processing %, per-txn fee, end-user fee) set to UK
   // numbers across all markets for now — verify later with Commercial Finance.
@@ -1245,8 +1371,15 @@
       includeQROP: false,
       includeFMM: false,
       // Tier choices
-      ooSubType: 'webapp',  // 'web' or 'webapp'
+      ooSubType: 'webapp',  // 'web' | 'app' | 'webapp'
       fmmTier: 'A',         // 'A' | 'B' | 'C' | 'D'
+      // Add-ons (monthly subs) — map of catalogue-id -> { enabled: bool, qty: int }
+      addons: {},
+      // Hardware (one-off) — map of catalogue-id -> { qty: int }
+      hardware: {},
+      // Free-text "what are they buying?" — the last thing the rep typed in.
+      // Stored so if they reopen the deal the text is still there.
+      scopeText: '',
       // Narrative override (rep can edit the auto-story)
       narrativeOverride: null,
       current: {
@@ -1352,6 +1485,13 @@
     updateSubTypeButtons();
     updateFMMTierButtons();
 
+    // Natural-language scope text
+    if ($('nlScopeText')) $('nlScopeText').value = prospect.scopeText || '';
+
+    // Render catalogue shelves (add-ons + hardware) from current state
+    renderAddonShelf();
+    renderHardwareShelf();
+
     setCountry(prospect.country || 'UK', /*skipSave*/ true);
     applyToggleVisibility();
     $('printName').textContent = prospect.name || 'Untitled prospect';
@@ -1410,8 +1550,279 @@
       qropSub: val('fdQROPSub'),
       fmmSub: val('fdFMMSub')
     };
+    // Natural-language scope input
+    if ($('nlScopeText')) prospect.scopeText = val('nlScopeText');
+    // Addons / hardware state is updated imperatively by the shelf handlers
+    // so no extra collection work is needed here.
     prospect.updatedAt = Date.now();
     $('printName').textContent = prospect.name || 'Untitled prospect';
+  }
+
+  // ====================================================================
+  // CATALOGUE SHELVES — Add-ons (monthly) + Hardware (one-off)
+  // ====================================================================
+  function currencySymbol() { return ccyMap[prospect.country] || '£'; }
+
+  function addonGroups() {
+    return CATALOG.groups.filter(function (g) { return g.id !== 'hardware'; });
+  }
+
+  function hardwareGroup() {
+    return CATALOG.groups.filter(function (g) { return g.id === 'hardware'; })[0];
+  }
+
+  // Render the Add-ons shelf. Groups -> checkboxes. State read from prospect.addons.
+  function renderAddonShelf() {
+    var container = $('addonGroupsContainer');
+    if (!container) return;
+    var ccy = currencySymbol();
+    var html = '';
+    addonGroups().forEach(function (group) {
+      html += '<div class="addon-group" data-group-id="' + group.id + '" style="margin-bottom: 18px;">';
+      html +=   '<div style="font-size: 13px; font-weight: 600; color: var(--flipdish-dark); margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid var(--border);">' +
+                   escapeHtml(group.label) +
+                   (group.hint ? ' <span style="font-weight: 400; color: var(--muted); font-size: 12px;">· ' + escapeHtml(group.hint) + '</span>' : '') +
+                 '</div>';
+      html +=   '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px;">';
+      group.products.forEach(function (p) {
+        var state = prospect.addons[p.id] || { enabled: false, qty: 1 };
+        var price = p.price[prospect.country] || p.price.UK;
+        var priceLabel = ccy + price + '/mo' + (p.perSite ? ' × site' : '');
+        var checked = state.enabled ? 'checked' : '';
+        var highlight = state._matched ? 'background: #FFF8E1; border-color: #FFC107;' : '';
+        html += '<label class="addon-row" data-addon-id="' + p.id + '" style="display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; cursor: pointer; font-size: 13px; ' + highlight + '">';
+        html +=   '<input type="checkbox" class="addon-check" data-addon-id="' + p.id + '" ' + checked + ' style="margin-top: 2px;" />';
+        html +=   '<div style="flex: 1;">';
+        html +=     '<div style="font-weight: 600; color: var(--flipdish-dark);">' + escapeHtml(p.label) + '</div>';
+        html +=     '<div style="color: var(--muted); font-size: 12px; margin-top: 2px;">' + priceLabel + '</div>';
+        if (p.qtyField) {
+          html +=   '<div style="margin-top: 6px; display: flex; align-items: center; gap: 6px;">';
+          html +=     '<span style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em;">Qty</span>';
+          html +=     '<input type="number" class="addon-qty" data-addon-id="' + p.id + '" min="1" value="' + (state.qty || 1) + '" style="width: 60px; padding: 4px 6px; border: 1px solid var(--border); border-radius: 6px; font-size: 12px;" />';
+          html +=   '</div>';
+        }
+        html +=   '</div>';
+        html += '</label>';
+      });
+      html +=   '</div>';
+      html += '</div>';
+    });
+    container.innerHTML = html;
+
+    // Wire up handlers
+    container.querySelectorAll('.addon-check').forEach(function (cb) {
+      cb.addEventListener('change', function () {
+        var id = cb.getAttribute('data-addon-id');
+        if (!prospect.addons[id]) prospect.addons[id] = { enabled: false, qty: 1 };
+        prospect.addons[id].enabled = cb.checked;
+        delete prospect.addons[id]._matched; // user has interacted — drop highlight
+        // Remove highlight visually
+        var row = cb.closest('.addon-row');
+        if (row) { row.style.background = ''; row.style.borderColor = ''; }
+        scheduleSave();
+        recompute();
+      });
+    });
+    container.querySelectorAll('.addon-qty').forEach(function (input) {
+      input.addEventListener('input', function () {
+        var id = input.getAttribute('data-addon-id');
+        if (!prospect.addons[id]) prospect.addons[id] = { enabled: false, qty: 1 };
+        prospect.addons[id].qty = Math.max(1, parseInt(input.value, 10) || 1);
+        scheduleSave();
+        recompute();
+      });
+    });
+
+    // Apply search filter if present
+    filterAddonShelf();
+  }
+
+  // Simple substring filter across the rendered add-on shelf
+  function filterAddonShelf() {
+    var q = ($('addonSearch') && $('addonSearch').value || '').trim().toLowerCase();
+    var rows = document.querySelectorAll('.addon-row');
+    rows.forEach(function (r) {
+      if (!q) { r.style.display = ''; return; }
+      var text = r.textContent.toLowerCase();
+      r.style.display = text.indexOf(q) >= 0 ? '' : 'none';
+    });
+    // Hide any group whose visible rows are all hidden
+    document.querySelectorAll('.addon-group').forEach(function (g) {
+      var anyVisible = Array.prototype.some.call(g.querySelectorAll('.addon-row'), function (r) {
+        return r.style.display !== 'none';
+      });
+      g.style.display = anyVisible ? '' : 'none';
+    });
+  }
+
+  // Render the Hardware shelf
+  function renderHardwareShelf() {
+    var container = $('hardwareListContainer');
+    if (!container) return;
+    var group = hardwareGroup();
+    if (!group) return;
+    var ccy = currencySymbol();
+    var html = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px;">';
+    group.products.forEach(function (p) {
+      var state = prospect.hardware[p.id] || { qty: 0 };
+      var price = p.price[prospect.country] || p.price.UK;
+      var highlight = state._matched ? 'background: #FFF8E1; border-color: #FFC107;' : '';
+      html += '<div class="hw-row" data-hw-id="' + p.id + '" style="display: flex; gap: 10px; align-items: center; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; ' + highlight + '">';
+      html +=   '<div style="flex: 1;">';
+      html +=     '<div style="font-weight: 600; color: var(--flipdish-dark);">' + escapeHtml(p.label) + '</div>';
+      html +=     '<div style="color: var(--muted); font-size: 12px; margin-top: 2px;">' + ccy + price + ' each</div>';
+      html +=   '</div>';
+      html +=   '<div style="display: flex; align-items: center; gap: 6px;">';
+      html +=     '<span style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em;">Qty</span>';
+      html +=     '<input type="number" class="hw-qty" data-hw-id="' + p.id + '" min="0" value="' + (state.qty || 0) + '" style="width: 64px; padding: 4px 6px; border: 1px solid var(--border); border-radius: 6px; font-size: 12px;" />';
+      html +=   '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+    container.innerHTML = html;
+
+    container.querySelectorAll('.hw-qty').forEach(function (input) {
+      input.addEventListener('input', function () {
+        var id = input.getAttribute('data-hw-id');
+        var qty = Math.max(0, parseInt(input.value, 10) || 0);
+        if (qty === 0) {
+          delete prospect.hardware[id];
+        } else {
+          prospect.hardware[id] = { qty: qty };
+        }
+        var row = input.closest('.hw-row');
+        if (row) { row.style.background = ''; row.style.borderColor = ''; }
+        scheduleSave();
+        recompute();
+      });
+    });
+  }
+
+  // ====================================================================
+  // NATURAL-LANGUAGE SCOPE PARSER
+  // Takes free text. Returns:
+  //   { coreMatches: [{toggleId, subtype?}], addonMatches: [{id, qty}], hwMatches: [{id, qty}] }
+  // ====================================================================
+  function parseScopeText(text) {
+    var t = (text || '').toLowerCase();
+    var coreMatches = [];
+    var addonMatches = [];
+    var hwMatches = [];
+
+    // Simple quantity extractor: "2 kiosks" / "1 handheld" / "3 x pos"
+    function findQty(fragment) {
+      // e.g. "2 kiosks", "3 handheld", "1 x kiosk"
+      var m = fragment.match(/(\d+)\s*(?:x|×)?\s*$/);
+      return m ? parseInt(m[1], 10) : null;
+    }
+
+    // Core toggles — iterate CORE_KEYWORDS in order (more-specific entries first).
+    // Keep only the FIRST match per toggleId so "just web" doesn't get overridden
+    // by the generic 'web' → webapp entry later in the list.
+    var seenToggles = {};
+    CORE_KEYWORDS.forEach(function (entry) {
+      if (seenToggles[entry.toggleId]) return;
+      for (var i = 0; i < entry.keywords.length; i++) {
+        var kw = entry.keywords[i].toLowerCase();
+        if (t.indexOf(kw) >= 0) {
+          coreMatches.push({ toggleId: entry.toggleId, subtype: entry.subtype });
+          seenToggles[entry.toggleId] = true;
+          break;
+        }
+      }
+    });
+
+    // Addons + hardware
+    CATALOG.groups.forEach(function (group) {
+      group.products.forEach(function (p) {
+        for (var i = 0; i < p.keywords.length; i++) {
+          var kw = p.keywords[i].toLowerCase();
+          var idx = t.indexOf(kw);
+          if (idx >= 0) {
+            // Try to pick up a number immediately before the keyword (e.g. "2 handhelds")
+            var prefix = t.substring(Math.max(0, idx - 8), idx);
+            var qty = findQty(prefix) || 1;
+            if (group.id === 'hardware') {
+              hwMatches.push({ id: p.id, qty: qty });
+            } else {
+              addonMatches.push({ id: p.id, qty: qty });
+            }
+            break;
+          }
+        }
+      });
+    });
+
+    return { coreMatches: coreMatches, addonMatches: addonMatches, hwMatches: hwMatches };
+  }
+
+  // Apply parser result to the prospect state and re-render
+  function applyScopeResult(result) {
+    var appliedCount = 0;
+
+    // Clear any lingering _matched highlights from a previous parse
+    Object.keys(prospect.addons || {}).forEach(function (id) { delete prospect.addons[id]._matched; });
+    Object.keys(prospect.hardware || {}).forEach(function (id) { delete prospect.hardware[id]._matched; });
+
+    // Core toggles — flip on, set subtype where applicable
+    result.coreMatches.forEach(function (m) {
+      var cb = $(m.toggleId);
+      if (cb && !cb.checked) { cb.checked = true; appliedCount++; }
+      if (m.subtype) {
+        // Set ooSubType etc.
+        if (m.toggleId === 'includeOO') prospect.ooSubType = m.subtype;
+      }
+    });
+    // Sync state off checkboxes
+    prospect.includeOO    = $('includeOO').checked;
+    prospect.includePOS   = $('includePOS').checked;
+    prospect.includeKiosk = $('includeKiosk').checked;
+    prospect.includeQROP  = $('includeQROP').checked;
+    prospect.includeFMM   = $('includeFMM').checked;
+
+    // Addons — tick + qty + highlight
+    result.addonMatches.forEach(function (m) {
+      var was = prospect.addons[m.id] && prospect.addons[m.id].enabled;
+      prospect.addons[m.id] = { enabled: true, qty: m.qty, _matched: true };
+      if (!was) appliedCount++;
+    });
+
+    // Hardware — set qty + highlight
+    result.hwMatches.forEach(function (m) {
+      var was = prospect.hardware[m.id] && prospect.hardware[m.id].qty > 0;
+      prospect.hardware[m.id] = { qty: m.qty, _matched: true };
+      if (!was) appliedCount++;
+    });
+
+    // Re-render everything that changed
+    updateSubTypeButtons();
+    applyToggleVisibility();
+    // Apply standards to newly-on core toggles (so their proposal side pre-fills)
+    ['oo','pos','kiosk','qrop','fmm'].forEach(function (code) {
+      var toggleId = { oo: 'includeOO', pos: 'includePOS', kiosk: 'includeKiosk', qrop: 'includeQROP', fmm: 'includeFMM' }[code];
+      if ($(toggleId).checked) applyStandardsForProduct(code, /*force*/ false);
+    });
+    renderAddonShelf();
+    renderHardwareShelf();
+    scheduleSave();
+    recompute();
+
+    return appliedCount;
+  }
+
+  // Clear all scope (reset all toggles, addons, hardware)
+  function clearAllScope() {
+    ['includeOO','includePOS','includeKiosk','includeQROP','includeFMM'].forEach(function (id) {
+      $(id).checked = false;
+    });
+    prospect.includeOO = prospect.includePOS = prospect.includeKiosk = prospect.includeQROP = prospect.includeFMM = false;
+    prospect.addons = {};
+    prospect.hardware = {};
+    applyToggleVisibility();
+    renderAddonShelf();
+    renderHardwareShelf();
+    scheduleSave();
+    recompute();
   }
 
   // ---------- save (debounced) ----------
@@ -1526,8 +1937,11 @@
     if (product === 'oo') {
       setIfEmpty('fdOORate', m.oo.rate);
       setIfEmpty('fdOOEndUserFee', m.oo.endUserFee);
-      // Sub always tracks the tier choice
-      var sub = (prospect.ooSubType === 'web') ? m.oo.webSub : m.oo.webAppSub;
+      // Sub tracks the tier: Web only / App only both = single-channel list price.
+      // Web + App = higher bundle price.
+      var sub;
+      if (prospect.ooSubType === 'webapp') sub = m.oo.webAppSub;
+      else sub = m.oo.webSub; // 'web' or 'app'
       $('fdOOSub').value = sub;
     } else if (product === 'pos') {
       setIfEmpty('fdPOSRate', m.pos.rate);
@@ -1569,7 +1983,7 @@
     if ($('includeOO').checked) {
       check('fdOORateWarn', $('fdOORate').value, m.oo.rate, 'OO processing rate', '%');
       check('fdOOEndUserFeeWarn', $('fdOOEndUserFee').value, m.oo.endUserFee, 'OO end-user fee', '$');
-      var ooSubStd = (prospect.ooSubType === 'web') ? m.oo.webSub : m.oo.webAppSub;
+      var ooSubStd = (prospect.ooSubType === 'webapp') ? m.oo.webAppSub : m.oo.webSub;
       check('fdOOSubWarn', $('fdOOSub').value, ooSubStd, 'OO subscription', '$');
     }
     if ($('includePOS').checked) {
@@ -1663,8 +2077,12 @@
       var fdOOCost   = ooGmv * fdOORate / 100 + fdOOSub;
       var hasCurOO   = ooGmv > 0 && curOORate > 0;
       if (hasCurOO || fdOORate > 0 || fdOOSub > 0) {
+        var ooLabel = 'Online Ordering';
+        if (prospect.ooSubType === 'web') ooLabel += ' (Web)';
+        else if (prospect.ooSubType === 'app') ooLabel += ' (App)';
+        else ooLabel += ' (Web + App)';
         pushLine({
-          label: 'Online Ordering' + (prospect.ooSubType === 'web' ? ' (Web)' : ' (Web + App)'),
+          label: ooLabel,
           curCost: curOOCost, fdCost: fdOOCost, hasCurrent: hasCurOO,
           detail: hasCurOO
             ? (curOORate + '% of ' + fmtMoney(ooGmv) + ' vs ' + fdOORate + '% + ' + fmtMoney(fdOOSub) + ' sub')
@@ -1762,13 +2180,55 @@
       }
     }
 
+    // ---- Add-ons (monthly subs, pure new revenue — no incumbent comparison) ----
+    Object.keys(prospect.addons || {}).forEach(function (id) {
+      var state = prospect.addons[id];
+      if (!state || !state.enabled) return;
+      var product = CATALOG_BY_ID[id];
+      if (!product) return;
+      var price = product.price[prospect.country] || product.price.UK;
+      var qty = state.qty || 1;
+      // perSite multiplies by locations. qtyField (like Additional Register) uses qty input.
+      var monthly = price * qty * (product.perSite ? locs : 1);
+      if (monthly <= 0) return;
+      var detail = fmtMoney(price) + '/mo';
+      if (product.perSite && locs > 1) detail += ' × ' + locs + ' sites';
+      if (product.qtyField && qty > 1) detail += ' × ' + qty;
+      pushLine({
+        label: product.label,
+        curCost: 0, fdCost: monthly, hasCurrent: false,
+        detail: detail
+      });
+    });
+
+    // ---- Hardware (one-off — feeds Year-1 total but NOT monthly SNR) ----
+    var hardwareOneOff = 0;
+    var hardwareLines = [];
+    Object.keys(prospect.hardware || {}).forEach(function (id) {
+      var state = prospect.hardware[id];
+      if (!state || !state.qty) return;
+      var product = CATALOG_BY_ID[id];
+      if (!product) return;
+      var price = product.price[prospect.country] || product.price.UK;
+      var oneOff = price * state.qty;
+      hardwareOneOff += oneOff;
+      hardwareLines.push({ label: product.label, qty: state.qty, unit: price, total: oneOff });
+    });
+
     var totalLines = savingsLines.concat(newRevLines);
     var annualSaving = monthlySaving * 12;
 
-    // Primary heroes — Flipdish revenue story (this is the rep's workbench)
-    var hasAny = totalLines.length > 0;
-    $('heroSNR').textContent     = hasAny ? fmtMoney(monthlySNR) : '—';
-    $('heroYear1').textContent   = hasAny ? fmtMoney(monthlySNR * 12) : '—';
+    // Primary heroes — Flipdish revenue story (this is the rep's workbench).
+    // Year-1 total = monthly SNR × 12  +  one-off hardware revenue.
+    var hasAny = totalLines.length > 0 || hardwareOneOff > 0;
+    var year1Total = (monthlySNR * 12) + hardwareOneOff;
+    $('heroSNR').textContent   = (totalLines.length > 0) ? fmtMoney(monthlySNR) : '—';
+    $('heroYear1').textContent = hasAny ? fmtMoney(year1Total) : '—';
+    if (hardwareOneOff > 0) {
+      $('heroYear1Sub').textContent = 'Incl. ' + fmtMoney(hardwareOneOff) + ' one-off hardware';
+    } else {
+      $('heroYear1Sub').textContent = 'Monthly Flipdish revenue × 12';
+    }
 
     // Optional "new monthly revenue" tile — only if there's revenue from products
     // the prospect doesn't currently have
@@ -1805,6 +2265,7 @@
         savingsLines: savingsLines, newRevLines: newRevLines,
         monthlySaving: monthlySaving, annualSaving: annualSaving,
         monthlySNR: monthlySNR, monthlyNewRev: monthlyNewRev,
+        hardwareOneOff: hardwareOneOff, hardwareLines: hardwareLines,
         flags: flags
       });
     }
@@ -1843,7 +2304,12 @@
     }
 
     // ---- The Flipdish value line — what this deal is worth to us ----
-    var flipdishLine = '<strong>Flipdish value:</strong> ' + fmtMoney(ctx.monthlySNR) + '/mo in Software Net Revenue, ' + fmtMoney(ctx.monthlySNR * 12) + ' Year-1 total.';
+    var year1 = (ctx.monthlySNR * 12) + (ctx.hardwareOneOff || 0);
+    var flipdishLine = '<strong>Flipdish value:</strong> ' + fmtMoney(ctx.monthlySNR) + '/mo in Software Net Revenue, ' + fmtMoney(year1) + ' Year-1 total';
+    if (ctx.hardwareOneOff && ctx.hardwareOneOff > 0) {
+      flipdishLine += ' (incl. ' + fmtMoney(ctx.hardwareOneOff) + ' one-off hardware)';
+    }
+    flipdishLine += '.';
     if (ctx.monthlyNewRev > 0) {
       flipdishLine += ' ' + fmtMoney(ctx.monthlyNewRev) + '/mo of that is new revenue from products they don\'t have today.';
     }
@@ -1956,6 +2422,50 @@
     wireToggle('includeKiosk', 'kiosk');
     wireToggle('includeQROP', 'qrop');
     wireToggle('includeFMM', 'fmm');
+
+    // ---- Natural-language scope parser wiring ----
+    function runParser() {
+      var text = $('nlScopeText').value || '';
+      prospect.scopeText = text;
+      var fb = $('nlScopeFeedback');
+      if (!text.trim()) {
+        fb.textContent = 'Type what they\'re buying and hit Find products. We\'ll pre-tick everything we recognise.';
+        fb.style.color = 'var(--muted)';
+        return;
+      }
+      var result = parseScopeText(text);
+      var count = applyScopeResult(result);
+      var parts = [];
+      if (result.coreMatches.length) parts.push(result.coreMatches.length + ' core product' + (result.coreMatches.length > 1 ? 's' : ''));
+      if (result.addonMatches.length) parts.push(result.addonMatches.length + ' add-on' + (result.addonMatches.length > 1 ? 's' : ''));
+      if (result.hwMatches.length)   parts.push(result.hwMatches.length + ' hardware item' + (result.hwMatches.length > 1 ? 's' : ''));
+      if (parts.length === 0) {
+        fb.textContent = 'No matches. Try naming the products (e.g. "Web, POS, KDS, 2 handhelds") — we scan for product names and quantities.';
+        fb.style.color = '#B91C1C';
+      } else {
+        fb.innerHTML = '✓ Ticked: ' + parts.join(' · ') + '. <strong>Review the yellow-highlighted items below</strong>, tweak quantities, then confirm.';
+        fb.style.color = 'var(--flipdish-dark)';
+      }
+      scheduleSave();
+    }
+    $('nlScopeBtn').addEventListener('click', runParser);
+    $('nlScopeText').addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); runParser(); }
+    });
+    $('nlScopeText').addEventListener('input', function () {
+      prospect.scopeText = $('nlScopeText').value;
+      scheduleSave();
+    });
+    $('nlScopeClearBtn').addEventListener('click', function () {
+      if (!confirm('Clear every product tick on this deal? (The current-setup numbers you\'ve typed in will be kept.)')) return;
+      $('nlScopeText').value = '';
+      prospect.scopeText = '';
+      $('nlScopeFeedback').textContent = '';
+      clearAllScope();
+    });
+
+    // Add-on shelf search
+    $('addonSearch').addEventListener('input', filterAddonShelf);
 
     // OO sub-type buttons (Web only / Web + App)
     document.querySelectorAll('.ooSubType-btn').forEach(function (btn) {
