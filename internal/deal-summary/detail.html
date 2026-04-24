@@ -344,6 +344,81 @@
     background: #F4F6F8; color: var(--muted); margin-left: 4px;
     font-weight: 700; letter-spacing: 0.04em;
   }
+
+  /* Approval banner — top of Section 5 when items are below floor */
+  .approval-banner {
+    background: #FFF6E0; border: 1px solid #E4C564;
+    border-left: 4px solid #C48A0E;
+    border-radius: 10px; padding: 14px 18px;
+    margin-top: 12px; display: flex; gap: 12px; align-items: flex-start;
+  }
+  .approval-banner svg {
+    flex-shrink: 0; width: 20px; height: 20px;
+    color: #8A5A12; margin-top: 2px;
+  }
+  .approval-banner .approval-title {
+    font-weight: 700; color: #6E4410; font-size: 14px;
+  }
+  .approval-banner .approval-list {
+    margin: 6px 0 0; padding-left: 18px;
+    font-size: 13px; color: #6E4410; line-height: 1.5;
+  }
+  .approval-banner .approval-list li { margin-bottom: 2px; }
+
+  /* Customer FYI — compact demoted savings strip */
+  .customer-fyi {
+    background: #F5FAFE; border: 1px solid var(--flipdish-blue-line);
+    border-radius: 10px; padding: 10px 14px;
+    margin-top: 12px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 14px;
+    font-size: 13px;
+  }
+  .customer-fyi-head {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--flipdish-blue-dark);
+  }
+  .customer-fyi-pair {
+    display: inline-flex; align-items: baseline; gap: 5px;
+  }
+  .customer-fyi-pair .fyi-label { color: var(--muted); }
+  .customer-fyi-pair .fyi-value {
+    font-weight: 700; color: var(--flipdish-dark);
+    font-variant-numeric: tabular-nums;
+  }
+  .customer-fyi-foot {
+    flex-basis: 100%; font-size: 11px; color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* Collapsible Section 3 toggle row */
+  .section-toggle-row {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; padding: 0 4px 8px; flex-wrap: wrap;
+  }
+  .section-toggle-row .hint-inline {
+    font-size: 13px; color: var(--muted); margin: 0;
+  }
+  .section-toggle-row button {
+    background: #fff; color: var(--flipdish-blue-dark);
+    border: 1px solid var(--flipdish-blue-line);
+    border-radius: 8px; padding: 6px 12px;
+    font: inherit; font-size: 12px; font-weight: 600;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+    white-space: nowrap;
+  }
+  .section-toggle-row button:hover {
+    border-color: var(--flipdish-blue); color: var(--flipdish-blue);
+  }
+  .collapsible-chevron {
+    display: inline-block; transition: transform .15s ease;
+    font-size: 10px;
+  }
+  .collapsible-chevron.expanded { transform: rotate(180deg); }
+
+  /* Workbench hero layout — Flipdish side only, with customer FYI below */
+  .workbench-hero-wrap {
+    margin-top: 12px;
+  }
   .breakdown {
     margin-top: 14px; background: #fff; border: 1px solid var(--border);
     border-radius: 12px; overflow: hidden;
@@ -465,14 +540,14 @@
     All deals
   </a>
 
-  <span class="fam-pill">Deal Room · Deal Summary</span>
+  <span class="fam-pill">Deal Room · Deal workbench (internal)</span>
 
   <!-- Inline-editable prospect name -->
   <input type="text" class="name-input" id="prospectName" placeholder="Prospect name (e.g. The Sizzling Wok)" maxlength="100" />
   <span class="save-indicator" id="saveIndicator">
     <span class="dot"></span> Saved
   </span>
-  <p class="lede" style="margin-top: 12px;">Capture their current setup, draft your Flipdish proposal, and share the story. Everything autosaves to this browser.</p>
+  <p class="lede" style="margin-top: 12px;">Price the Flipdish side of a deal, flag anything that needs approval, and see what the deal is worth to us. For the customer-facing version, use the <em>Generate customer one-pager</em> button at the bottom. Everything autosaves to this browser.</p>
 
   <!-- Print-only name (since the input is hidden in print) -->
   <div class="print-only print-name" id="printName"></div>
@@ -606,10 +681,18 @@
   <!-- ================= STEP 3 — THEIR CURRENT SETUP ================= -->
   <div class="step">
     <span class="num">3</span>
-    <span class="text">Their current setup<span class="sub">What they're paying today — from discovery call or their invoice</span></span>
+    <span class="text">Their current setup<span class="sub">Optional — fill this in to calculate customer savings for the external one-pager</span></span>
   </div>
 
-  <div class="card">
+  <div class="section-toggle-row">
+    <p class="hint-inline">If this info is already in Salesforce and you just want to price the Flipdish side, skip to Section 4.</p>
+    <button type="button" id="toggleCurrentSetup" aria-expanded="false" aria-controls="currentSetupCard">
+      <span id="toggleCurrentSetupLabel">Show current setup</span>
+      <span class="collapsible-chevron" id="toggleCurrentSetupChevron">▼</span>
+    </button>
+  </div>
+
+  <div class="card" id="currentSetupCard" style="display: none;">
     <div id="currentEmptyState" style="padding: 20px; text-align: center; color: var(--muted); font-size: 14px;">
       Nothing in scope yet — flip a toggle on in Section 2 and the matching "today" block will appear here.
     </div>
@@ -964,56 +1047,51 @@
     </div>
   </div>
 
-  <!-- ================= STEP 5 — THE ANSWER ================= -->
+  <!-- ================= STEP 5 — DEAL BRIEF ================= -->
   <div class="step">
     <span class="num">5</span>
-    <span class="text">The answer<span class="sub">What this deal looks like for the customer and for Flipdish</span></span>
+    <span class="text">Deal brief<span class="sub">What this deal is worth to Flipdish, plus any approval flags</span></span>
   </div>
 
-  <!-- Dual-story heroes: Customer side + Flipdish side -->
-  <div class="answer-group-row">
-    <div class="answer-group">
-      <h3>For the customer
-        <span class="group-sub">What they save by switching to Flipdish</span>
-      </h3>
-      <div class="answer-wrap">
-        <div class="hero">
-          <div class="hero-label">Monthly saving</div>
-          <div class="hero-value" id="heroMonthly">—</div>
-          <div class="hero-sub">Total reduction in cost of sale per month</div>
-        </div>
-        <div class="hero">
-          <div class="hero-label">Annual saving</div>
-          <div class="hero-value" id="heroAnnual">—</div>
-          <div class="hero-sub">Over 12 months, at their current volume</div>
-        </div>
+  <!-- Approval banner — only shown when one or more rates are below standard -->
+  <div class="approval-banner" id="approvalBanner" style="display: none;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <div>
+      <div class="approval-title"><span id="approvalCount">—</span> below standard — needs manager approval</div>
+      <ul class="approval-list" id="approvalList"></ul>
+    </div>
+  </div>
+
+  <!-- Primary heroes: Flipdish side (this is the rep's workbench) -->
+  <div class="workbench-hero-wrap">
+    <div class="answer-wrap">
+      <div class="hero neutral">
+        <div class="hero-label">Monthly Flipdish revenue</div>
+        <div class="hero-value" id="heroSNR">—</div>
+        <div class="hero-sub" id="heroSNRSub">Software Net Revenue per month</div>
+      </div>
+      <div class="hero emphasis">
+        <div class="hero-label">Year-1 total value</div>
+        <div class="hero-value" id="heroYear1">—</div>
+        <div class="hero-sub">Monthly Flipdish revenue × 12</div>
       </div>
     </div>
-    <div class="answer-group">
-      <h3>For Flipdish
-        <span class="group-sub">What this deal is worth to us</span>
-      </h3>
-      <div class="answer-wrap">
-        <div class="hero neutral">
-          <div class="hero-label">Monthly Flipdish revenue</div>
-          <div class="hero-value" id="heroSNR">—</div>
-          <div class="hero-sub" id="heroSNRSub">Software Net Revenue per month</div>
-        </div>
-        <div class="hero emphasis">
-          <div class="hero-label">Year-1 total value</div>
-          <div class="hero-value" id="heroYear1">—</div>
-          <div class="hero-sub">Monthly Flipdish revenue × 12</div>
-        </div>
-      </div>
-      <!-- Optional amber tile, only shown when new revenue > 0 -->
-      <div class="answer-wrap" id="heroNewRevWrap" style="margin-top: 12px; display: none;">
-        <div class="hero warm">
-          <div class="hero-label">New monthly revenue</div>
-          <div class="hero-value" id="heroNewRev">—</div>
-          <div class="hero-sub">From products the prospect doesn't have today</div>
-        </div>
+    <!-- Optional amber tile — only shown when new revenue > 0 -->
+    <div class="answer-wrap" id="heroNewRevWrap" style="margin-top: 12px; display: none;">
+      <div class="hero warm">
+        <div class="hero-label">New monthly revenue</div>
+        <div class="hero-value" id="heroNewRev">—</div>
+        <div class="hero-sub">From products the prospect doesn't have today</div>
       </div>
     </div>
+  </div>
+
+  <!-- Compact FYI for customer savings — demoted (goes on the external page) -->
+  <div class="customer-fyi" id="customerFyiWrap" style="display: none;">
+    <span class="customer-fyi-head">FYI — customer savings</span>
+    <span class="customer-fyi-pair"><span class="fyi-label">Monthly</span><span class="fyi-value" id="heroMonthly">—</span></span>
+    <span class="customer-fyi-pair"><span class="fyi-label">Annual</span><span class="fyi-value" id="heroAnnual">—</span></span>
+    <div class="customer-fyi-foot">This is what the customer one-pager will show them. Appears once current setup is filled in.</div>
   </div>
 
   <div class="narrative-wrap">
@@ -1059,6 +1137,10 @@
       <button type="button" class="btn" id="emailBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         Email the summary
+      </button>
+      <button type="button" class="btn btn-salesforce" id="customerOnePagerBtn" disabled title="Coming soon — will generate a polished customer-facing one-pager from this deal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Generate customer one-pager<span class="btn-coming-soon-tag">SOON</span>
       </button>
       <button type="button" class="btn btn-salesforce" id="salesforceBtn" disabled title="Coming soon — will push this deal to Salesforce">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -1395,7 +1477,6 @@
       });
       scheduleSave();
       recompute();
-      checkFloors();
     }
   }
 
@@ -1472,41 +1553,66 @@
   }
 
   // ---------- below-floor warnings ----------
+  // Returns an array of {label, current, standard, unit} for every rate/fee/sub
+  // that's below the country standard. Also flips the per-field amber warnings.
   function checkFloors() {
     var m = PRICE_TABLE[prospect.country] || PRICE_TABLE.UK;
-    function warn(id, current, standard) {
-      var el = $(id); if (!el) return;
+    var flags = [];
+    function check(id, current, standard, label, unit) {
+      var el = $(id);
       var n = parseFloat(current);
       var s = parseFloat(standard);
       var below = !isNaN(n) && !isNaN(s) && n < s;
-      el.style.display = below ? '' : 'none';
+      if (el) el.style.display = below ? '' : 'none';
+      if (below) flags.push({ label: label, current: n, standard: s, unit: unit });
     }
     if ($('includeOO').checked) {
-      warn('fdOORateWarn', $('fdOORate').value, m.oo.rate);
-      warn('fdOOEndUserFeeWarn', $('fdOOEndUserFee').value, m.oo.endUserFee);
+      check('fdOORateWarn', $('fdOORate').value, m.oo.rate, 'OO processing rate', '%');
+      check('fdOOEndUserFeeWarn', $('fdOOEndUserFee').value, m.oo.endUserFee, 'OO end-user fee', '$');
       var ooSubStd = (prospect.ooSubType === 'web') ? m.oo.webSub : m.oo.webAppSub;
-      warn('fdOOSubWarn', $('fdOOSub').value, ooSubStd);
+      check('fdOOSubWarn', $('fdOOSub').value, ooSubStd, 'OO subscription', '$');
     }
     if ($('includePOS').checked) {
-      warn('fdPOSRateWarn', $('fdPOSRate').value, m.pos.rate);
-      warn('fdPOSTransFeeWarn', $('fdPOSTransFee').value, m.pos.transFee);
-      warn('fdPOSSubWarn', $('fdPOSSub').value, m.pos.sub);
+      check('fdPOSRateWarn', $('fdPOSRate').value, m.pos.rate, 'POS processing rate', '%');
+      check('fdPOSTransFeeWarn', $('fdPOSTransFee').value, m.pos.transFee, 'POS per-txn fee', '$');
+      check('fdPOSSubWarn', $('fdPOSSub').value, m.pos.sub, 'POS subscription (per site)', '$');
     }
     if ($('includeKiosk').checked) {
-      warn('fdKioskRateWarn', $('fdKioskRate').value, m.kiosk.rate);
-      warn('fdKioskTransFeeWarn', $('fdKioskTransFee').value, m.kiosk.transFee);
-      warn('fdKioskSubWarn', $('fdKioskSub').value, m.kiosk.sub);
+      check('fdKioskRateWarn', $('fdKioskRate').value, m.kiosk.rate, 'Kiosk processing rate', '%');
+      check('fdKioskTransFeeWarn', $('fdKioskTransFee').value, m.kiosk.transFee, 'Kiosk per-txn fee', '$');
+      check('fdKioskSubWarn', $('fdKioskSub').value, m.kiosk.sub, 'Kiosk subscription (per unit)', '$');
     }
     if ($('includeQROP').checked) {
-      warn('fdQROPRateWarn', $('fdQROPRate').value, m.qrop.rate);
-      warn('fdQROPTransFeeWarn', $('fdQROPTransFee').value, m.qrop.transFee);
+      check('fdQROPRateWarn', $('fdQROPRate').value, m.qrop.rate, 'QROP processing rate', '%');
+      check('fdQROPTransFeeWarn', $('fdQROPTransFee').value, m.qrop.transFee, 'QROP per-txn fee', '$');
       var qropStd = $('includePOS').checked ? m.qrop.subBundle : m.qrop.sub;
-      warn('fdQROPSubWarn', $('fdQROPSub').value, qropStd);
+      check('fdQROPSubWarn', $('fdQROPSub').value, qropStd, 'QROP subscription' + ($('includePOS').checked ? ' (bundle)' : ''), '$');
     }
     if ($('includeFMM').checked) {
       var tierMap = { A: m.fmm.tierA, B: m.fmm.tierB, C: m.fmm.tierC, D: m.fmm.tierD };
-      warn('fdFMMSubWarn', $('fdFMMSub').value, tierMap[prospect.fmmTier || 'A']);
+      check('fdFMMSubWarn', $('fdFMMSub').value, tierMap[prospect.fmmTier || 'A'], 'FMM tier ' + (prospect.fmmTier || 'A') + ' subscription', '$');
     }
+    return flags;
+  }
+
+  // Populate the approval banner based on checkFloors() output.
+  function renderApprovalBanner(flags) {
+    var banner = $('approvalBanner');
+    if (!flags || flags.length === 0) {
+      banner.style.display = 'none';
+      return;
+    }
+    banner.style.display = '';
+    $('approvalCount').textContent = flags.length + (flags.length === 1 ? ' rate' : ' rates');
+    var list = $('approvalList');
+    var html = '';
+    flags.forEach(function (f) {
+      var curStr = f.unit === '%' ? (f.current + '%') : fmtMoney(f.current, f.current % 1 ? 2 : 0);
+      var stdStr = f.unit === '%' ? (f.standard + '%') : fmtMoney(f.standard, f.standard % 1 ? 2 : 0);
+      html += '<li><strong>' + escapeHtml(f.label) + '</strong>: ' +
+              curStr + ' offered vs ' + stdStr + ' standard</li>';
+    });
+    list.innerHTML = html;
   }
 
   // ---------- formatters ----------
@@ -1659,15 +1765,13 @@
     var totalLines = savingsLines.concat(newRevLines);
     var annualSaving = monthlySaving * 12;
 
-    // Heroes — dual story (Customer + Flipdish)
+    // Primary heroes — Flipdish revenue story (this is the rep's workbench)
     var hasAny = totalLines.length > 0;
-    $('heroMonthly').textContent = hasAny ? fmtMoney(monthlySaving) : '—';
-    $('heroAnnual').textContent  = hasAny ? fmtMoney(annualSaving) : '—';
     $('heroSNR').textContent     = hasAny ? fmtMoney(monthlySNR) : '—';
     $('heroYear1').textContent   = hasAny ? fmtMoney(monthlySNR * 12) : '—';
 
-    // Optional "new monthly revenue" tile (only if there's revenue from products the
-    // prospect doesn't currently have)
+    // Optional "new monthly revenue" tile — only if there's revenue from products
+    // the prospect doesn't currently have
     if (monthlyNewRev > 0) {
       $('heroNewRevWrap').style.display = '';
       $('heroNewRev').textContent = fmtMoney(monthlyNewRev);
@@ -1677,11 +1781,32 @@
       $('heroSNRSub').textContent = 'Software Net Revenue per month';
     }
 
+    // Demoted customer-savings FYI strip — only shown when there ARE savings lines
+    // (i.e. the rep has filled in at least one piece of current setup)
+    if (savingsLines.length > 0) {
+      $('customerFyiWrap').style.display = '';
+      $('heroMonthly').textContent = fmtMoney(monthlySaving);
+      $('heroAnnual').textContent  = fmtMoney(annualSaving);
+    } else {
+      $('customerFyiWrap').style.display = 'none';
+      $('heroMonthly').textContent = '—';
+      $('heroAnnual').textContent  = '—';
+    }
+
+    // Approval banner — sum of every rate/fee/sub that's below country standard
+    var flags = checkFloors();
+    renderApprovalBanner(flags);
+
     // Narrative — honour override if the rep has edited the story
     if (prospect.narrativeOverride) {
       $('narrative').innerHTML = prospect.narrativeOverride;
     } else {
-      renderNarrative(savingsLines, newRevLines, monthlySaving, annualSaving, monthlySNR, monthlyNewRev);
+      renderNarrative({
+        savingsLines: savingsLines, newRevLines: newRevLines,
+        monthlySaving: monthlySaving, annualSaving: annualSaving,
+        monthlySNR: monthlySNR, monthlyNewRev: monthlyNewRev,
+        flags: flags
+      });
     }
     // Reset button only shows when an override exists
     $('resetNarrativeBtn').style.display = prospect.narrativeOverride ? '' : 'none';
@@ -1690,55 +1815,60 @@
     renderBreakdown(totalLines, monthlySaving);
   }
 
-  function renderNarrative(savingsLines, newRevLines, monthlySaving, annualSaving, monthlySNR, monthlyNewRev) {
+  // Internal deal brief — this is the REP'S summary, not the customer pitch.
+  // The customer-facing narrative lives on the external one-pager.
+  function renderNarrative(ctx) {
     var el = $('narrative');
-    var hasAnything = (savingsLines && savingsLines.length) || (newRevLines && newRevLines.length);
+    var savingsLines = ctx.savingsLines || [];
+    var newRevLines = ctx.newRevLines || [];
+    var hasAnything = savingsLines.length || newRevLines.length;
     if (!hasAnything) {
-      el.innerHTML = 'Fill in the current setup and Flipdish proposal above — the deal story appears here.';
+      el.innerHTML = 'Fill in the Flipdish proposal above — the deal brief appears here once you\'ve picked products and entered rates.';
       return;
     }
     var name = prospect.name || 'This prospect';
     var country = { UK: 'UK', IE: 'Ireland', US: 'USA', ES: 'Spain' }[prospect.country] || prospect.country;
+    var locs = prospect.locations || 1;
     var parts = [];
 
-    // ---- Part 1: the customer savings story (only if there are savings lines) ----
-    if (savingsLines && savingsLines.length) {
-      if (monthlySaving > 0) {
-        parts.push('<strong>' + escapeHtml(name) + '</strong> currently pays more than they need to for their ordering and payments stack. Switching to Flipdish brings their monthly cost down by <strong>' + fmtMoney(monthlySaving) + '</strong> — <strong>' + fmtMoney(annualSaving) + ' a year</strong>.');
-      } else if (monthlySaving < 0) {
-        parts.push('Heads up: on the numbers above, Flipdish would <strong>cost ' + escapeHtml(name) + ' ' + fmtMoney(Math.abs(monthlySaving)) + '/month more</strong> than their current setup. Either the proposed rates need to come down, or the conversation needs to be about product value (growth, ops, customer data) rather than price.');
+    // ---- Header line: who, where, size ----
+    var sizeLabel = locs === 1 ? 'single-site' : (locs + '-site');
+    parts.push('<strong>' + escapeHtml(name) + '</strong> — ' + sizeLabel + ' deal in ' + escapeHtml(country) + '.');
+
+    // ---- Scope line: which products are in ----
+    var scopeParts = [];
+    savingsLines.concat(newRevLines).forEach(function (l) { scopeParts.push(escapeHtml(l.label)); });
+    if (scopeParts.length) {
+      parts.push('<strong>Scope:</strong> ' + scopeParts.join(', ') + '.');
+    }
+
+    // ---- The Flipdish value line — what this deal is worth to us ----
+    var flipdishLine = '<strong>Flipdish value:</strong> ' + fmtMoney(ctx.monthlySNR) + '/mo in Software Net Revenue, ' + fmtMoney(ctx.monthlySNR * 12) + ' Year-1 total.';
+    if (ctx.monthlyNewRev > 0) {
+      flipdishLine += ' ' + fmtMoney(ctx.monthlyNewRev) + '/mo of that is new revenue from products they don\'t have today.';
+    }
+    parts.push(flipdishLine);
+
+    // ---- Approval flags line — when rates are below floor ----
+    if (ctx.flags && ctx.flags.length) {
+      var flagBits = ctx.flags.map(function (f) {
+        var curStr = f.unit === '%' ? (f.current + '%') : fmtMoney(f.current, f.current % 1 ? 2 : 0);
+        var stdStr = f.unit === '%' ? (f.standard + '%') : fmtMoney(f.standard, f.standard % 1 ? 2 : 0);
+        return escapeHtml(f.label) + ' (' + curStr + ' vs ' + stdStr + ' standard)';
+      });
+      parts.push('<strong>⚠ Below floor:</strong> ' + flagBits.join('; ') + '. Manager approval required.');
+    }
+
+    // ---- Customer savings line (only when rep has filled in current setup) ----
+    if (savingsLines.length && ctx.monthlySaving !== 0) {
+      if (ctx.monthlySaving > 0) {
+        parts.push('<strong>Customer pitch angle:</strong> they save ' + fmtMoney(ctx.monthlySaving) + '/mo (' + fmtMoney(ctx.annualSaving) + '/yr) vs their current stack.');
       } else {
-        parts.push('On the numbers above, Flipdish matches their current cost exactly — so the conversation becomes about value, not price.');
+        parts.push('<strong>Watch-out:</strong> on current numbers Flipdish would cost them ' + fmtMoney(Math.abs(ctx.monthlySaving)) + '/mo more than today. Pitch on product value, not price.');
       }
-
-      // Per-line colour commentary — list the biggest saver / biggest cost increase
-      var sorted = savingsLines.slice().sort(function (a, b) { return b.delta - a.delta; });
-      if (sorted.length >= 2) {
-        var top = sorted[0];
-        var bottom = sorted[sorted.length - 1];
-        var topPart = top.delta > 0
-          ? ('the biggest win is <strong>' + fmtMoney(top.delta) + '/mo</strong> on ' + escapeHtml(top.label))
-          : ('nothing in the current stack is actually cheaper on Flipdish — the closest is ' + escapeHtml(top.label));
-        if (bottom.delta < 0 && bottom !== top) {
-          parts.push('Breakdown: ' + topPart + ', while <strong>' + escapeHtml(bottom.label) + '</strong> would cost <strong>' + fmtMoney(Math.abs(bottom.delta)) + '/mo more</strong> than today.');
-        } else {
-          parts.push('Breakdown: ' + topPart + '.');
-        }
-      }
+    } else if (newRevLines.length && !savingsLines.length) {
+      parts.push('<em>No current-setup info entered — customer savings won\'t appear on the one-pager unless Section 3 is filled in.</em>');
     }
-
-    // ---- Part 2: the new-products story (only if there's new revenue) ----
-    if (newRevLines && newRevLines.length && monthlyNewRev > 0) {
-      var newLabels = newRevLines.map(function (l) { return escapeHtml(l.label); });
-      var newList;
-      if (newLabels.length === 1) newList = newLabels[0];
-      else if (newLabels.length === 2) newList = newLabels.join(' and ');
-      else newList = newLabels.slice(0, -1).join(', ') + ' and ' + newLabels[newLabels.length - 1];
-      parts.push('On top of that, the deal adds <strong>' + newList + '</strong> — products ' + escapeHtml(name) + ' doesn\'t have today, worth <strong>' + fmtMoney(monthlyNewRev) + '/mo</strong> in new Flipdish revenue.');
-    }
-
-    // ---- Part 3: the Flipdish value line — always shows ----
-    parts.push('For Flipdish, this deal is worth <strong>' + fmtMoney(monthlySNR) + '/month</strong> — a <strong>' + fmtMoney(monthlySNR * 12) + ' Year-1 total</strong> from ' + escapeHtml(country) + '.');
 
     el.innerHTML = parts.join(' ');
   }
@@ -1806,8 +1936,8 @@
       '#fdFMMSub'
     );
     allInputs.forEach(function (el) {
-      el.addEventListener('input', function () { recompute(); checkFloors(); scheduleSave(); });
-      el.addEventListener('change', function () { recompute(); checkFloors(); scheduleSave(); });
+      el.addEventListener('input', function () { recompute(); scheduleSave(); });
+      el.addEventListener('change', function () { recompute(); scheduleSave(); });
     });
 
     // Toggle helper — on toggle, apply standards + visibility + recompute
@@ -1818,7 +1948,6 @@
         // Toggling POS can change QROP's bundle status
         if (productKey === 'pos' && $('includeQROP').checked) applyStandardsForProduct('qrop', /*force*/ true);
         recompute();
-        checkFloors();
         scheduleSave();
       });
     }
@@ -1835,7 +1964,6 @@
         updateSubTypeButtons();
         applyStandardsForProduct('oo', /*force*/ true);
         recompute();
-        checkFloors();
         scheduleSave();
       });
     });
@@ -1847,7 +1975,6 @@
         updateFMMTierButtons();
         applyStandardsForProduct('fmm', /*force*/ true);
         recompute();
-        checkFloors();
         scheduleSave();
       });
     });
@@ -1936,6 +2063,41 @@
     $('salesforceBtn').addEventListener('click', function () {
       alert('Salesforce push is coming soon — this will create or update the Opportunity with all the deal numbers from this page.');
     });
+
+    // ---- Generate customer one-pager (disabled / coming soon) ----
+    $('customerOnePagerBtn').addEventListener('click', function () {
+      alert('The customer one-pager is coming next — it\'ll generate a polished, prospect-facing version of this deal from the numbers on this page.');
+    });
+
+    // ---- Collapsible Section 3 (Current setup) ----
+    var setupCard = $('currentSetupCard');
+    var setupBtn = $('toggleCurrentSetup');
+    var setupLabel = $('toggleCurrentSetupLabel');
+    var setupChevron = $('toggleCurrentSetupChevron');
+    function setCurrentSetupExpanded(expanded) {
+      setupCard.style.display = expanded ? '' : 'none';
+      setupBtn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      setupLabel.textContent = expanded ? 'Hide current setup' : 'Show current setup';
+      setupChevron.classList.toggle('expanded', expanded);
+    }
+    setupBtn.addEventListener('click', function () {
+      var currentlyOpen = setupCard.style.display !== 'none';
+      setCurrentSetupExpanded(!currentlyOpen);
+    });
+    // If the prospect already has any current-setup data, auto-expand on load
+    function hasAnyCurrentSetup() {
+      var ids = ['curOOProvider','curOOCommission','curOOGmv',
+                 'curPOSProvider','curPOSRate','curPOSTransFee','curPOSSub','curPOSGmv','curPOSTransactions',
+                 'curKioskProvider','curKioskRate','curKioskTransFee','curKioskSub','curKioskGmv','curKioskTransactions','curKioskCount',
+                 'curQROPProvider','curQROPRate','curQROPTransFee','curQROPSub','curQROPGmv','curQROPTransactions',
+                 'curFMMProvider','curFMMSub'];
+      for (var i = 0; i < ids.length; i++) {
+        var el = $(ids[i]);
+        if (el && el.value && el.value.trim() !== '') return true;
+      }
+      return false;
+    }
+    setCurrentSetupExpanded(hasAnyCurrentSetup());
 
     // Delete
     $('deleteBtn').addEventListener('click', function () {
