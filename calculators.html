@@ -94,27 +94,27 @@
 
   /* ---------- Hero (compact) ---------- */
   .hero {
-    padding: 22px 28px 14px;
+    padding: 28px 28px 16px;
     max-width: 1120px;
     margin: 0 auto;
     width: 100%;
     display: flex;
     align-items: baseline;
-    gap: 18px;
+    gap: 22px;
     flex-wrap: wrap;
   }
   h1 {
     font-family: 'Domine', serif;
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 700;
     color: var(--venice-blue);
     margin: 0;
-    letter-spacing: -0.4px;
+    letter-spacing: -0.5px;
     line-height: 1.15;
     flex: 0 0 auto;
   }
   .lede {
-    font-size: 14px;
+    font-size: 14.5px;
     color: var(--muted);
     margin: 0;
     line-height: 1.5;
@@ -186,7 +186,7 @@
   .grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
+    gap: 18px;
   }
   @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
@@ -202,11 +202,11 @@
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 14px;
-    padding: 14px 16px 14px 20px;
+    padding: 18px 20px 18px 22px;
     box-shadow: var(--shadow);
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
     transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
     text-decoration: none;
     color: inherit;
@@ -241,9 +241,9 @@
     gap: 10px;
   }
   .tile-icon {
-    width: 34px;
-    height: 34px;
-    border-radius: 9px;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
     background: var(--fam-soft);
     color: var(--fam);
     display: flex;
@@ -251,7 +251,7 @@
     justify-content: center;
     flex-shrink: 0;
   }
-  .tile-icon svg { width: 18px; height: 18px; }
+  .tile-icon svg { width: 20px; height: 20px; }
 
   .badge {
     font-size: 10px;
@@ -273,35 +273,36 @@
 
   .tile-title {
     font-family: 'Domine', serif;
-    font-size: 15px;
+    font-size: 16.5px;
     font-weight: 600;
     color: var(--ink);
     margin: 0;
-    letter-spacing: -0.1px;
+    letter-spacing: -0.15px;
     line-height: 1.25;
   }
   .tile-desc {
-    font-size: 12.5px;
+    font-size: 13.5px;
     color: var(--muted);
-    line-height: 1.45;
+    line-height: 1.5;
     margin: 0;
     flex: 1;
-    /* Cap to two lines so very long descriptions don't blow the tile out */
+    /* Allow up to three lines so descriptions don't get cut off with an
+       awkward "..." — plenty of room without blowing the tile out. */
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
   .tile-cta {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    font-size: 12.5px;
+    gap: 6px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--fam);
-    margin-top: 2px;
+    margin-top: 4px;
   }
-  .tile-cta svg { transition: transform .15s ease; width: 12px; height: 12px; }
+  .tile-cta svg { transition: transform .15s ease; width: 13px; height: 13px; }
   .tile:hover .tile-cta svg { transform: translateX(4px); }
 
   /* ---------- Top-level section grouping (Deal Room, Calculators) ---------- */

@@ -61,7 +61,7 @@
 
   /* ---------- Hero ---------- */
   .hero {
-    padding: 72px 28px 24px;
+    padding: 44px 28px 18px;
     max-width: 1120px;
     margin: 0 auto;
     width: 100%;
@@ -69,70 +69,70 @@
   }
   .eyebrow {
     display: inline-block;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     letter-spacing: 1.4px;
     text-transform: uppercase;
     color: var(--science-blue);
     background: var(--soft-blue);
-    padding: 6px 14px;
+    padding: 5px 12px;
     border-radius: 999px;
-    margin-bottom: 18px;
+    margin-bottom: 14px;
   }
   h1 {
     font-family: 'Domine', serif;
-    font-size: 56px;
+    font-size: 42px;
     font-weight: 700;
     color: var(--venice-blue);
-    margin: 0 0 14px;
-    letter-spacing: -1px;
-    line-height: 1.1;
+    margin: 0 0 10px;
+    letter-spacing: -0.6px;
+    line-height: 1.12;
     background: linear-gradient(90deg, var(--venice-blue) 0%, var(--science-blue) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
   }
   .lede {
-    font-size: 18px;
+    font-size: 16px;
     color: var(--muted);
-    max-width: 640px;
+    max-width: 600px;
     margin: 0 auto;
     line-height: 1.55;
   }
 
   /* ---------- Two-door grid ---------- */
   .doors-wrap {
-    max-width: 1120px;
+    max-width: 1080px;
     margin: 0 auto;
-    padding: 40px 28px 64px;
+    padding: 28px 28px 48px;
     width: 100%;
     flex: 1;
   }
   .doors {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 24px;
+    gap: 20px;
   }
   @media (max-width: 760px) {
-    .doors { grid-template-columns: 1fr; gap: 18px; }
+    .doors { grid-template-columns: 1fr; gap: 16px; }
   }
 
-  /* ---------- Door (giant tile) ---------- */
+  /* ---------- Door (top-level nav tile) ---------- */
   .door {
     --accent: var(--muted);
     --accent-soft: var(--soft-blue);
     position: relative;
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 22px;
-    padding: 36px 32px 32px;
+    border-radius: 18px;
+    padding: 26px 28px 24px;
     box-shadow: var(--shadow);
     text-decoration: none;
     color: inherit;
     display: flex;
     flex-direction: column;
-    gap: 18px;
-    min-height: 360px;
+    gap: 14px;
+    min-height: 240px;
     transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
     overflow: hidden;
   }
@@ -140,11 +140,11 @@
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
-    height: 6px;
+    height: 5px;
     background: var(--accent);
   }
   .door:hover {
-    transform: translateY(-4px);
+    transform: translateY(-3px);
     box-shadow: var(--shadow-hover);
     border-color: var(--accent);
   }
@@ -152,34 +152,34 @@
   .door[data-door="deal"]   { --accent: var(--door-deal); --accent-soft: var(--door-deal-soft); }
 
   .door-icon-wrap {
-    width: 76px; height: 76px;
-    border-radius: 20px;
+    width: 56px; height: 56px;
+    border-radius: 14px;
     background: var(--accent-soft);
     color: var(--accent);
     display: flex;
     align-items: center;
     justify-content: center;
   }
-  .door-icon-wrap svg { width: 38px; height: 38px; }
+  .door-icon-wrap svg { width: 28px; height: 28px; }
 
   .door-eyebrow {
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 700;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--accent);
   }
   .door h2 {
     font-family: 'Domine', serif;
-    font-size: 30px;
+    font-size: 24px;
     font-weight: 700;
     color: var(--ink);
     margin: 0;
-    letter-spacing: -0.4px;
+    letter-spacing: -0.3px;
     line-height: 1.15;
   }
   .door-desc {
-    font-size: 15px;
+    font-size: 14px;
     color: var(--muted);
     line-height: 1.55;
     margin: 0;
@@ -188,11 +188,11 @@
   .door-cta {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    font-size: 15px;
+    gap: 6px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--accent);
-    margin-top: 4px;
+    margin-top: 2px;
   }
   .door-cta svg { transition: transform .15s ease; }
   .door:hover .door-cta svg { transform: translateX(5px); }
@@ -223,14 +223,14 @@
   @media (max-width: 640px) {
     .topbar { padding: 12px 18px; }
     .topbar-tag { display: none; }
-    .hero { padding: 48px 18px 18px; }
-    h1 { font-size: 38px; letter-spacing: -0.5px; }
-    .lede { font-size: 16px; }
-    .doors-wrap { padding: 28px 18px 40px; }
-    .door { padding: 28px 24px 26px; min-height: auto; }
-    .door h2 { font-size: 24px; }
-    .door-icon-wrap { width: 64px; height: 64px; border-radius: 16px; }
-    .door-icon-wrap svg { width: 32px; height: 32px; }
+    .hero { padding: 32px 18px 14px; }
+    h1 { font-size: 32px; letter-spacing: -0.4px; }
+    .lede { font-size: 15px; }
+    .doors-wrap { padding: 22px 18px 32px; }
+    .door { padding: 22px 20px 22px; min-height: auto; }
+    .door h2 { font-size: 22px; }
+    .door-icon-wrap { width: 50px; height: 50px; border-radius: 13px; }
+    .door-icon-wrap svg { width: 26px; height: 26px; }
   }
 </style>
 </head>
@@ -253,7 +253,7 @@
 <section class="hero">
   <span class="eyebrow">For the commercial team</span>
   <h1>Deal Desk</h1>
-  <p class="lede">One home for everything you need to size, price and present a Flipdish deal. Pick a door.</p>
+  <p class="lede">One home for everything you need to size, price and present a Flipdish deal.</p>
 </section>
 
 <main class="doors-wrap">
