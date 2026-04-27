@@ -373,21 +373,16 @@
 
     if (p.includeOO) {
       var ooGmv = N(c.ooGmv);
-      var ooAov = N(c.ooAov) > 0 ? N(c.ooAov) : N(c.aov);
-      var ooTxn = ooAov > 0 ? (ooGmv / ooAov) : 0;
       var curOOSub      = N(c.ooSub);
       var curOOProcRate = N(c.ooProcessingRate) / 100;
-      var curOOTransFee = N(c.ooTransFee);
-      var curOOTotal = (ooGmv * curOOProcRate) + (ooTxn * curOOTransFee) + curOOSub;
-      var fdOOProcRate = N(f.ooProcessingRate) / 100;
-      var fdOOTransFee = N(f.ooTransFee);
-      var fdOOCommRate = N(f.ooCommissionRate) / 100;
-      var fdOOTotal = (ooGmv * fdOOProcRate) + (ooTxn * fdOOTransFee) + (ooGmv * fdOOCommRate);
+      var curOOTotal    = (ooGmv * curOOProcRate) + curOOSub;
+      var fdOOProcRate  = N(f.ooProcessingRate) / 100;
+      var fdOOTotal     = ooGmv * fdOOProcRate;
       result.ooSavings = curOOTotal - fdOOTotal;
       result.detail.oo = {
-        gmv: ooGmv, aov: ooAov, txn: ooTxn,
-        curSub: curOOSub, curProcPct: N(c.ooProcessingRate), curTransFee: curOOTransFee,
-        fdProcPct: N(f.ooProcessingRate), fdTransFee: fdOOTransFee, fdCommPct: N(f.ooCommissionRate),
+        gmv: ooGmv,
+        curSub: curOOSub, curProcPct: N(c.ooProcessingRate),
+        fdProcPct: N(f.ooProcessingRate),
         curTotal: curOOTotal, fdTotal: fdOOTotal,
         provider: c.ooProvider || ''
       };

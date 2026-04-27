@@ -208,6 +208,70 @@
     margin-left: 8px;
   }
 
+  /* ---------- Live commercial check ---------- */
+  /* Panel at the top of Step 3. Shows the rep how the proposed package
+     stacks up against Flipdish's commercial floors: SNR, op margin,
+     hardware payback, and how much hardware discount is still on the
+     table. Updates live as the rep edits the proposal cards below. */
+  .live-check {
+    border-left: 4px solid var(--green-strong);
+    background: linear-gradient(180deg, #FAFEFC 0%, #F4FAF7 100%);
+  }
+  .live-check.warn {
+    border-left-color: var(--amber-strong);
+    background: linear-gradient(180deg, #FFFCF0 0%, #FBF5DC 100%);
+  }
+  .live-check.bust {
+    border-left-color: var(--red-strong);
+    background: linear-gradient(180deg, #FCF5F4 0%, #F8E6E3 100%);
+  }
+  .live-check h3.live-check-title {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px; padding-bottom: 8px;
+  }
+  .live-check-status {
+    font-family: 'Roboto', sans-serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    background: var(--green-soft); color: var(--green-strong);
+    padding: 3px 10px; border-radius: 999px;
+  }
+  .live-check.warn .live-check-status { background: var(--amber-soft); color: var(--amber-strong); }
+  .live-check.bust .live-check-status { background: var(--red-soft); color: var(--red-strong); }
+  .live-check-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  @media (max-width: 760px) { .live-check-grid { grid-template-columns: repeat(2, 1fr); } }
+  .live-tile {
+    background: rgba(255,255,255,0.6);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .live-label {
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .live-value {
+    font-family: 'Domine', Georgia, serif;
+    font-size: 20px; font-weight: 700;
+    color: var(--flipdish-dark);
+    line-height: 1.15;
+  }
+  .live-value.warn { color: var(--amber-strong); }
+  .live-value.bust { color: var(--red-strong); }
+  .live-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .live-check-rationale {
+    font-size: 13px; line-height: 1.5; color: var(--flipdish-dark);
+    background: rgba(255,255,255,0.7);
+    border-radius: 8px; padding: 10px 12px;
+  }
+  .live-check-rationale strong { color: var(--flipdish-blue-dark); }
+
   /* ---------- Document upload stub ---------- */
   /* Visible UI placeholder. Extraction wires up later — this is just the
      drag-target so reps know it's coming. */
@@ -483,6 +547,9 @@
     <label class="scope-toggle" data-toggle="includePOS">
       <input type="checkbox" id="includePOS"> POS / In-store
     </label>
+    <label class="scope-toggle" data-toggle="includeKiosk">
+      <input type="checkbox" id="includeKiosk"> Kiosk
+    </label>
   </div>
 
   <!-- OO current — direct ordering provider comparison -->
@@ -506,12 +573,8 @@
         <input id="curOOSub" type="number" min="0" step="1" placeholder="e.g. 79">
       </div>
       <div class="field">
-        <label>Payment processing fee % <span class="hint">(card processing)</span></label>
-        <input id="curOOProcessingRate" type="number" min="0" step="0.05" placeholder="e.g. 1.6">
-      </div>
-      <div class="field">
-        <label>Per-transaction fee</label>
-        <input id="curOOTransFee" type="number" min="0" step="0.01" placeholder="e.g. 0.05">
+        <label>Processing % <span class="hint">(or commission % — same thing in OO)</span></label>
+        <input id="curOOProcessingRate" type="number" min="0" step="0.1" placeholder="e.g. 7">
       </div>
     </div>
   </div>
@@ -559,7 +622,43 @@
   <!-- ===================== STEP 3 — FLIPDISH PROPOSAL ===================== -->
   <div class="step">
     <span class="num">3</span>
-    <span class="text">Flipdish proposal <span class="sub">Copy the key numbers from your SFDC quote — don't rebuild the quote here</span></span>
+    <span class="text">Flipdish proposal <span class="sub">Pre-filled with list rates · use the live check to see how much you can discount before breaking the deal</span></span>
+  </div>
+
+  <!-- Live commercial check — top of Step 3.
+       Shows the rep how the current proposed numbers stack up against
+       Flipdish's commercial floors: SNR per site, hardware payback,
+       and the discount headroom remaining. Updates live as the rep
+       edits the proposal cards below. -->
+  <div class="card live-check" id="liveCheck">
+    <h3 class="live-check-title">Live commercial check
+      <span class="live-check-status" id="liveStatus">Healthy</span>
+    </h3>
+    <div class="live-check-grid">
+      <div class="live-tile">
+        <div class="live-label">SNR per site / mo</div>
+        <div class="live-value" id="liveSnr">—</div>
+        <div class="live-sub" id="liveSnrSub">Floor: £350/mo</div>
+      </div>
+      <div class="live-tile">
+        <div class="live-label">Op margin / mo</div>
+        <div class="live-value" id="liveOpMargin">—</div>
+        <div class="live-sub">SNR × 0.75 (Finance haircut)</div>
+      </div>
+      <div class="live-tile">
+        <div class="live-label">Hardware payback</div>
+        <div class="live-value" id="livePayback">—</div>
+        <div class="live-sub" id="livePaybackSub">Target: ≤ 3 months</div>
+      </div>
+      <div class="live-tile">
+        <div class="live-label">Max hardware discount</div>
+        <div class="live-value" id="liveMaxHwDiscount">—</div>
+        <div class="live-sub" id="liveHwSub">at 3-month payback envelope</div>
+      </div>
+    </div>
+    <div class="live-check-rationale" id="liveRationale">
+      Fill in the customer's current commercial reality (Step 2) and the proposed rates below to see how the deal stacks up against Flipdish's commercial floors.
+    </div>
   </div>
 
   <!-- OO proposal -->
@@ -567,16 +666,8 @@
     <h3>Direct ordering — Flipdish proposal <span class="hint" style="font-weight:400;font-size:13px;color:var(--muted);margin-left:8px;">(software sub goes in the Bundle card below)</span></h3>
     <div class="grid3">
       <div class="field">
-        <label>Flipdish payment processing fee %</label>
-        <input id="fdOOProcessingRate" type="number" min="0" step="0.05" placeholder="e.g. 1.4">
-      </div>
-      <div class="field">
-        <label>Flipdish per-transaction fee</label>
-        <input id="fdOOTransFee" type="number" min="0" step="0.01" placeholder="e.g. 0.03">
-      </div>
-      <div class="field">
-        <label>OR Flipdish commission % <span class="hint">(only if commission-only deal)</span></label>
-        <input id="fdOOCommissionRate" type="number" min="0" step="0.1" placeholder="e.g. 7">
+        <label>Flipdish OO processing % <span class="hint" id="fdOOProcessingHint">List: 5%</span></label>
+        <input id="fdOOProcessingRate" type="number" min="0" step="0.1" placeholder="e.g. 5">
       </div>
     </div>
   </div>
@@ -586,27 +677,45 @@
     <h3>POS — Flipdish proposal</h3>
     <div class="grid3">
       <div class="field">
-        <label>Proposed merchant rate %</label>
-        <input id="fdPosRate" type="number" min="0" step="0.05" placeholder="e.g. 1.4">
+        <label>Proposed merchant rate % <span class="hint" id="fdPosRateHint">List: 1.2%</span></label>
+        <input id="fdPosRate" type="number" min="0" step="0.05" placeholder="e.g. 1.2">
       </div>
       <div class="field">
-        <label>Proposed per-transaction fee</label>
-        <input id="fdPosTransFee" type="number" min="0" step="0.01" placeholder="e.g. 0.03">
+        <label>Proposed per-transaction fee <span class="hint" id="fdPosTransFeeHint">List: £0.10</span></label>
+        <input id="fdPosTransFee" type="number" min="0" step="0.01" placeholder="e.g. 0.10">
       </div>
     </div>
   </div>
 
+  <!-- Kiosk proposal -->
+  <div class="card" id="card-proposalKiosk" style="display:none;">
+    <h3>Kiosk — Flipdish proposal <span class="hint" style="font-weight:400;font-size:13px;color:var(--muted);margin-left:8px;">(monthly sub rolls up into the Bundle card below; hardware rolls up into the Bundle hardware one-off)</span></h3>
+    <div class="grid3">
+      <div class="field">
+        <label>Number of kiosks</label>
+        <input id="fdKioskCount" type="number" min="0" step="1" placeholder="e.g. 2">
+      </div>
+      <div class="field">
+        <label>Kiosk hardware list (per unit) <span class="hint" id="fdKioskHwHint">List: £1,500</span></label>
+        <input id="fdKioskHwListPerUnit" type="number" min="0" step="50" placeholder="e.g. 1500">
+      </div>
+      <div class="field">
+        <label>Kiosk monthly sub (per unit) <span class="hint" id="fdKioskSubHint">List: £79</span></label>
+        <input id="fdKioskSubPerUnit" type="number" min="0" step="1" placeholder="e.g. 79">
+      </div>
+    </div>
+  </div>
 
   <!-- Bundle (always shown) -->
   <div class="card">
-    <h3>Bundle — Flipdish proposal</h3>
+    <h3>Bundle — Flipdish proposal <span class="hint" style="font-weight:400;font-size:13px;color:var(--muted);margin-left:8px;">(roll-up of all subs + hardware on the deal — pre-fills from list rates as you toggle scope; tweak to match SFDC quote)</span></h3>
     <div class="grid3">
       <div class="field">
-        <label>Total Flipdish monthly subscription <span class="hint">(from SFDC — the all-in number on the quote)</span></label>
+        <label>Total Flipdish monthly subscription <span class="hint" id="fdMonthlySubHint">all-in figure</span></label>
         <input id="fdMonthlySub" type="number" min="0" step="1" placeholder="e.g. 399">
       </div>
       <div class="field">
-        <label>Hardware one-off (net of subsidy)</label>
+        <label>Hardware one-off (net of subsidy) <span class="hint" id="fdHardwareHint">all hardware</span></label>
         <input id="fdHardwareOneOff" type="number" min="0" step="1" placeholder="e.g. 1800">
       </div>
       <div class="field">
@@ -783,35 +892,39 @@
   function blankProspect() {
     return {
       id: newId(),
-      schema: 3,            // 3 = direct-ordering comparison + hardware costs
+      schema: 4,            // 4 = adds Kiosk lever + simplified OO (single processing %)
       name: '',
       country: 'UK',
       locations: 1,
       contactName: '',
       ownerName: '',
-      // Which levers are in play? Deal Room compares cost-replacement on the
-      // two recurring streams; value-generation products (Phone AI, Kiosk,
-      // FMM, etc.) live in their own standalone calcs and roll up into
-      // flipdish.monthlySub here.
+      // Which levers are in play? Deal Room compares cost-replacement on
+      // OO + POS, plus pricing for Kiosk (which doesn't displace anything
+      // — it's a new offering for the customer, but the discount optimiser
+      // needs to know about it for the hardware payback math).
       includeOO: false,
       includePOS: false,
+      includeKiosk: false,
       // Current reality — the customer's full cost picture today
       current: {
         // Direct ordering (compared against Foodhub, Mealzo, OrderYoyo, etc.)
+        // OO has a single rate field — "Processing %" / "commission %" are
+        // the same thing in OO. No separate per-txn fee charged to merchant.
         ooProvider: '', ooGmv: '', ooAov: '', ooSub: '',
-        ooProcessingRate: '', ooTransFee: '',
-        // In-store (POS + Kiosk) — includes monthly hardware cost
+        ooProcessingRate: '',
+        // In-store — current POS + any current monthly hardware cost
         posProvider: '', cashierCount: '', posGmv: '', aov: '',
         posRate: '', posTransFee: '', posSub: '', posHardwareMonthly: ''
       },
-      // Flipdish proposal (from SFDC)
+      // Flipdish proposal (pre-fills from list rates on country change)
       flipdish: {
-        // Direct ordering — three options so the rep can model either
-        // a sub+processing+txn deal OR a commission-only deal
-        ooProcessingRate: '', ooTransFee: '', ooCommissionRate: '',
+        // OO: single rate field (sub rolls up into bundle.monthlySub)
+        ooProcessingRate: '',
         // POS
         posRate: '', posTransFee: '',
-        // Bundle (folds in any add-on product subs — Phone AI, Kiosk, etc.)
+        // Kiosk (new in v4)
+        kioskCount: '', kioskHwListPerUnit: '', kioskSubPerUnit: '',
+        // Bundle (rep totals up subs + hardware here, pre-fills on scope)
         monthlySub: '', hardwareOneOff: '', contractMonths: 36
       },
       createdAt: Date.now(),
@@ -837,12 +950,16 @@
     return p;
   }
 
-  // Migrate older saved deals into the current schema (3).
-  //   v1 (product-picker) → v3: drop catalogue, map overlapping fields
-  //   v2 (marketplace-style OO commission) → v3: drop ooCommission and notes,
-  //       remap fdOORate (was Flipdish commission %) into fdOOCommissionRate
+  // Migrate older saved deals into the current schema (4).
+  //   v1 (product-picker) → v4: drop catalogue, map overlapping fields
+  //   v2 (marketplace-style OO commission) → v4: drop ooCommission/notes/
+  //       OO per-txn fields; remap fdOORate (was Flipdish commission %)
+  //       into ooProcessingRate (since OO is now a single-rate model)
+  //   v3 (direct-ordering comparison + hardware) → v4: drop OO per-txn
+  //       fields, drop ooCommissionRate (use ooProcessingRate as the one
+  //       rate field — they're the same thing in OO context)
   function migrateProspect(p) {
-    if (p.schema === 3) return p;
+    if (p.schema === 4) return p;
     var migrated = blankProspect();
     migrated.id = p.id;
     migrated.name = p.name || '';
@@ -854,6 +971,7 @@
     migrated.updatedAt = p.updatedAt || Date.now();
     migrated.includeOO = !!p.includeOO;
     migrated.includePOS = !!p.includePOS;
+    migrated.includeKiosk = !!p.includeKiosk;
     var c = p.current || {};
     var f = p.flipdish || {};
     // OO — keep provider + revenue, drop marketplace commission
@@ -874,9 +992,10 @@
     }
     // Phone fields are no longer migrated — Phone AI lives in its own
     // standalone calc, and its monthly sub rolls up into bundle.monthlySub.
-    // Flipdish proposal — old fdOORate was the commission %, so move it
-    // into the new ooCommissionRate slot
-    migrated.flipdish.ooCommissionRate = f.ooRate || '';
+    // Flipdish proposal — OO is now a single-rate model; pull whatever
+    // the older record had into ooProcessingRate. v3 had ooCommissionRate
+    // separately; v2 had a single fdOORate; v1 might have either.
+    migrated.flipdish.ooProcessingRate = f.ooProcessingRate || f.ooCommissionRate || f.ooRate || '';
     migrated.flipdish.posRate          = f.posRate || '';
     migrated.flipdish.posTransFee      = f.posTransFee || '';
     migrated.flipdish.monthlySub       = f.monthlySub || '';
@@ -890,7 +1009,11 @@
       });
       if (rollup > 0) migrated.flipdish.monthlySub = String(rollup);
     }
-    migrated.schema = 3;
+    // Kiosk fields are new in v4 — start blank
+    migrated.flipdish.kioskCount         = '';
+    migrated.flipdish.kioskHwListPerUnit = '';
+    migrated.flipdish.kioskSubPerUnit    = '';
+    migrated.schema = 4;
     return migrated;
   }
 
@@ -908,15 +1031,15 @@
 
     $('includeOO').checked = !!prospect.includeOO;
     $('includePOS').checked = !!prospect.includePOS;
+    $('includeKiosk').checked = !!prospect.includeKiosk;
 
     var c = prospect.current || {};
-    // OO — direct ordering provider comparison
+    // OO — direct ordering provider comparison (single rate, no per-txn)
     $('curOOProvider').value       = c.ooProvider || '';
     $('curOOGmv').value            = c.ooGmv || '';
     $('curOOAov').value             = c.ooAov || '';
     $('curOOSub').value             = c.ooSub || '';
     $('curOOProcessingRate').value  = c.ooProcessingRate || '';
-    $('curOOTransFee').value        = c.ooTransFee || '';
     // POS / in-store
     $('curPosProvider').value         = c.posProvider || '';
     $('curCashierCount').value        = c.cashierCount || '';
@@ -929,13 +1052,14 @@
 
     var f = prospect.flipdish || {};
     $('fdOOProcessingRate').value  = f.ooProcessingRate || '';
-    $('fdOOTransFee').value         = f.ooTransFee || '';
-    $('fdOOCommissionRate').value   = f.ooCommissionRate || '';
-    $('fdPosRate').value     = f.posRate || '';
-    $('fdPosTransFee').value = f.posTransFee || '';
-    $('fdMonthlySub').value      = f.monthlySub || '';
-    $('fdHardwareOneOff').value  = f.hardwareOneOff || '';
-    $('fdContractMonths').value  = f.contractMonths || 36;
+    $('fdPosRate').value            = f.posRate || '';
+    $('fdPosTransFee').value        = f.posTransFee || '';
+    $('fdKioskCount').value         = f.kioskCount || '';
+    $('fdKioskHwListPerUnit').value = f.kioskHwListPerUnit || '';
+    $('fdKioskSubPerUnit').value    = f.kioskSubPerUnit || '';
+    $('fdMonthlySub').value         = f.monthlySub || '';
+    $('fdHardwareOneOff').value     = f.hardwareOneOff || '';
+    $('fdContractMonths').value     = f.contractMonths || 36;
 
     setCountry(prospect.country || 'UK', /*skipSave*/true);
     applyScopeVisibility();
@@ -944,7 +1068,7 @@
 
   // ---------- Collect: form -> prospect object ----------
   function collect() {
-    prospect.schema = 3;
+    prospect.schema = 4;
     prospect.name = val('prospectName').trim();
     prospect.locations = Math.max(1, Math.round(num('locations')) || 1);
     prospect.contactName = val('contactName').trim();
@@ -952,15 +1076,16 @@
 
     prospect.includeOO = $('includeOO').checked;
     prospect.includePOS = $('includePOS').checked;
+    prospect.includeKiosk = $('includeKiosk').checked;
 
     prospect.current = {
-      // OO — direct ordering provider
+      // OO — direct ordering provider (single rate, no per-txn — Will: 0.8p/c
+      // Stripe cost is Flipdish-side, never surfaces to the merchant)
       ooProvider:       val('curOOProvider').trim(),
       ooGmv:            val('curOOGmv'),
       ooAov:            val('curOOAov'),
       ooSub:            val('curOOSub'),
       ooProcessingRate: val('curOOProcessingRate'),
-      ooTransFee:       val('curOOTransFee'),
       // POS / in-store
       posProvider:        val('curPosProvider').trim(),
       cashierCount:       val('curCashierCount'),
@@ -972,30 +1097,87 @@
       posHardwareMonthly: val('curPosHardwareMonthly')
     };
     prospect.flipdish = {
-      ooProcessingRate: val('fdOOProcessingRate'),
-      ooTransFee:       val('fdOOTransFee'),
-      ooCommissionRate: val('fdOOCommissionRate'),
-      posRate:          val('fdPosRate'),
-      posTransFee:      val('fdPosTransFee'),
-      monthlySub:       val('fdMonthlySub'),
-      hardwareOneOff:   val('fdHardwareOneOff'),
-      contractMonths:   Math.max(1, Math.round(num('fdContractMonths')) || 36)
+      ooProcessingRate:    val('fdOOProcessingRate'),
+      posRate:             val('fdPosRate'),
+      posTransFee:         val('fdPosTransFee'),
+      kioskCount:          val('fdKioskCount'),
+      kioskHwListPerUnit:  val('fdKioskHwListPerUnit'),
+      kioskSubPerUnit:     val('fdKioskSubPerUnit'),
+      monthlySub:          val('fdMonthlySub'),
+      hardwareOneOff:      val('fdHardwareOneOff'),
+      contractMonths:      Math.max(1, Math.round(num('fdContractMonths')) || 36)
     };
     prospect.updatedAt = Date.now();
   }
 
   // ---------- Scope visibility ----------
   function applyScopeVisibility() {
-    $('card-currentOO').style.display   = $('includeOO').checked  ? '' : 'none';
-    $('card-currentPOS').style.display  = $('includePOS').checked ? '' : 'none';
-    $('card-proposalOO').style.display  = $('includeOO').checked  ? '' : 'none';
-    $('card-proposalPOS').style.display = $('includePOS').checked ? '' : 'none';
+    $('card-currentOO').style.display    = $('includeOO').checked    ? '' : 'none';
+    $('card-currentPOS').style.display   = $('includePOS').checked   ? '' : 'none';
+    $('card-proposalOO').style.display   = $('includeOO').checked    ? '' : 'none';
+    $('card-proposalPOS').style.display  = $('includePOS').checked   ? '' : 'none';
+    $('card-proposalKiosk').style.display = $('includeKiosk').checked ? '' : 'none';
+    // Kiosk has no Step 2 current card — most customers don't have kiosks
+    // today, so there's nothing to displace. Kiosk only appears in the
+    // proposal (Step 3) since it's a NEW offering Flipdish is selling.
+
+    // When a scope toggle is turned ON, pre-fill the matching Flipdish
+    // proposal fields with list rates (if the rep hasn't already typed
+    // anything). This way the rep starts from a defensible no-discount
+    // baseline and discounts down — instead of starting from blank.
+    prefillProposalFromList();
+
     // Pill highlight
     document.querySelectorAll('.scope-toggle').forEach(function (el) {
       var id = el.dataset.toggle;
       var cb = $(id);
       if (cb) el.classList.toggle('on', cb.checked);
     });
+  }
+
+  // ---------- Pre-fill Flipdish proposal from list rates ----------
+  // Called whenever scope or country changes. Only fills fields that are
+  // currently blank — never overwrites a value the rep has typed in.
+  function prefillProposalFromList() {
+    var rates = LIST_RATES[prospect.country] || LIST_RATES.UK;
+    function fillIfBlank(id, value) {
+      var el = $(id);
+      if (!el) return;
+      if (el.value === '' || el.value == null) el.value = String(value);
+    }
+    if ($('includeOO').checked && rates.oo) {
+      fillIfBlank('fdOOProcessingRate', rates.oo.processing * 100);  // 0.05 → 5
+    }
+    if ($('includePOS').checked && rates.pos) {
+      fillIfBlank('fdPosRate',     rates.pos.processing * 100);  // 0.012 → 1.2
+      fillIfBlank('fdPosTransFee', rates.pos.txnFee);
+    }
+    if ($('includeKiosk').checked && rates.kiosk) {
+      fillIfBlank('fdKioskHwListPerUnit', rates.kiosk.hardware);
+      fillIfBlank('fdKioskSubPerUnit',    rates.kiosk.sub);
+    }
+    // Update the per-field "List: X" hint labels to reflect the active market.
+    updateListHints();
+  }
+
+  // Update the small "List: X" hints next to each Flipdish proposal input
+  // so the rep can always see what list price they're discounting from.
+  function updateListHints() {
+    var rates = LIST_RATES[prospect.country] || LIST_RATES.UK;
+    var c = CCY[prospect.country];
+    function setHint(id, text) {
+      var el = $(id);
+      if (el) el.textContent = text;
+    }
+    if (rates.oo)    setHint('fdOOProcessingHint', 'List: ' + (rates.oo.processing * 100) + '%');
+    if (rates.pos) {
+      setHint('fdPosRateHint',     'List: ' + (rates.pos.processing * 100) + '%');
+      setHint('fdPosTransFeeHint', 'List: ' + c + rates.pos.txnFee.toFixed(2));
+    }
+    if (rates.kiosk) {
+      setHint('fdKioskHwHint',  'List: ' + c + rates.kiosk.hardware.toLocaleString());
+      setHint('fdKioskSubHint', 'List: ' + c + rates.kiosk.sub);
+    }
   }
 
   // ---------- Country ----------
@@ -1008,6 +1190,10 @@
     // POS isn't sold in US or ES — hide the toggle and force-disable any
     // existing selection so the page doesn't show a stale POS card.
     applyMarketAvailability();
+    // Refresh "List: X" hints to show the new market's list rates and
+    // pre-fill any blank Flipdish proposal fields with this market's list.
+    updateListHints();
+    if (!isInitializing) prefillProposalFromList();
     recompute();
     if (!skipSave) scheduleSave();
   }
@@ -1042,14 +1228,23 @@
   }
 
   // ---------- Calculation core ----------
-  // Returns an object with all the numbers the renderer needs.
+  // Returns the customer-facing value story (savings vs current setup) AND
+  // the Flipdish-side commercial picture (SNR, op margin, hardware payback)
+  // that drives the Live Commercial Check panel at the top of Step 3.
   function computeValueStory(p) {
     var result = {
-      ooSavings: 0,    // monthly
-      posSavings: 0,   // monthly
+      ooSavings: 0,    // monthly customer saving on OO
+      posSavings: 0,   // monthly customer saving on POS
+      kioskMonthlyCost: 0,  // Kiosk is a new line item — no displacement
       fdMonthlySub: 0,
       hardwareOneOff: 0,
       contractMonths: 36,
+      // Flipdish-side commercial picture (drives the Live Check panel)
+      snrPerSite: 0,
+      opMarginMonthly: 0,
+      paybackEnvelope: 0,
+      maxHardwareDiscount: 0,
+      paybackMonths: null,
       // details for formulas
       detail: {}
     };
@@ -1057,31 +1252,31 @@
     var c = p.current || {};
     var f = p.flipdish || {};
     var N = function (v) { var x = parseFloat(v); return isNaN(x) ? 0 : x; };
+    var rates = LIST_RATES[p.country] || LIST_RATES.UK;
+    var locations = Math.max(1, Math.round(N(p.locations)) || 1);
 
     // -------- OO savings --------
-    // Direct ordering provider comparison: customer's full current cost
-    // (sub + processing + per-txn) vs Flipdish's cost (processing + per-txn,
-    // OR commission %). The Flipdish sub rolls up into bundle.monthlySub
-    // so we don't double-count it here.
+    // Direct ordering provider comparison. OO has a single rate field
+    // ("Processing %" — same thing as commission % in OO). No per-txn fee
+    // charged to the merchant (the 0.8p/c Stripe cost is Flipdish-side).
+    // Flipdish OO sub rolls up into bundle.monthlySub so we don't
+    // double-count it on this lever.
     if (p.includeOO) {
       var ooGmv = N(c.ooGmv);
       var ooAov = N(c.ooAov) > 0 ? N(c.ooAov) : N(c.aov);  // fallback to in-store AOV
       var ooTxn = ooAov > 0 ? (ooGmv / ooAov) : 0;
-      // Customer's CURRENT direct ordering total
-      var curOOSub        = N(c.ooSub);
-      var curOOProcRate   = N(c.ooProcessingRate) / 100;
-      var curOOTransFee   = N(c.ooTransFee);
-      var curOOTotal = (ooGmv * curOOProcRate) + (ooTxn * curOOTransFee) + curOOSub;
-      // FLIPDISH OO cost — supports both sub+processing+txn and commission-only
-      var fdOOProcRate    = N(f.ooProcessingRate) / 100;
-      var fdOOTransFee    = N(f.ooTransFee);
-      var fdOOCommRate    = N(f.ooCommissionRate) / 100;
-      var fdOOTotal = (ooGmv * fdOOProcRate) + (ooTxn * fdOOTransFee) + (ooGmv * fdOOCommRate);
+      // Customer's CURRENT direct ordering total = current sub + processing
+      var curOOSub      = N(c.ooSub);
+      var curOOProcRate = N(c.ooProcessingRate) / 100;
+      var curOOTotal    = (ooGmv * curOOProcRate) + curOOSub;
+      // FLIPDISH OO cost = processing only (sub is in bundle)
+      var fdOOProcRate  = N(f.ooProcessingRate) / 100;
+      var fdOOTotal     = ooGmv * fdOOProcRate;
       result.ooSavings = curOOTotal - fdOOTotal;
       result.detail.oo = {
         gmv: ooGmv, aov: ooAov, txn: ooTxn,
-        curSub: curOOSub, curProcPct: N(c.ooProcessingRate), curTxnFee: curOOTransFee,
-        fdProcPct: N(f.ooProcessingRate), fdTxnFee: fdOOTransFee, fdCommPct: N(f.ooCommissionRate),
+        curSub: curOOSub, curProcPct: N(c.ooProcessingRate),
+        fdProcPct: N(f.ooProcessingRate),
         curTotal: curOOTotal, fdTotal: fdOOTotal,
         curProvider: c.ooProvider || ''
       };
@@ -1111,15 +1306,30 @@
       };
     }
 
+    // -------- Kiosk (new offering — no current displacement) --------
+    if (p.includeKiosk) {
+      var kioskCount    = Math.max(0, Math.round(N(f.kioskCount)) || 0);
+      var kioskHwPerUnit = N(f.kioskHwListPerUnit);
+      var kioskSubPerUnit = N(f.kioskSubPerUnit);
+      result.kioskMonthlyCost = kioskCount * kioskSubPerUnit;
+      result.detail.kiosk = {
+        count: kioskCount,
+        hwPerUnit: kioskHwPerUnit,
+        subPerUnit: kioskSubPerUnit,
+        hwTotal: kioskCount * kioskHwPerUnit,
+        subTotal: kioskCount * kioskSubPerUnit
+      };
+    }
+
     // -------- Bundle --------
     result.fdMonthlySub = N(f.monthlySub);
     result.hardwareOneOff = N(f.hardwareOneOff);
     result.contractMonths = Math.max(1, Math.round(N(f.contractMonths)) || 36);
 
-    // -------- Net monthly --------
+    // -------- Net monthly (customer perspective) --------
     // Net = (OO savings + POS savings) − Flipdish bundle subscription
-    // Bundle sub captures any add-on product subs (Phone AI, Kiosk, FMM,
-    // QROP, etc.) the rep has rolled into the all-in number from SFDC.
+    // Kiosk is a new line item (no displacement) — already captured
+    // inside fdMonthlySub if the rep has rolled it up there.
     result.netMonthly =
         result.ooSavings
       + result.posSavings
@@ -1128,15 +1338,76 @@
     result.annualValue = (result.netMonthly * 12) - result.hardwareOneOff;
     result.contractValue = (result.netMonthly * result.contractMonths) - result.hardwareOneOff;
 
+    // -------- Flipdish-side commercial picture (drives Live Check panel) --------
+    // SNR (Software Net Revenue) per site = total Flipdish recurring revenue
+    // minus card processing cost, minus current sub-equivalent on the cust side.
+    // We compute Flipdish's gross take across all active levers using LIST
+    // rates (so the live check shows what the *proposed* deal earns).
+    var snrTotal = 0;
+    // OO contribution: Flipdish OO processing × revenue, less Stripe cost,
+    // plus whatever portion of bundle sub is OO's share.
+    if (p.includeOO && rates.oo) {
+      var d = result.detail.oo || {};
+      var ooRev = d.gmv || 0;
+      var ooTxn = d.txn || 0;
+      var ooProcRev = ooRev * (N(f.ooProcessingRate) / 100);
+      var ooCardCost = (ooRev * (rates.ooCardPct || 0)) + (ooTxn * (rates.ooCardFix || 0));
+      // OO sub portion of bundle: assume rates.oo.sub as nominal share
+      result.detail.snrOO = ooProcRev - ooCardCost + rates.oo.sub;
+      snrTotal += result.detail.snrOO;
+    }
+    if (p.includePOS && rates.pos) {
+      var pd = result.detail.pos || {};
+      var posRev = pd.gmv || 0;
+      var posTxn = pd.txn || 0;
+      var posProcRev = posRev * (N(f.posRate) / 100);
+      var posTxnRev = posTxn * N(f.posTransFee);
+      var posCardCost = (posRev * (rates.posCardPct || 0)) + (posTxn * (rates.posCardFix || 0));
+      result.detail.snrPOS = posProcRev + posTxnRev - posCardCost + rates.pos.sub;
+      snrTotal += result.detail.snrPOS;
+    }
+    if (p.includeKiosk && rates.kiosk) {
+      // Kiosk has no per-txn revenue or card processing — it's pure sub.
+      var kCount = Math.max(0, Math.round(N(f.kioskCount)) || 0);
+      var kSub = N(f.kioskSubPerUnit) || rates.kiosk.sub;
+      result.detail.snrKiosk = kCount * kSub;
+      snrTotal += result.detail.snrKiosk;
+    }
+    var snrPerSite = snrTotal / locations;
+    result.snrPerSite = snrPerSite;
+    result.opMarginMonthly = snrTotal * GUARDRAILS.opMarginFactor;
+
+    // Hardware payback envelope under cross-subsidy rule (option b):
+    // POS + Kiosk SNR fully eligible; 25% of OO SNR is also eligible.
+    var eligibleSnr =
+        (result.detail.snrPOS   || 0)
+      + (result.detail.snrKiosk || 0)
+      + ((result.detail.snrOO || 0) * GUARDRAILS.ooSnrCrossSubsidy);
+    var eligibleOpMargin = eligibleSnr * GUARDRAILS.opMarginFactor;
+    result.paybackEnvelope = eligibleOpMargin * GUARDRAILS.paybackTargetMonths;
+
+    // Total hardware list = POS hardware (in fdHardwareOneOff if entered)
+    // + Kiosk hardware (count × per-unit list). For the live check we use
+    // the PROPOSED hardware figure (rep's bundle entry) plus any kiosk
+    // hardware that might not be rolled in yet.
+    var hardwareForCheck = N(f.hardwareOneOff);
+    // Don't double-count kiosk hardware if the rep has already added it.
+    // For simplicity: if rep entered fdHardwareOneOff, trust them.
+    result.maxHardwareDiscount = Math.max(0, result.paybackEnvelope);
+    if (hardwareForCheck > 0 && result.opMarginMonthly > 0) {
+      var eligibleOpMargin2 = eligibleOpMargin || 0.0001;
+      result.paybackMonths = hardwareForCheck / eligibleOpMargin2;
+    }
+
     return result;
   }
 
   // ---------- Narrative generator ----------
   function narrativeFor(p, v) {
     var out = [];
-    var hasAnything = (p.includeOO || p.includePOS);
+    var hasAnything = (p.includeOO || p.includePOS || p.includeKiosk);
     if (!hasAnything) {
-      return '<p>Pick at least one lever above (Online Ordering or POS) to see the value story.</p>';
+      return '<p>Pick at least one lever above (Online Ordering, POS, or Kiosk) to see the value story.</p>';
     }
     var name = p.name || 'this customer';
     var ccy = CCY[p.country];
@@ -1224,8 +1495,99 @@
         ? fmtMoney(v.detail.pos.curTotal) + '/mo (today) − ' + fmtMoney(v.detail.pos.newTotal) + '/mo (Flipdish)'
         : '—');
 
+    // Live commercial check (top of Step 3)
+    renderLiveCheck(v);
+
     // Narrative
     $('narrativeBox').innerHTML = narrativeFor(prospect, v);
+  }
+
+  // Render the Live Commercial Check panel at the top of Step 3.
+  // Shows SNR per site, op margin, hardware payback, and how much hardware
+  // discount headroom remains. Sets warn/bust state on the panel based on
+  // whether SNR is above the £350/site floor and payback is ≤ 3 months.
+  function renderLiveCheck(v) {
+    var hasAnything = prospect.includeOO || prospect.includePOS || prospect.includeKiosk;
+    var panel = $('liveCheck');
+    var status = $('liveStatus');
+    var snrEl = $('liveSnr');
+    var opEl = $('liveOpMargin');
+    var pbEl = $('livePayback');
+    var pbSubEl = $('livePaybackSub');
+    var hwDiscEl = $('liveMaxHwDiscount');
+    var rationale = $('liveRationale');
+
+    panel.classList.remove('warn', 'bust');
+
+    if (!hasAnything) {
+      status.textContent = 'Awaiting inputs';
+      snrEl.textContent = '—';
+      opEl.textContent = '—';
+      pbEl.textContent = '—';
+      hwDiscEl.textContent = '—';
+      rationale.innerHTML = 'Pick at least one lever above (Online Ordering, POS, or Kiosk) and fill in the customer\'s current commercial reality to see how the deal stacks up against Flipdish\'s commercial floors.';
+      return;
+    }
+
+    var locations = Math.max(1, prospect.locations || 1);
+    var snr = v.snrPerSite || 0;
+    var op = v.opMarginMonthly || 0;
+    var paybackEnv = v.paybackEnvelope || 0;
+    var pbMonths = v.paybackMonths;
+    var floor = GUARDRAILS.snrFloorMonthly;
+
+    snrEl.textContent = fmtMoney(snr) + '/mo';
+    opEl.textContent  = fmtMoney(op) + '/mo';
+    hwDiscEl.textContent = fmtMoney(Math.max(0, paybackEnv));
+
+    // Determine status
+    var below = snr < floor;
+    var paybackBust = (pbMonths != null && pbMonths > GUARDRAILS.paybackTargetMonths);
+
+    snrEl.classList.toggle('warn', below);
+    snrEl.classList.toggle('bust', false);
+    if (below) snrEl.classList.add('bust');
+    $('liveSnrSub').textContent = below
+      ? 'Below ' + fmtMoney(floor) + ' floor — review pricing'
+      : 'Floor: ' + fmtMoney(floor) + '/mo · ' + fmtMoney(snr - floor) + ' headroom';
+
+    if (pbMonths == null) {
+      pbEl.textContent = '—';
+      pbEl.classList.remove('warn', 'bust');
+      pbSubEl.textContent = 'Enter hardware one-off to see payback';
+    } else {
+      pbEl.textContent = pbMonths.toFixed(1) + ' mo';
+      pbEl.classList.toggle('warn', pbMonths > 2 && pbMonths <= GUARDRAILS.paybackTargetMonths);
+      pbEl.classList.toggle('bust', paybackBust);
+      pbSubEl.textContent = paybackBust
+        ? 'Over ' + GUARDRAILS.paybackTargetMonths + '-month target'
+        : 'Target: ≤ ' + GUARDRAILS.paybackTargetMonths + ' months';
+    }
+
+    // Overall panel status
+    if (below || paybackBust) {
+      panel.classList.add('bust');
+      status.textContent = below && paybackBust ? 'Margin AND payback off' : (below ? 'Below SNR floor' : 'Payback over target');
+    } else if (snr < floor * 1.2 || (pbMonths != null && pbMonths > 2)) {
+      panel.classList.add('warn');
+      status.textContent = 'Tight';
+    } else {
+      status.textContent = 'Healthy';
+    }
+
+    // Rationale — explain the headroom
+    var bullets = [];
+    bullets.push('SNR per site at proposed rates: <strong>' + fmtMoney(snr) + '/mo</strong> (floor ' + fmtMoney(floor) + ').');
+    if (paybackEnv > 0) {
+      bullets.push('Hardware payback envelope (POS + Kiosk SNR + 25% of OO SNR, × 3 months): <strong>' + fmtMoney(paybackEnv) + '</strong>. That\'s the maximum hardware discount you can offer before payback breaches the 3-month target.');
+    }
+    if (paybackBust) {
+      bullets.push('<strong>Hardware payback at the proposed price exceeds 3 months</strong> — either lower the hardware price, or push for more recurring SNR (sub or processing).');
+    }
+    if (below) {
+      bullets.push('<strong>SNR per site is below the £' + floor + '/mo floor</strong> — tighten the discounts on subscription or processing rate.');
+    }
+    rationale.innerHTML = bullets.map(function(b) { return '<p style="margin:0 0 6px;">' + b + '</p>'; }).join('');
   }
 
   function renderStream(id, enabled, value, formula) {
@@ -1320,7 +1682,7 @@
       btn.addEventListener('click', function () { setCountry(btn.dataset.country); });
     });
     // Scope toggles
-    ['includeOO','includePOS'].forEach(function (id) {
+    ['includeOO','includePOS','includeKiosk'].forEach(function (id) {
       $(id).addEventListener('change', function () {
         applyScopeVisibility();
         scheduleSave();
@@ -1331,10 +1693,11 @@
     // Any input in the form: debounced save + recompute
     var allInputIds = [
       'prospectName','locations','contactName','ownerName',
-      'curOOProvider','curOOGmv','curOOAov','curOOSub','curOOProcessingRate','curOOTransFee',
+      'curOOProvider','curOOGmv','curOOAov','curOOSub','curOOProcessingRate',
       'curPosProvider','curCashierCount','curPosGmv','curAov','curPosRate','curPosTransFee','curPosSub','curPosHardwareMonthly',
-      'fdOOProcessingRate','fdOOTransFee','fdOOCommissionRate',
+      'fdOOProcessingRate',
       'fdPosRate','fdPosTransFee',
+      'fdKioskCount','fdKioskHwListPerUnit','fdKioskSubPerUnit',
       'fdMonthlySub','fdHardwareOneOff','fdContractMonths'
     ];
     allInputIds.forEach(function (id) {
@@ -1357,7 +1720,7 @@
     recompute();
     isInitializing = false;
     // If this is a brand-new prospect, don't auto-save an empty record
-    if (prospect.name || prospect.includeOO || prospect.includePOS) {
+    if (prospect.name || prospect.includeOO || prospect.includePOS || prospect.includeKiosk) {
       doSave();
     } else {
       updateSaveStamp();

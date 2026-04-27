@@ -345,15 +345,16 @@
         Number(f.monthlySub)        > 0 ||
         Number(f.ooRate)            > 0 ||  // legacy v2
         Number(f.ooProcessingRate)  > 0 ||
-        Number(f.ooCommissionRate)  > 0 ||
-        Number(f.ooTransFee)        > 0 ||
+        Number(f.ooCommissionRate)  > 0 ||  // legacy v3
         Number(f.posRate)           > 0 ||
+        Number(f.kioskCount)        > 0 ||  // v4: Kiosk
         Number(f.ooSub)             > 0 ||  // legacy v1
         Number(f.posSub)            > 0;    // legacy v1
     if (hasProposal) return { key: 'ready', label: 'Proposal ready' };
     var hasCurrent =
         Number(c.ooGmv)  > 0 ||
-        Number(c.posGmv) > 0;
+        Number(c.posGmv) > 0 ||
+        !!p.includeKiosk;
     if (hasCurrent) return { key: 'discovery', label: 'Discovery captured' };
     return { key: 'draft', label: 'Just started' };
   }
@@ -372,14 +373,8 @@
 
     if (p.includeOO) {
       var ooGmv = N(c.ooGmv);
-      var ooAov = N(c.ooAov) > 0 ? N(c.ooAov) : N(c.aov);
-      var ooTxn = ooAov > 0 ? (ooGmv / ooAov) : 0;
-      var curOO = (ooGmv * (N(c.ooProcessingRate) / 100))
-                + (ooTxn * N(c.ooTransFee))
-                + N(c.ooSub);
-      var fdOO  = (ooGmv * (N(f.ooProcessingRate) / 100))
-                + (ooTxn * N(f.ooTransFee))
-                + (ooGmv * (N(f.ooCommissionRate) / 100));
+      var curOO = (ooGmv * (N(c.ooProcessingRate) / 100)) + N(c.ooSub);
+      var fdOO  = ooGmv * (N(f.ooProcessingRate) / 100);
       monthly += (curOO - fdOO);
     }
     if (p.includePOS) {
