@@ -456,15 +456,18 @@
 
     if (p.includeOO) {
       var ooGmv = N(c.ooGmv);
+      var ooAov = N(c.ooAov) > 0 ? N(c.ooAov) : N(c.aov);
+      var ooTxn = ooAov > 0 ? (ooGmv / ooAov) : 0;
       var curOOSub      = N(c.ooSub);
       var curOOProcRate = N(c.ooProcessingRate) / 100;
-      var curOOTotal    = (ooGmv * curOOProcRate) + curOOSub;
+      var curOOTransFee = N(c.ooTransFee);
+      var curOOTotal    = (ooGmv * curOOProcRate) + (ooTxn * curOOTransFee) + curOOSub;
       var fdOOProcRate  = N(f.ooProcessingRate) / 100;
       var fdOOTotal     = ooGmv * fdOOProcRate;
       result.ooSavings = curOOTotal - fdOOTotal;
       result.detail.oo = {
         gmv: ooGmv,
-        curSub: curOOSub, curProcPct: N(c.ooProcessingRate),
+        curSub: curOOSub, curProcPct: N(c.ooProcessingRate), curTransFee: curOOTransFee,
         fdProcPct: N(f.ooProcessingRate),
         curTotal: curOOTotal, fdTotal: fdOOTotal,
         provider: c.ooProvider || ''
@@ -477,17 +480,16 @@
       var curRate = N(c.posRate) / 100, newRate = N(f.posRate) / 100;
       var curTxnFee = N(c.posTransFee), newTxnFee = N(f.posTransFee);
       var curSub = N(c.posSub);
-      var curHardware = N(c.posHardwareMonthly);
-      var curPosCost = (posGmv * curRate) + (posTxn * curTxnFee) + curSub + curHardware;
+      var curPosCost = (posGmv * curRate) + (posTxn * curTxnFee) + curSub;
       var fdPosCost  = (posGmv * newRate) + (posTxn * newTxnFee);
       result.posSavings = curPosCost - fdPosCost;
       result.detail.pos = {
         gmv: posGmv, txn: posTxn, aov: aov,
         curRate: N(c.posRate), newRate: N(f.posRate),
         curTxnFee: curTxnFee, newTxnFee: newTxnFee,
-        curSub: curSub, curHardware: curHardware,
+        curSub: curSub,
         curTotal: curPosCost, newTotal: fdPosCost,
-        provider: c.posProvider || '', cashierCount: N(c.cashierCount)
+        provider: c.posProvider || ''
       };
     }
     // Roll up per-product subs and hardware (schema 5+).
@@ -500,9 +502,8 @@
       totalHw  += N(f.posHardware);
     }
     if (p.includeKiosk) {
-      var kc = Math.max(0, Math.round(N(f.kioskCount)) || 0);
-      totalSub += kc * N(f.kioskSubPerUnit);
-      totalHw  += kc * N(f.kioskHwListPerUnit);
+      totalSub += N(f.kioskSub);
+      totalHw  += N(f.kioskHardware);
     }
     result.fdMonthlySub   = totalSub;
     result.hardwareOneOff = totalHw;
@@ -647,9 +648,12 @@
       youSubMonthly  += N(f.posSub) * locations;
     }
     if (p.includeKiosk && rates.kiosk) {
-      var kc = N(f.kioskCount);
-      listSubMonthly += rates.kiosk.sub * kc;
-      youSubMonthly  += N(f.kioskSubPerUnit) * kc;
+      // Kiosk uses totals directly; we don't know list sub for the
+      // customer's deal because count isn't tracked. Use the user's
+      // value as both list and yours (no compare row will render).
+      var kioskSubYou = N(f.kioskSub);
+      listSubMonthly += kioskSubYou;
+      youSubMonthly  += kioskSubYou;
     }
     if (listSubMonthly > 0 && youSubMonthly > 0) {
       totalListMonthly += listSubMonthly;
@@ -681,9 +685,13 @@
       youHardware  += N(f.posHardware);
     }
     if (p.includeKiosk && rates.kiosk) {
-      var kc2 = N(f.kioskCount);
-      listHardware += rates.kiosk.hardware * kc2;
-      youHardware  += N(f.kioskHwListPerUnit) * kc2;
+      // Kiosk uses totals directly. We don't know how many kiosks were
+      // priced, so we can't synthesise a per-unit list comparison.
+      // Show the user-entered total as both list and yours so the row
+      // appears with no discount unless the rep adjusted it manually.
+      var kioskHwYou = N(f.kioskHardware);
+      listHardware += kioskHwYou;
+      youHardware  += kioskHwYou;
     }
     if (listHardware > 0 && youHardware >= 0) {
       totalListOneOff += listHardware;

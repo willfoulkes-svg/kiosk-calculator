@@ -342,14 +342,16 @@
     var c = p.current  || {};
     var f = p.flipdish || {};
     var hasProposal =
-        Number(f.ooSub)             > 0 ||  // v5: per-product OO sub
-        Number(f.posSub)            > 0 ||  // v5: per-product POS sub
+        Number(f.ooSub)             > 0 ||  // per-product OO sub
+        Number(f.posSub)            > 0 ||  // per-product POS sub
+        Number(f.kioskSub)          > 0 ||  // v6: Kiosk total sub
+        Number(f.kioskHardware)     > 0 ||  // v6: Kiosk total hardware
         Number(f.monthlySub)        > 0 ||  // legacy v4 bundle
         Number(f.ooRate)            > 0 ||  // legacy v2
         Number(f.ooProcessingRate)  > 0 ||
         Number(f.ooCommissionRate)  > 0 ||  // legacy v3
         Number(f.posRate)           > 0 ||
-        Number(f.kioskCount)        > 0;    // v4: Kiosk
+        Number(f.kioskCount)        > 0;    // legacy v5 Kiosk
     if (hasProposal) return { key: 'ready', label: 'Proposal ready' };
     var hasCurrent =
         Number(c.ooGmv)  > 0 ||
@@ -373,7 +375,11 @@
 
     if (p.includeOO) {
       var ooGmv = N(c.ooGmv);
-      var curOO = (ooGmv * (N(c.ooProcessingRate) / 100)) + N(c.ooSub);
+      var ooAov = N(c.ooAov) > 0 ? N(c.ooAov) : N(c.aov);
+      var ooTxn = ooAov > 0 ? (ooGmv / ooAov) : 0;
+      var curOO = (ooGmv * (N(c.ooProcessingRate) / 100))
+                + (ooTxn * N(c.ooTransFee))
+                + N(c.ooSub);
       var fdOO  = ooGmv * (N(f.ooProcessingRate) / 100);
       monthly += (curOO - fdOO);
     }
@@ -383,23 +389,17 @@
       var txn = aov > 0 ? (gmv / aov) : 0;
       var curPOS = (gmv * (N(c.posRate) / 100))
                  + (txn * N(c.posTransFee))
-                 + N(c.posSub)
-                 + N(c.posHardwareMonthly);
+                 + N(c.posSub);
       var fdPOS  = (gmv * (N(f.posRate) / 100))
                  + (txn * N(f.posTransFee));
       monthly += (curPOS - fdPOS);
     }
-    // Subtract the Flipdish total monthly sub (sum of per-product subs in
-    // v5+; falls back to legacy f.monthlySub for older saved deals that
-    // haven't been opened+migrated yet).
+    // Subtract the Flipdish total monthly sub (per-product subs in v6+).
     var locations = Math.max(1, Math.round(N(p.locations)) || 1);
     var totalSub = 0;
     if (p.includeOO)    totalSub += N(f.ooSub);
     if (p.includePOS)   totalSub += N(f.posSub) * locations;
-    if (p.includeKiosk) {
-      var kc = Math.max(0, Math.round(N(f.kioskCount)) || 0);
-      totalSub += kc * N(f.kioskSubPerUnit);
-    }
+    if (p.includeKiosk) totalSub += N(f.kioskSub);
     if (totalSub === 0 && N(f.monthlySub) > 0) totalSub = N(f.monthlySub);  // legacy
     monthly -= totalSub;
     return monthly * 12;
