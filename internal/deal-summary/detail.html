@@ -208,6 +208,48 @@
     margin-left: 8px;
   }
 
+  /* ---------- Document upload stub ---------- */
+  /* Visible UI placeholder. Extraction wires up later — this is just the
+     drag-target so reps know it's coming. */
+  .upload-card {
+    background: linear-gradient(180deg, #FAFCFE 0%, #F4F8FC 100%);
+    border: 1.5px dashed var(--flipdish-blue-line);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 14px;
+  }
+  .upload-grid {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 14px;
+    align-items: start;
+  }
+  .upload-icon {
+    width: 48px; height: 48px;
+    border-radius: 10px;
+    background: var(--flipdish-blue-light);
+    color: var(--flipdish-blue);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .upload-icon svg { width: 24px; height: 24px; }
+  .upload-title {
+    font-family: 'Domine', Georgia, serif;
+    font-size: 15px; font-weight: 600;
+    color: var(--flipdish-blue-dark);
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .badge-soon {
+    font-family: 'Roboto', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    background: var(--amber-soft); color: var(--amber-strong);
+    padding: 2px 8px; border-radius: 999px;
+  }
+  .upload-desc {
+    margin: 6px 0 0; font-size: 13px;
+    color: var(--muted); line-height: 1.5;
+  }
+
   /* ---------- Scope toggle row (which levers are in play) ---------- */
   .scope-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
   .scope-toggle {
@@ -407,6 +449,25 @@
   <div class="step">
     <span class="num">2</span>
     <span class="text">Their current commercial reality <span class="sub">What the customer processes and pays today</span></span>
+  </div>
+
+  <!-- Document upload stub — UI in place, extraction wires up later
+       alongside the Supabase migration. -->
+  <div class="card upload-card" id="card-uploadStub">
+    <div class="upload-grid">
+      <div class="upload-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <path d="M12 18v-6"/>
+          <polyline points="9 15 12 12 15 15"/>
+        </svg>
+      </div>
+      <div class="upload-text">
+        <div class="upload-title">Drop a current provider statement <span class="badge-soon">Coming soon</span></div>
+        <p class="upload-desc">Drop in a Foodhub, Mealzo, OrderYoyo, Toast, Square or Clover invoice/statement (PDF or image) and we'll read the rates and pre-fill the cards below. Until this is wired, fill in the numbers manually below — same fields, same outcome.</p>
+      </div>
+    </div>
   </div>
 
   <!-- Scope toggles — which levers are we playing with in this deal.
@@ -637,6 +698,59 @@
   var STORAGE_KEY = 'flipdishProspects';
   var CCY  = { UK: '£', IE: '€', US: '$', ES: '€' };
   var LOC  = { UK: 'United Kingdom', IE: 'Ireland', US: 'United States', ES: 'Spain' };
+
+  // ====================================================================
+  // FLIPDISH LIST RATES + COMMERCIAL GUARDRAILS
+  // --------------------------------------------------------------------
+  // Single source of truth for what Flipdish charges a standard customer
+  // and the commercial floors the discount optimiser must respect.
+  //
+  // Mirrored in /.auto-memory/reference_flipdish_list_rates.md — keep
+  // both in sync if Finance refreshes any number.
+  //
+  //   sub             — list monthly subscription
+  //   processing      — list percentage charged to merchant (decimal)
+  //   txnFee          — list per-transaction fee charged to merchant
+  //   hardwareStarter — list price for the standard hardware kit
+  //   posCardPct/Fix  — Flipdish's POS card-processing cost (Stripe)
+  //   ooCardPct/Fix   — Flipdish's OO card-processing cost (Stripe)
+  //
+  // Markets where a product isn't sold are set to null (e.g. POS in US/ES).
+  // ====================================================================
+  var LIST_RATES = {
+    UK: {
+      oo:    { sub: 99, processing: 0.05 },
+      pos:   { sub: 99, processing: 0.012, txnFee: 0.10, hardwareStarter: 799 },
+      kiosk: { sub: 79, hardware: 1500 },
+      posCardPct: 0.0070, posCardFix: 0.006,
+      ooCardPct:  0.0064, ooCardFix:  0.016
+    },
+    IE: {
+      oo:    { sub: 99, processing: 0.05 },
+      pos:   { sub: 99, processing: 0.012, txnFee: 0.10, hardwareStarter: 899 },
+      kiosk: { sub: 79, hardware: 1500 },
+      posCardPct: 0.0052, posCardFix: 0.008,
+      ooCardPct:  0.0048, ooCardFix:  0.018
+    },
+    US: {
+      oo:    { sub: 249, processing: 0.05 },
+      pos:   null,   // POS not sold in US
+      kiosk: { sub: 79, hardware: 2500 },
+      ooCardPct: 0.0255, ooCardFix: 0.018
+    },
+    ES: {
+      oo:    { sub: 99, processing: 0.05 },
+      pos:   null,   // POS not sold in ES
+      kiosk: { sub: 79, hardware: 1500 },
+      ooCardPct: 0.0051, ooCardFix: 0.018
+    }
+  };
+  var GUARDRAILS = {
+    opMarginFactor:      0.75,   // SNR × 0.75 = monthly op margin
+    paybackTargetMonths: 3,      // hardware payback envelope = 3 × eligible op margin
+    snrFloorMonthly:     350,    // per site — soft warning when crossed
+    ooSnrCrossSubsidy:   0.25    // 25% of monthly OO SNR offsets hardware payback (option b)
+  };
 
   // ---------- URL + id helpers ----------
   function getQueryParam(key) {
@@ -891,8 +1005,28 @@
     document.querySelectorAll('.country-pill').forEach(function (btn) {
       btn.classList.toggle('active', btn.dataset.country === code);
     });
+    // POS isn't sold in US or ES — hide the toggle and force-disable any
+    // existing selection so the page doesn't show a stale POS card.
+    applyMarketAvailability();
     recompute();
     if (!skipSave) scheduleSave();
+  }
+
+  // Show / hide product toggles based on market availability. Driven by the
+  // LIST_RATES table — if a product entry is null for the active country,
+  // its scope toggle is hidden and any existing selection is cleared so we
+  // don't leave a stale current/proposal card visible.
+  function applyMarketAvailability() {
+    var rates = LIST_RATES[prospect.country] || LIST_RATES.UK;
+    var posToggle = document.querySelector('.scope-toggle[data-toggle="includePOS"]');
+    if (posToggle) {
+      var posAvailable = !!rates.pos;
+      posToggle.style.display = posAvailable ? '' : 'none';
+      if (!posAvailable && $('includePOS').checked) {
+        $('includePOS').checked = false;
+        applyScopeVisibility();
+      }
+    }
   }
 
   // ---------- Formatters ----------
