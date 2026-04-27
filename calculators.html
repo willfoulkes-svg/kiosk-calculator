@@ -160,71 +160,6 @@
     width: 12px; height: 12px; opacity: 0.7;
   }
 
-  /* ---------- Filter chips ---------- */
-  .filter-wrap {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background: rgba(246,249,252,0.92);
-    backdrop-filter: saturate(180%) blur(10px);
-    -webkit-backdrop-filter: saturate(180%) blur(10px);
-    border-bottom: 1px solid var(--border);
-    padding: 12px 28px;
-    margin-top: 16px;
-  }
-  .filter-inner {
-    max-width: 1120px;
-    margin: 0 auto;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    align-items: center;
-  }
-  .filter-label {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-right: 6px;
-  }
-  .chip {
-    border: 1.5px solid var(--border);
-    background: #fff;
-    border-radius: 999px;
-    padding: 7px 14px;
-    font: inherit;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--ink);
-    cursor: pointer;
-    transition: all .15s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .chip .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 999px;
-    background: var(--muted);
-    display: inline-block;
-  }
-  .chip[data-family="all"] .dot { background: linear-gradient(135deg, #0074D9, #7C3AED); }
-  .chip[data-family="oo"] .dot { background: var(--fam-oo); }
-  .chip[data-family="pos"] .dot { background: var(--fam-pos); }
-  .chip[data-family="kiosk"] .dot { background: var(--fam-kiosk); }
-  .chip[data-family="combined"] .dot { background: var(--fam-combined); }
-  .chip[data-family="cross"] .dot { background: var(--fam-cross); }
-  .chip[data-family="phone"] .dot { background: var(--fam-phone); }
-  .chip:hover { border-color: var(--ink); }
-  .chip.active {
-    background: var(--ink);
-    border-color: var(--ink);
-    color: #fff;
-  }
-  .chip.active .dot { box-shadow: 0 0 0 2px rgba(255,255,255,0.25); }
-
   /* ---------- Grid ---------- */
   .grid-wrap {
     max-width: 1120px;
@@ -524,19 +459,6 @@
   </button>
 </div>
 
-<!-- Filter chips -->
-<div class="filter-wrap">
-  <div class="filter-inner">
-    <span class="filter-label">Filter</span>
-    <button class="chip active" data-family="all"><span class="dot"></span>All</button>
-    <button class="chip" data-family="oo"><span class="dot"></span>Online Ordering</button>
-    <button class="chip" data-family="pos"><span class="dot"></span>POS</button>
-    <button class="chip" data-family="kiosk"><span class="dot"></span>Kiosk</button>
-    <button class="chip" data-family="cross"><span class="dot"></span>Cross-product &amp; Renewal</button>
-    <button class="chip" data-family="phone"><span class="dot"></span>Phone AI</button>
-  </div>
-</div>
-
 <main class="grid-wrap">
 
   <!-- =================================================== -->
@@ -760,30 +682,15 @@
 </footer>
 
 <script>
-  // Filter chip behavior
-  const chips = document.querySelectorAll('.chip');
-
-  // Two groups of tiles: External + Internal calculators.
-  const externalTiles = document.querySelectorAll('#grid-external .tile');
-  const internalTiles = document.querySelectorAll('#grid-internal .tile');
-
-  const emptyExternal = document.getElementById('empty-external');
-  const emptyInternal = document.getElementById('empty-internal');
-
+  // Audience tabs are the only interactive control on this page — click to
+  // swap which section (External / Internal) is visible. Family filtering
+  // was removed because the tabs already split tools into 5-each groups,
+  // and the per-tile colour accent gives all the family signal we need.
   const sectionExternal = document.getElementById('section-external');
   const sectionInternal = document.getElementById('section-internal');
-
-  // The hidden section-count spans (still here for backwards-compat)
-  // and the new tab-count badges that drive the audience tabs.
-  const tabCountExternal = document.getElementById('tab-count-external');
-  const tabCountInternal = document.getElementById('tab-count-internal');
-
-  // Audience tabs
   const tabs = document.querySelectorAll('.tab[data-audience]');
-  let activeAudience = 'external';
 
   function applyAudience(audience) {
-    activeAudience = audience;
     tabs.forEach(t => {
       const on = t.dataset.audience === audience;
       t.classList.toggle('active', on);
@@ -796,50 +703,7 @@
   tabs.forEach(t => {
     t.addEventListener('click', () => applyAudience(t.dataset.audience));
   });
-  // Apply default tab on page load so the Internal section starts hidden.
   applyAudience('external');
-
-  // A tile matches a filter if its data-family equals the family, OR if its
-  // data-also list (space-separated) contains the family. This lets
-  // cross-product tiles surface under the individual product chips too —
-  // e.g. the Deal Summary tile shows up under POS, OO, and Kiosk filters
-  // because those products are all in scope of the summary.
-  function tileMatches(tile, family) {
-    if (family === 'all') return true;
-    if (tile.dataset.family === family) return true;
-    const also = (tile.dataset.also || '').split(/\s+/).filter(Boolean);
-    return also.includes(family);
-  }
-
-  // Run the same filter logic over a group of tiles and update its
-  // count + empty-state + section visibility. Returns how many tiles matched.
-  function filterGroup(tiles, emptyEl, countEl, sectionEl, family) {
-    let shown = 0;
-    tiles.forEach(t => {
-      const match = tileMatches(t, family);
-      t.style.display = match ? '' : 'none';
-      if (match) shown++;
-    });
-    if (emptyEl) emptyEl.style.display = shown === 0 ? 'block' : 'none';
-    if (countEl) countEl.textContent = shown;
-    if (sectionEl) sectionEl.classList.toggle('section-hidden', shown === 0 && family !== 'all');
-    return shown;
-  }
-
-  function applyFilter(family) {
-    // Pass null for sectionEl so filterGroup doesn't toggle section-hidden —
-    // section visibility is the audience tab's job, not the filter's.
-    const extShown = filterGroup(externalTiles, emptyExternal, tabCountExternal, null, family);
-    const intShown = filterGroup(internalTiles, emptyInternal, tabCountInternal, null, family);
-  }
-
-  chips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      chips.forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      applyFilter(chip.dataset.family);
-    });
-  });
 </script>
 
 </body>
