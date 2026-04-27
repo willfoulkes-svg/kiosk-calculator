@@ -376,15 +376,23 @@
     var N = function (v) { var x = parseFloat(v); return isNaN(x) ? 0 : x; };
 
     if (p.includeOO) {
-      var ooGmv   = N(c.ooGmv);
-      var ooCur   = N(c.ooCommission) / 100;
-      var ooNew   = N(f.ooRate) / 100;
-      var ooCurCost = ooGmv * ooCur;
-      var ooNewCost = ooGmv * ooNew;
-      result.ooSavings = ooCurCost - ooNewCost;
+      var ooGmv = N(c.ooGmv);
+      var ooAov = N(c.ooAov) > 0 ? N(c.ooAov) : N(c.aov);
+      var ooTxn = ooAov > 0 ? (ooGmv / ooAov) : 0;
+      var curOOSub      = N(c.ooSub);
+      var curOOProcRate = N(c.ooProcessingRate) / 100;
+      var curOOTransFee = N(c.ooTransFee);
+      var curOOTotal = (ooGmv * curOOProcRate) + (ooTxn * curOOTransFee) + curOOSub;
+      var fdOOProcRate = N(f.ooProcessingRate) / 100;
+      var fdOOTransFee = N(f.ooTransFee);
+      var fdOOCommRate = N(f.ooCommissionRate) / 100;
+      var fdOOTotal = (ooGmv * fdOOProcRate) + (ooTxn * fdOOTransFee) + (ooGmv * fdOOCommRate);
+      result.ooSavings = curOOTotal - fdOOTotal;
       result.detail.oo = {
-        gmv: ooGmv, curPct: N(c.ooCommission), newPct: N(f.ooRate),
-        curCost: ooCurCost, newCost: ooNewCost,
+        gmv: ooGmv, aov: ooAov, txn: ooTxn,
+        curSub: curOOSub, curProcPct: N(c.ooProcessingRate), curTransFee: curOOTransFee,
+        fdProcPct: N(f.ooProcessingRate), fdTransFee: fdOOTransFee, fdCommPct: N(f.ooCommissionRate),
+        curTotal: curOOTotal, fdTotal: fdOOTotal,
         provider: c.ooProvider || ''
       };
     }
@@ -395,13 +403,15 @@
       var curRate = N(c.posRate) / 100, newRate = N(f.posRate) / 100;
       var curTxnFee = N(c.posTransFee), newTxnFee = N(f.posTransFee);
       var curSub = N(c.posSub);
-      var curPosCost = (posGmv * curRate) + (posTxn * curTxnFee) + curSub;
+      var curHardware = N(c.posHardwareMonthly);
+      var curPosCost = (posGmv * curRate) + (posTxn * curTxnFee) + curSub + curHardware;
       var fdPosCost  = (posGmv * newRate) + (posTxn * newTxnFee);
       result.posSavings = curPosCost - fdPosCost;
       result.detail.pos = {
         gmv: posGmv, txn: posTxn, aov: aov,
         curRate: N(c.posRate), newRate: N(f.posRate),
-        curTxnFee: curTxnFee, newTxnFee: newTxnFee, curSub: curSub,
+        curTxnFee: curTxnFee, newTxnFee: newTxnFee,
+        curSub: curSub, curHardware: curHardware,
         curTotal: curPosCost, newTotal: fdPosCost,
         provider: c.posProvider || '', cashierCount: N(c.cashierCount)
       };
@@ -466,13 +476,13 @@
   function ooCompareHtml(v, country) {
     var d = v.detail.oo;
     if (!d || d.gmv <= 0) return '';
-    var providerLabel = d.provider ? escapeHtml(d.provider) : 'Your current provider';
+    var providerLabel = d.provider ? escapeHtml(d.provider) : 'Your current direct ordering provider';
     return '' +
       '<div class="compare">' +
-        '<div class="compare-title">Online Ordering commission</div>' +
-        '<div class="row"><span class="k">Monthly GMV on this channel</span><span class="v">' + fmtMoney(d.gmv, country) + '</span></div>' +
-        '<div class="row"><span class="k">' + providerLabel + ' — ' + d.curPct + '%</span><span class="v">-' + fmtMoney(d.curCost, country) + '/mo</span></div>' +
-        '<div class="row"><span class="k">Flipdish — ' + d.newPct + '%</span><span class="v">-' + fmtMoney(d.newCost, country) + '/mo</span></div>' +
+        '<div class="compare-title">Direct online ordering</div>' +
+        '<div class="row"><span class="k">Monthly online revenue</span><span class="v">' + fmtMoney(d.gmv, country) + '</span></div>' +
+        '<div class="row"><span class="k">' + providerLabel + ' — all-in monthly</span><span class="v">-' + fmtMoney(d.curTotal, country) + '</span></div>' +
+        '<div class="row"><span class="k">Flipdish — all-in monthly</span><span class="v">-' + fmtMoney(d.fdTotal, country) + '</span></div>' +
         '<div class="total-row"><span>Monthly saving</span><span class="v">' + fmtMoney(v.ooSavings, country) + '</span></div>' +
         saveCallout(v.ooSavings, country) +
       '</div>';
@@ -484,8 +494,8 @@
     var providerLabel = d.provider ? escapeHtml(d.provider) : 'Your current POS';
     return '' +
       '<div class="compare">' +
-        '<div class="compare-title">POS &amp; card processing</div>' +
-        '<div class="row"><span class="k">Monthly in-store GMV</span><span class="v">' + fmtMoney(d.gmv, country) + '</span></div>' +
+        '<div class="compare-title">POS &amp; in-store</div>' +
+        '<div class="row"><span class="k">Monthly in-store revenue</span><span class="v">' + fmtMoney(d.gmv, country) + '</span></div>' +
         '<div class="row"><span class="k">' + providerLabel + ' — all-in monthly</span><span class="v">-' + fmtMoney(d.curTotal, country) + '</span></div>' +
         '<div class="row"><span class="k">Flipdish — all-in monthly</span><span class="v">-' + fmtMoney(d.newTotal, country) + '</span></div>' +
         '<div class="total-row"><span>Monthly saving</span><span class="v">' + fmtMoney(v.posSavings, country) + '</span></div>' +

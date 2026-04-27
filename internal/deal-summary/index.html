@@ -335,19 +335,22 @@
   //   'discovery' → at least one current-setup number captured (Step 2)
   //   'ready'     → at least one Flipdish proposal number entered (Step 3)
   //
-  // Works against both the old (schema 1) and new (schema 2) shapes
-  // because we only read field names that exist in both.
+  // Reads field names that exist across schemas 1 / 2 / 3 so older
+  // saved deals also classify correctly.
   function dealStatus(p) {
     if (!p) return { key: 'draft', label: 'Just started' };
     var c = p.current  || {};
     var f = p.flipdish || {};
     var hasProposal =
-        Number(f.monthlySub)  > 0 ||
-        Number(f.ooRate)      > 0 ||
-        Number(f.posRate)     > 0 ||
-        Number(f.phoneAiSub)  > 0 ||
-        Number(f.ooSub)       > 0 ||
-        Number(f.posSub)      > 0;
+        Number(f.monthlySub)        > 0 ||
+        Number(f.ooRate)            > 0 ||  // legacy v2
+        Number(f.ooProcessingRate)  > 0 ||
+        Number(f.ooCommissionRate)  > 0 ||
+        Number(f.ooTransFee)        > 0 ||
+        Number(f.posRate)           > 0 ||
+        Number(f.phoneAiSub)        > 0 ||
+        Number(f.ooSub)             > 0 ||  // legacy v1
+        Number(f.posSub)            > 0;    // legacy v1
     if (hasProposal) return { key: 'ready', label: 'Proposal ready' };
     var hasCurrent =
         Number(c.ooGmv)             > 0 ||
@@ -358,31 +361,58 @@
   }
 
   // ---------- savings calculation (matches detail.html) ----------
-  // This recomputes the "headline annual saving" for display on the list.
-  // Keep the formulas identical to those used on the detail page.
+  // Recomputes the "annual saving" used by the list — same net monthly × 12
+  // figure the rep sees on the Deal Room hero, so the two pages stay in
+  // lockstep. Hardware is excluded here because it's a one-off, not an
+  // ongoing annual cost.
   function computeHeadline(p) {
     if (!p) return 0;
+    var c = p.current || {};
+    var f = p.flipdish || {};
+    var N = function (v) { var x = parseFloat(v); return isNaN(x) ? 0 : x; };
     var monthly = 0;
-    var includeOO = p.includeOO && p.current && p.flipdish;
-    var includePOS = p.includePOS && p.current && p.flipdish;
 
-    if (includeOO) {
-      var curOOCost = (Number(p.current.ooGmv || 0) * (Number(p.current.ooCommission || 0) / 100));
-      var fdOOCost  = (Number(p.current.ooGmv || 0) * (Number(p.flipdish.ooRate || 0) / 100))
-                     + Number(p.flipdish.ooSub || 0);
-      monthly += (curOOCost - fdOOCost);
+    if (p.includeOO) {
+      var ooGmv = N(c.ooGmv);
+      var ooAov = N(c.ooAov) > 0 ? N(c.ooAov) : N(c.aov);
+      var ooTxn = ooAov > 0 ? (ooGmv / ooAov) : 0;
+      var curOO = (ooGmv * (N(c.ooProcessingRate) / 100))
+                + (ooTxn * N(c.ooTransFee))
+                + N(c.ooSub);
+      var fdOO  = (ooGmv * (N(f.ooProcessingRate) / 100))
+                + (ooTxn * N(f.ooTransFee))
+                + (ooGmv * (N(f.ooCommissionRate) / 100));
+      monthly += (curOO - fdOO);
     }
-    if (includePOS) {
-      // POS saving = (current total fee) - (flipdish total fee), on same GMV
-      var gmv = Number(p.current.posGmv || 0);
-      var curPOS = (gmv * (Number(p.current.posRate || 0) / 100))
-                 + (Number(p.current.posTransactions || 0) * Number(p.current.posTransFee || 0))
-                 + Number(p.current.posSub || 0);
-      var fdPOS  = (gmv * (Number(p.flipdish.posRate || 0) / 100))
-                 + (Number(p.current.posTransactions || 0) * Number(p.flipdish.posTransFee || 0))
-                 + Number(p.flipdish.posSub || 0);
+    if (p.includePOS) {
+      var gmv = N(c.posGmv);
+      var aov = N(c.aov);
+      var txn = aov > 0 ? (gmv / aov) : 0;
+      var curPOS = (gmv * (N(c.posRate) / 100))
+                 + (txn * N(c.posTransFee))
+                 + N(c.posSub)
+                 + N(c.posHardwareMonthly);
+      var fdPOS  = (gmv * (N(f.posRate) / 100))
+                 + (txn * N(f.posTransFee));
       monthly += (curPOS - fdPOS);
     }
+    if (p.includePhoneAI) {
+      var orders   = N(c.phoneOrdersPerDay) * 30;
+      var missed   = Math.min(100, Math.max(0, N(c.phoneMissedPct))) / 100;
+      var phoneAov = N(c.phoneAov) > 0 ? N(c.phoneAov) : N(c.aov);
+      var phoneCommPct = N(f.phoneAiCommPct) / 100;
+      var newRev   = orders * missed * phoneAov * (1 - phoneCommPct);
+      var labour   = orders * (N(c.phoneCallLenMin) / 60) * N(c.hourlyWage);
+      monthly += newRev + labour;
+      monthly -= N(f.phoneAiSub);
+      // Commission on previously-answered orders becomes a new cost
+      var commAll      = orders * phoneAov * phoneCommPct;
+      var commOnMissed = orders * missed * phoneAov * phoneCommPct;
+      monthly -= (commAll - commOnMissed);
+    }
+    // Subtract the Flipdish monthly bundle sub from the gross savings so
+    // the headline shown on the list = net monthly × 12 (matches Deal Room).
+    monthly -= N(f.monthlySub);
     return monthly * 12;
   }
 
@@ -402,8 +432,7 @@
       prospects = prospects.filter(function (p) {
         return (p.name || '').toLowerCase().indexOf(q) >= 0
             || (p.country || '').toLowerCase().indexOf(q) >= 0
-            || countryName(p.country).toLowerCase().indexOf(q) >= 0
-            || (p.notes || '').toLowerCase().indexOf(q) >= 0;
+            || countryName(p.country).toLowerCase().indexOf(q) >= 0;
       });
     }
 
@@ -439,14 +468,12 @@
     prospects.forEach(function (p) {
       var headline = computeHeadline(p);
       var hasSavings = headline > 0;
-      var notesSnippet = (p.notes || '').slice(0, 80);
       var status = dealStatus(p);
 
       html += '<div class="prospect-row">' +
               '<div class="prospect-name">' +
                 '<a href="detail.html?id=' + encodeURIComponent(p.id) + '">' + escapeHtml(p.name || 'Untitled prospect') + '</a>' +
                 '<div><span class="status-pill ' + status.key + '">' + status.label + '</span></div>' +
-                (notesSnippet ? '<div class="prospect-notes-snippet">' + escapeHtml(notesSnippet) + (p.notes.length > 80 ? '…' : '') + '</div>' : '') +
               '</div>' +
               '<div class="col-country"><span class="country-badge">' + countryFlag(p.country) + ' ' + escapeHtml(countryName(p.country)) + '</span></div>' +
               '<div class="col-savings">' +

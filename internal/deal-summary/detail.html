@@ -400,10 +400,6 @@
         <label>Deal owner (rep)</label>
         <input id="ownerName" type="text" placeholder="Your name">
       </div>
-      <div class="field full">
-        <label>Notes <span class="hint">Talk-track, pain points, anything worth remembering</span></label>
-        <textarea id="notes" placeholder="e.g. Current OO provider is Deliveroo-only. Big appetite for kiosks. Decision-maker is the ops director, signs off in April."></textarea>
-      </div>
     </div>
   </div>
 
@@ -426,21 +422,33 @@
     </label>
   </div>
 
-  <!-- OO current -->
+  <!-- OO current — direct ordering provider comparison -->
   <div class="card" id="card-currentOO" style="display:none;">
-    <h3>Online Ordering — today</h3>
+    <h3>Direct ordering — today <span class="hint" style="font-weight:400;font-size:13px;color:var(--muted);margin-left:8px;">(their current direct ordering platform — not marketplace channels)</span></h3>
     <div class="grid3">
       <div class="field">
-        <label>Current OO provider</label>
-        <input id="curOOProvider" type="text" placeholder="e.g. Deliveroo, Uber Eats">
+        <label>Current direct ordering provider</label>
+        <input id="curOOProvider" type="text" placeholder="e.g. Foodhub, Mealzo, OrderYoyo">
       </div>
       <div class="field">
-        <label>Monthly OO GMV <span class="hint">(via that channel)</span></label>
+        <label>Monthly online revenue <span class="hint">(via direct ordering)</span></label>
         <input id="curOOGmv" type="number" min="0" step="100" placeholder="e.g. 20000">
       </div>
       <div class="field">
-        <label>Current commission % <span class="hint">(what provider takes)</span></label>
-        <input id="curOOCommission" type="number" min="0" step="0.5" placeholder="e.g. 14">
+        <label>Average online order value</label>
+        <input id="curOOAov" type="number" min="0" step="0.5" placeholder="e.g. 22">
+      </div>
+      <div class="field">
+        <label>Software subscription <span class="hint">(£/mo)</span></label>
+        <input id="curOOSub" type="number" min="0" step="1" placeholder="e.g. 79">
+      </div>
+      <div class="field">
+        <label>Payment processing fee % <span class="hint">(card processing)</span></label>
+        <input id="curOOProcessingRate" type="number" min="0" step="0.05" placeholder="e.g. 1.6">
+      </div>
+      <div class="field">
+        <label>Per-transaction fee</label>
+        <input id="curOOTransFee" type="number" min="0" step="0.01" placeholder="e.g. 0.05">
       </div>
     </div>
   </div>
@@ -476,6 +484,10 @@
       <div class="field">
         <label>Current POS monthly subscription</label>
         <input id="curPosSub" type="number" min="0" step="1" placeholder="e.g. 199">
+      </div>
+      <div class="field">
+        <label>Monthly hardware cost <span class="hint">(terminal lease, warranty, replacement — £0 if owned outright)</span></label>
+        <input id="curPosHardwareMonthly" type="number" min="0" step="1" placeholder="e.g. 60">
       </div>
     </div>
   </div>
@@ -515,11 +527,19 @@
 
   <!-- OO proposal -->
   <div class="card" id="card-proposalOO" style="display:none;">
-    <h3>Online Ordering — Flipdish proposal</h3>
+    <h3>Direct ordering — Flipdish proposal <span class="hint" style="font-weight:400;font-size:13px;color:var(--muted);margin-left:8px;">(software sub goes in the Bundle card below)</span></h3>
     <div class="grid3">
       <div class="field">
-        <label>Proposed OO commission %</label>
-        <input id="fdOORate" type="number" min="0" step="0.1" placeholder="e.g. 7">
+        <label>Flipdish payment processing fee %</label>
+        <input id="fdOOProcessingRate" type="number" min="0" step="0.05" placeholder="e.g. 1.4">
+      </div>
+      <div class="field">
+        <label>Flipdish per-transaction fee</label>
+        <input id="fdOOTransFee" type="number" min="0" step="0.01" placeholder="e.g. 0.03">
+      </div>
+      <div class="field">
+        <label>OR Flipdish commission % <span class="hint">(only if commission-only deal)</span></label>
+        <input id="fdOOCommissionRate" type="number" min="0" step="0.1" placeholder="e.g. 7">
       </div>
     </div>
   </div>
@@ -599,14 +619,14 @@
 
   <div class="breakdown">
     <div class="stream" id="stream-ooSavings">
-      <h4>Online Ordering savings</h4>
-      <div class="stream-sub">Lower commission % on the same monthly GMV.</div>
+      <h4>Direct ordering savings</h4>
+      <div class="stream-sub">Lower sub + processing + per-txn fees vs their current direct ordering provider.</div>
       <div class="stream-value off" id="ooSavingsValue">—</div>
       <div class="formula" id="ooSavingsFormula">Enable Online Ordering to see this.</div>
     </div>
     <div class="stream" id="stream-posSavings">
-      <h4>POS / processing savings</h4>
-      <div class="stream-sub">Lower merchant rate + lower per-txn fee + different monthly subscription.</div>
+      <h4>POS / in-store savings</h4>
+      <div class="stream-sub">Lower processing + per-txn + subscription + hardware costs vs their current POS setup.</div>
       <div class="stream-value off" id="posSavingsValue">—</div>
       <div class="formula" id="posSavingsFormula">Enable POS to see this.</div>
     </div>
@@ -701,30 +721,39 @@
   function blankProspect() {
     return {
       id: newId(),
-      schema: 2,            // 2 = commercial-inputs model
+      schema: 3,            // 3 = direct-ordering comparison + hardware costs
       name: '',
       country: 'UK',
       locations: 1,
       contactName: '',
       ownerName: '',
-      notes: '',
+      // (notes field dropped — was unused by the calc and the customer page)
       // Which levers are in play?
       includeOO: false,
       includePOS: false,
       includePhoneAI: false,
-      // Current reality
+      // Current reality — the customer's full cost picture today
       current: {
-        ooProvider: '', ooGmv: '', ooCommission: '',
+        // Direct ordering (replaces marketplace-style commission % framing)
+        ooProvider: '', ooGmv: '', ooAov: '', ooSub: '',
+        ooProcessingRate: '', ooTransFee: '',
+        // In-store (POS + Kiosk) — now includes monthly hardware cost
         posProvider: '', cashierCount: '', posGmv: '', aov: '',
-        posRate: '', posTransFee: '', posSub: '',
+        posRate: '', posTransFee: '', posSub: '', posHardwareMonthly: '',
+        // Phone (unchanged)
         phoneOrdersPerDay: '', phoneMissedPct: '', phoneCallLenMin: '',
         phoneAov: '', hourlyWage: ''
       },
       // Flipdish proposal (from SFDC)
       flipdish: {
-        ooRate: '',
+        // Direct ordering — three options so the rep can model either
+        // a sub+processing+txn deal OR a commission-only deal
+        ooProcessingRate: '', ooTransFee: '', ooCommissionRate: '',
+        // POS (unchanged)
         posRate: '', posTransFee: '',
+        // Phone (unchanged)
         phoneAiSub: '', phoneAiCommPct: PHONE_COMMISSION_DEFAULT,
+        // Bundle
         monthlySub: '', hardwareOneOff: '', contractMonths: 36
       },
       createdAt: Date.now(),
@@ -750,46 +779,67 @@
     return p;
   }
 
-  // Migrate old (schema 1, product-picker) prospects to the new shape.
-  // We keep any overlapping fields and drop the product/catalogue bits.
+  // Migrate older saved deals into the current schema (3).
+  //   v1 (product-picker) → v3: drop catalogue, map overlapping fields
+  //   v2 (marketplace-style OO commission) → v3: drop ooCommission and notes,
+  //       remap fdOORate (was Flipdish commission %) into fdOOCommissionRate
   function migrateProspect(p) {
-    if (p.schema === 2) return p;
+    if (p.schema === 3) return p;
     var migrated = blankProspect();
     migrated.id = p.id;
     migrated.name = p.name || '';
     migrated.country = p.country || 'UK';
     migrated.locations = p.locations || 1;
-    migrated.notes = p.notes || '';
+    migrated.contactName = p.contactName || '';
+    migrated.ownerName = p.ownerName || '';
     migrated.createdAt = p.createdAt || Date.now();
     migrated.updatedAt = p.updatedAt || Date.now();
     migrated.includeOO = !!p.includeOO;
     migrated.includePOS = !!p.includePOS;
-    migrated.includePhoneAI = false;  // wasn't in the old model
+    migrated.includePhoneAI = !!p.includePhoneAI;
     var c = p.current || {};
     var f = p.flipdish || {};
-    migrated.current.ooProvider    = c.ooProvider || '';
-    migrated.current.ooGmv         = c.ooGmv || '';
-    migrated.current.ooCommission  = c.ooCommission || '';
-    migrated.current.posProvider   = c.posProvider || '';
-    migrated.current.posGmv        = c.posGmv || '';
-    migrated.current.posRate       = c.posRate || '';
-    migrated.current.posTransFee   = c.posTransFee || '';
-    migrated.current.posSub        = c.posSub || '';
-    // derive AOV if transactions are there
-    if (c.posGmv && c.posTransactions) {
+    // OO — keep provider + revenue, drop marketplace commission
+    migrated.current.ooProvider = c.ooProvider || '';
+    migrated.current.ooGmv      = c.ooGmv || '';
+    // POS — straight passthrough
+    migrated.current.posProvider = c.posProvider || '';
+    migrated.current.cashierCount = c.cashierCount || '';
+    migrated.current.posGmv      = c.posGmv || '';
+    migrated.current.aov         = c.aov || '';
+    migrated.current.posRate     = c.posRate || '';
+    migrated.current.posTransFee = c.posTransFee || '';
+    migrated.current.posSub      = c.posSub || '';
+    // derive AOV if v1 stored transactions instead
+    if (!migrated.current.aov && c.posGmv && c.posTransactions) {
       var gm = parseFloat(c.posGmv), tx = parseFloat(c.posTransactions);
       if (!isNaN(gm) && !isNaN(tx) && tx > 0) migrated.current.aov = (gm / tx).toFixed(2);
     }
-    migrated.flipdish.ooRate          = f.ooRate || '';
-    migrated.flipdish.posRate         = f.posRate || '';
-    migrated.flipdish.posTransFee     = f.posTransFee || '';
-    // Roll up old per-product subs into the bundle total if possible
-    var rollup = 0;
-    ['ooSub','posSub','kioskSub','qropSub','fmmSub'].forEach(function (k) {
-      var v = parseFloat(f[k]); if (!isNaN(v)) rollup += v;
-    });
-    if (rollup > 0) migrated.flipdish.monthlySub = String(rollup);
-    migrated.schema = 2;
+    // Phone — passthrough
+    migrated.current.phoneOrdersPerDay = c.phoneOrdersPerDay || '';
+    migrated.current.phoneMissedPct    = c.phoneMissedPct || '';
+    migrated.current.phoneCallLenMin   = c.phoneCallLenMin || '';
+    migrated.current.phoneAov          = c.phoneAov || '';
+    migrated.current.hourlyWage        = c.hourlyWage || '';
+    // Flipdish proposal — old fdOORate was the commission %, so move it
+    // into the new ooCommissionRate slot
+    migrated.flipdish.ooCommissionRate = f.ooRate || '';
+    migrated.flipdish.posRate          = f.posRate || '';
+    migrated.flipdish.posTransFee      = f.posTransFee || '';
+    migrated.flipdish.phoneAiSub       = f.phoneAiSub || '';
+    migrated.flipdish.phoneAiCommPct   = (f.phoneAiCommPct != null) ? f.phoneAiCommPct : PHONE_COMMISSION_DEFAULT;
+    migrated.flipdish.monthlySub       = f.monthlySub || '';
+    migrated.flipdish.hardwareOneOff   = f.hardwareOneOff || '';
+    migrated.flipdish.contractMonths   = f.contractMonths || 36;
+    // v1 only — roll old per-product subs into bundle if monthlySub was empty
+    if (!migrated.flipdish.monthlySub) {
+      var rollup = 0;
+      ['ooSub','posSub','kioskSub','qropSub','fmmSub'].forEach(function (k) {
+        var v = parseFloat(f[k]); if (!isNaN(v)) rollup += v;
+      });
+      if (rollup > 0) migrated.flipdish.monthlySub = String(rollup);
+    }
+    migrated.schema = 3;
     return migrated;
   }
 
@@ -804,40 +854,46 @@
     $('locations').value = prospect.locations || 1;
     $('contactName').value = prospect.contactName || '';
     $('ownerName').value = prospect.ownerName || '';
-    $('notes').value = prospect.notes || '';
 
     $('includeOO').checked = !!prospect.includeOO;
     $('includePOS').checked = !!prospect.includePOS;
     $('includePhoneAI').checked = !!prospect.includePhoneAI;
 
     var c = prospect.current || {};
-    $('curOOProvider').value = c.ooProvider || '';
-    $('curOOGmv').value = c.ooGmv || '';
-    $('curOOCommission').value = c.ooCommission || '';
-
-    $('curPosProvider').value = c.posProvider || '';
-    $('curCashierCount').value = c.cashierCount || '';
-    $('curPosGmv').value = c.posGmv || '';
-    $('curAov').value = c.aov || '';
-    $('curPosRate').value = c.posRate || '';
-    $('curPosTransFee').value = c.posTransFee || '';
-    $('curPosSub').value = c.posSub || '';
-
-    $('curPhoneOrders').value = c.phoneOrdersPerDay || '';
-    $('curPhoneMissed').value = c.phoneMissedPct || '';
+    // OO — direct ordering provider comparison
+    $('curOOProvider').value       = c.ooProvider || '';
+    $('curOOGmv').value            = c.ooGmv || '';
+    $('curOOAov').value             = c.ooAov || '';
+    $('curOOSub').value             = c.ooSub || '';
+    $('curOOProcessingRate').value  = c.ooProcessingRate || '';
+    $('curOOTransFee').value        = c.ooTransFee || '';
+    // POS / in-store
+    $('curPosProvider').value         = c.posProvider || '';
+    $('curCashierCount').value        = c.cashierCount || '';
+    $('curPosGmv').value              = c.posGmv || '';
+    $('curAov').value                 = c.aov || '';
+    $('curPosRate').value             = c.posRate || '';
+    $('curPosTransFee').value         = c.posTransFee || '';
+    $('curPosSub').value              = c.posSub || '';
+    $('curPosHardwareMonthly').value  = c.posHardwareMonthly || '';
+    // Phone
+    $('curPhoneOrders').value  = c.phoneOrdersPerDay || '';
+    $('curPhoneMissed').value  = c.phoneMissedPct || '';
     $('curPhoneCallLen').value = c.phoneCallLenMin || '';
-    $('curPhoneAov').value = c.phoneAov || '';
-    $('curHourlyWage').value = c.hourlyWage || '';
+    $('curPhoneAov').value     = c.phoneAov || '';
+    $('curHourlyWage').value   = c.hourlyWage || '';
 
     var f = prospect.flipdish || {};
-    $('fdOORate').value = f.ooRate || '';
-    $('fdPosRate').value = f.posRate || '';
+    $('fdOOProcessingRate').value  = f.ooProcessingRate || '';
+    $('fdOOTransFee').value         = f.ooTransFee || '';
+    $('fdOOCommissionRate').value   = f.ooCommissionRate || '';
+    $('fdPosRate').value     = f.posRate || '';
     $('fdPosTransFee').value = f.posTransFee || '';
-    $('fdPhoneAiSub').value = f.phoneAiSub || '';
+    $('fdPhoneAiSub').value  = f.phoneAiSub || '';
     $('fdPhoneAiComm').value = (f.phoneAiCommPct != null) ? f.phoneAiCommPct : PHONE_COMMISSION_DEFAULT;
-    $('fdMonthlySub').value = f.monthlySub || '';
-    $('fdHardwareOneOff').value = f.hardwareOneOff || '';
-    $('fdContractMonths').value = f.contractMonths || 36;
+    $('fdMonthlySub').value      = f.monthlySub || '';
+    $('fdHardwareOneOff').value  = f.hardwareOneOff || '';
+    $('fdContractMonths').value  = f.contractMonths || 36;
 
     setCountry(prospect.country || 'UK', /*skipSave*/true);
     applyScopeVisibility();
@@ -846,42 +902,51 @@
 
   // ---------- Collect: form -> prospect object ----------
   function collect() {
+    prospect.schema = 3;
     prospect.name = val('prospectName').trim();
     prospect.locations = Math.max(1, Math.round(num('locations')) || 1);
     prospect.contactName = val('contactName').trim();
     prospect.ownerName = val('ownerName').trim();
-    prospect.notes = val('notes').trim();
 
     prospect.includeOO = $('includeOO').checked;
     prospect.includePOS = $('includePOS').checked;
     prospect.includePhoneAI = $('includePhoneAI').checked;
 
     prospect.current = {
-      ooProvider: val('curOOProvider').trim(),
-      ooGmv: val('curOOGmv'),
-      ooCommission: val('curOOCommission'),
-      posProvider: val('curPosProvider').trim(),
-      cashierCount: val('curCashierCount'),
-      posGmv: val('curPosGmv'),
-      aov: val('curAov'),
-      posRate: val('curPosRate'),
-      posTransFee: val('curPosTransFee'),
-      posSub: val('curPosSub'),
+      // OO — direct ordering provider
+      ooProvider:       val('curOOProvider').trim(),
+      ooGmv:            val('curOOGmv'),
+      ooAov:            val('curOOAov'),
+      ooSub:            val('curOOSub'),
+      ooProcessingRate: val('curOOProcessingRate'),
+      ooTransFee:       val('curOOTransFee'),
+      // POS / in-store
+      posProvider:        val('curPosProvider').trim(),
+      cashierCount:       val('curCashierCount'),
+      posGmv:             val('curPosGmv'),
+      aov:                val('curAov'),
+      posRate:            val('curPosRate'),
+      posTransFee:        val('curPosTransFee'),
+      posSub:             val('curPosSub'),
+      posHardwareMonthly: val('curPosHardwareMonthly'),
+      // Phone
       phoneOrdersPerDay: val('curPhoneOrders'),
-      phoneMissedPct: val('curPhoneMissed'),
-      phoneCallLenMin: val('curPhoneCallLen'),
-      phoneAov: val('curPhoneAov'),
-      hourlyWage: val('curHourlyWage')
+      phoneMissedPct:    val('curPhoneMissed'),
+      phoneCallLenMin:   val('curPhoneCallLen'),
+      phoneAov:          val('curPhoneAov'),
+      hourlyWage:        val('curHourlyWage')
     };
     prospect.flipdish = {
-      ooRate: val('fdOORate'),
-      posRate: val('fdPosRate'),
-      posTransFee: val('fdPosTransFee'),
-      phoneAiSub: val('fdPhoneAiSub'),
-      phoneAiCommPct: val('fdPhoneAiComm'),
-      monthlySub: val('fdMonthlySub'),
-      hardwareOneOff: val('fdHardwareOneOff'),
-      contractMonths: Math.max(1, Math.round(num('fdContractMonths')) || 36)
+      ooProcessingRate: val('fdOOProcessingRate'),
+      ooTransFee:       val('fdOOTransFee'),
+      ooCommissionRate: val('fdOOCommissionRate'),
+      posRate:          val('fdPosRate'),
+      posTransFee:      val('fdPosTransFee'),
+      phoneAiSub:       val('fdPhoneAiSub'),
+      phoneAiCommPct:   val('fdPhoneAiComm'),
+      monthlySub:       val('fdMonthlySub'),
+      hardwareOneOff:   val('fdHardwareOneOff'),
+      contractMonths:   Math.max(1, Math.round(num('fdContractMonths')) || 36)
     };
     prospect.updatedAt = Date.now();
   }
@@ -947,16 +1012,31 @@
     var N = function (v) { var x = parseFloat(v); return isNaN(x) ? 0 : x; };
 
     // -------- OO savings --------
+    // Direct ordering provider comparison: customer's full current cost
+    // (sub + processing + per-txn) vs Flipdish's cost (processing + per-txn,
+    // OR commission %). The Flipdish sub rolls up into bundle.monthlySub
+    // so we don't double-count it here.
     if (p.includeOO) {
-      var ooGmv   = N(c.ooGmv);
-      var ooCur   = N(c.ooCommission) / 100;
-      var ooNew   = N(f.ooRate) / 100;
-      var ooCurCost = ooGmv * ooCur;
-      var ooNewCost = ooGmv * ooNew;
-      result.ooSavings = ooCurCost - ooNewCost;
+      var ooGmv = N(c.ooGmv);
+      var ooAov = N(c.ooAov) > 0 ? N(c.ooAov) : N(c.aov);  // fallback to in-store AOV
+      var ooTxn = ooAov > 0 ? (ooGmv / ooAov) : 0;
+      // Customer's CURRENT direct ordering total
+      var curOOSub        = N(c.ooSub);
+      var curOOProcRate   = N(c.ooProcessingRate) / 100;
+      var curOOTransFee   = N(c.ooTransFee);
+      var curOOTotal = (ooGmv * curOOProcRate) + (ooTxn * curOOTransFee) + curOOSub;
+      // FLIPDISH OO cost — supports both sub+processing+txn and commission-only
+      var fdOOProcRate    = N(f.ooProcessingRate) / 100;
+      var fdOOTransFee    = N(f.ooTransFee);
+      var fdOOCommRate    = N(f.ooCommissionRate) / 100;
+      var fdOOTotal = (ooGmv * fdOOProcRate) + (ooTxn * fdOOTransFee) + (ooGmv * fdOOCommRate);
+      result.ooSavings = curOOTotal - fdOOTotal;
       result.detail.oo = {
-        gmv: ooGmv, curPct: N(c.ooCommission), newPct: N(f.ooRate),
-        curCost: ooCurCost, newCost: ooNewCost
+        gmv: ooGmv, aov: ooAov, txn: ooTxn,
+        curSub: curOOSub, curProcPct: N(c.ooProcessingRate), curTxnFee: curOOTransFee,
+        fdProcPct: N(f.ooProcessingRate), fdTxnFee: fdOOTransFee, fdCommPct: N(f.ooCommissionRate),
+        curTotal: curOOTotal, fdTotal: fdOOTotal,
+        curProvider: c.ooProvider || ''
       };
     }
 
@@ -968,15 +1048,18 @@
       var curRate = N(c.posRate) / 100, newRate = N(f.posRate) / 100;
       var curTxnFee = N(c.posTransFee), newTxnFee = N(f.posTransFee);
       var curSub = N(c.posSub);
-      // Current total monthly POS cost
-      var curPosCost = (posGmv * curRate) + (posTxn * curTxnFee) + curSub;
-      // Flipdish proposed POS cost (no separate sub — subscription rolls up into the bundle sub)
+      var curHardware = N(c.posHardwareMonthly);
+      // Current total monthly POS cost — includes hardware lease/warranty
+      var curPosCost = (posGmv * curRate) + (posTxn * curTxnFee) + curSub + curHardware;
+      // Flipdish proposed POS cost (sub rolls up into bundle; hardware
+      // is a one-off captured separately and netted against Year 1 / contract value)
       var fdPosCost  = (posGmv * newRate) + (posTxn * newTxnFee);
       result.posSavings = curPosCost - fdPosCost;
       result.detail.pos = {
         gmv: posGmv, txn: posTxn, aov: aov,
         curRate: N(c.posRate), newRate: N(f.posRate),
-        curTxnFee: curTxnFee, newTxnFee: newTxnFee, curSub: curSub,
+        curTxnFee: curTxnFee, newTxnFee: newTxnFee,
+        curSub: curSub, curHardware: curHardware,
         curTotal: curPosCost, newTotal: fdPosCost
       };
     }
@@ -1050,10 +1133,11 @@
     if (p.includeOO && v.detail.oo) {
       var d = v.detail.oo;
       if (d.gmv > 0) {
+        var providerLabel = d.curProvider ? escapeHtml(d.curProvider) : 'their current direct ordering provider';
         if (v.ooSavings > 0) {
-          lines.push('Online Ordering commission drops from <strong>' + d.curPct + '%</strong> to <strong>' + d.newPct + '%</strong> on ' + fmtMoney(d.gmv) + ' of monthly GMV — saving <strong>' + fmtMoney(v.ooSavings) + '/mo</strong>.');
+          lines.push('On the direct ordering side, switching from <strong>' + providerLabel + '</strong> to Flipdish on ' + fmtMoney(d.gmv) + '/mo of online revenue saves <strong>' + fmtMoney(v.ooSavings) + '/mo</strong> across sub + processing + per-transaction fees.');
         } else if (v.ooSavings < 0) {
-          lines.push('On Online Ordering the proposed <strong>' + d.newPct + '%</strong> rate is <em>higher</em> than their current <strong>' + d.curPct + '%</strong> — costs them <strong>' + fmtMoney(-v.ooSavings) + '/mo more</strong>. Worth reviewing.');
+          lines.push('On direct ordering, Flipdish is coming out <strong>' + fmtMoney(-v.ooSavings) + '/mo more expensive</strong> than ' + providerLabel + '. Sense-check the proposed rates.');
         }
       }
     }
@@ -1062,9 +1146,9 @@
       var pd = v.detail.pos;
       if (pd.gmv > 0) {
         if (v.posSavings > 0) {
-          lines.push('On the POS side — merchant rate from <strong>' + pd.curRate + '%</strong> to <strong>' + pd.newRate + '%</strong> on ' + fmtMoney(pd.gmv) + '/mo of in-store GMV, plus any difference in monthly sub — nets <strong>' + fmtMoney(v.posSavings) + '/mo</strong> saved.');
+          lines.push('On the POS / in-store side — merchant rate from <strong>' + pd.curRate + '%</strong> to <strong>' + pd.newRate + '%</strong> on ' + fmtMoney(pd.gmv) + '/mo of in-store revenue, plus differences in sub' + (pd.curHardware > 0 ? ' and the ' + fmtMoney(pd.curHardware) + '/mo they currently pay for hardware' : '') + ' — nets <strong>' + fmtMoney(v.posSavings) + '/mo</strong> saved.');
         } else if (v.posSavings < 0) {
-          lines.push('POS / processing is coming out <strong>' + fmtMoney(-v.posSavings) + '/mo more expensive</strong> than what they pay today. Sense-check the proposed rates or current setup figures.');
+          lines.push('POS / in-store is coming out <strong>' + fmtMoney(-v.posSavings) + '/mo more expensive</strong> than what they pay today. Sense-check the proposed rates or current setup figures.');
         }
       }
     }
@@ -1131,7 +1215,7 @@
     // Streams
     renderStream('ooSavings', prospect.includeOO, v.ooSavings,
       v.detail.oo
-        ? fmtMoney(v.detail.oo.gmv) + '/mo × (' + v.detail.oo.curPct + '% − ' + v.detail.oo.newPct + '%)'
+        ? fmtMoney(v.detail.oo.curTotal) + '/mo (today) − ' + fmtMoney(v.detail.oo.fdTotal) + '/mo (Flipdish)'
         : '—');
     renderStream('posSavings', prospect.includePOS, v.posSavings,
       v.detail.pos
@@ -1252,11 +1336,12 @@
 
     // Any input in the form: debounced save + recompute
     var allInputIds = [
-      'prospectName','locations','contactName','ownerName','notes',
-      'curOOProvider','curOOGmv','curOOCommission',
-      'curPosProvider','curCashierCount','curPosGmv','curAov','curPosRate','curPosTransFee','curPosSub',
+      'prospectName','locations','contactName','ownerName',
+      'curOOProvider','curOOGmv','curOOAov','curOOSub','curOOProcessingRate','curOOTransFee',
+      'curPosProvider','curCashierCount','curPosGmv','curAov','curPosRate','curPosTransFee','curPosSub','curPosHardwareMonthly',
       'curPhoneOrders','curPhoneMissed','curPhoneCallLen','curPhoneAov','curHourlyWage',
-      'fdOORate','fdPosRate','fdPosTransFee','fdPhoneAiSub','fdPhoneAiComm',
+      'fdOOProcessingRate','fdOOTransFee','fdOOCommissionRate',
+      'fdPosRate','fdPosTransFee','fdPhoneAiSub','fdPhoneAiComm',
       'fdMonthlySub','fdHardwareOneOff','fdContractMonths'
     ];
     allInputIds.forEach(function (id) {
