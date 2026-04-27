@@ -208,6 +208,83 @@
     margin-left: 8px;
   }
 
+  /* ---------- Recommendation panel ---------- */
+  /* Top of Step 3. Auto-suggested discount stack + rationale + Apply
+     button. Shaded blue so it's visually distinct from the proposal
+     cards below it (which the rep edits) and the live check below
+     them (which is the verdict). */
+  .recommendation {
+    border-left: 4px solid var(--flipdish-blue);
+    background: linear-gradient(180deg, #F4F9FE 0%, #E8F1FB 100%);
+  }
+  .rec-title {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 12px;
+    margin-bottom: 12px; padding-bottom: 8px;
+  }
+  .rec-apply {
+    background: var(--flipdish-blue-dark); color: #fff;
+    border: 0; border-radius: 8px;
+    padding: 8px 16px;
+    font: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    transition: background .15s ease;
+  }
+  .rec-apply:hover { background: var(--flipdish-blue); }
+  .rec-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  @media (max-width: 760px) { .rec-grid { grid-template-columns: 1fr; } }
+  .rec-row {
+    background: rgba(255,255,255,0.7);
+    border: 1px solid var(--flipdish-blue-line);
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .rec-row .rec-label {
+    font-size: 12px; font-weight: 600;
+    color: var(--flipdish-blue-dark);
+  }
+  .rec-row .rec-values {
+    font-size: 13px;
+    color: var(--flipdish-dark);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .rec-row .rec-values .from {
+    color: var(--muted);
+    text-decoration: line-through;
+    margin-right: 6px;
+  }
+  .rec-row .rec-values .to {
+    font-weight: 700;
+    color: var(--flipdish-blue-dark);
+  }
+  .rec-row .rec-values .delta {
+    display: block;
+    font-size: 11px;
+    color: var(--green-strong);
+    margin-top: 2px;
+  }
+  .rec-rationale {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--flipdish-blue-dark);
+    background: rgba(255,255,255,0.7);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .rec-rationale p { margin: 0 0 6px; }
+  .rec-rationale p:last-child { margin-bottom: 0; }
+  .rec-rationale strong { color: var(--flipdish-blue-dark); }
+
   /* ---------- Live commercial check ---------- */
   /* Panel at the top of Step 3. Shows the rep how the proposed package
      stacks up against Flipdish's commercial floors: SNR, op margin,
@@ -625,40 +702,19 @@
     <span class="text">Flipdish proposal <span class="sub">Pre-filled with list rates · use the live check to see how much you can discount before breaking the deal</span></span>
   </div>
 
-  <!-- Live commercial check — top of Step 3.
-       Shows the rep how the current proposed numbers stack up against
-       Flipdish's commercial floors: SNR per site, hardware payback,
-       and the discount headroom remaining. Updates live as the rep
-       edits the proposal cards below. -->
-  <div class="card live-check" id="liveCheck">
-    <h3 class="live-check-title">Live commercial check
-      <span class="live-check-status" id="liveStatus">Healthy</span>
+  <!-- Recommendation panel — top of Step 3.
+       Auto-suggested discount stack based on the customer profile in
+       Step 2 + Flipdish's commercial guardrails. Rep can hit "Apply"
+       to drop the recommended numbers into the proposal cards below
+       and then tweak from there. -->
+  <div class="card recommendation" id="recPanel" style="display:none;">
+    <h3 class="rec-title">Recommended discount stack
+      <button class="rec-apply" id="recApplyBtn" type="button">Apply recommendation</button>
     </h3>
-    <div class="live-check-grid">
-      <div class="live-tile">
-        <div class="live-label">SNR per site / mo</div>
-        <div class="live-value" id="liveSnr">—</div>
-        <div class="live-sub" id="liveSnrSub">Floor: £350/mo</div>
-      </div>
-      <div class="live-tile">
-        <div class="live-label">Op margin / mo</div>
-        <div class="live-value" id="liveOpMargin">—</div>
-        <div class="live-sub">SNR × 0.75 (Finance haircut)</div>
-      </div>
-      <div class="live-tile">
-        <div class="live-label">Hardware payback</div>
-        <div class="live-value" id="livePayback">—</div>
-        <div class="live-sub" id="livePaybackSub">Target: ≤ 3 months</div>
-      </div>
-      <div class="live-tile">
-        <div class="live-label">Max hardware discount</div>
-        <div class="live-value" id="liveMaxHwDiscount">—</div>
-        <div class="live-sub" id="liveHwSub">at 3-month payback envelope</div>
-      </div>
+    <div class="rec-grid" id="recGrid">
+      <!-- rec-row entries injected by JS -->
     </div>
-    <div class="live-check-rationale" id="liveRationale">
-      Fill in the customer's current commercial reality (Step 2) and the proposed rates below to see how the deal stacks up against Flipdish's commercial floors.
-    </div>
+    <div class="rec-rationale" id="recRationale"></div>
   </div>
 
   <!-- OO proposal -->
@@ -722,6 +778,41 @@
         <label>Contract term (months) <span class="hint">(used to show total contract value)</span></label>
         <input id="fdContractMonths" type="number" min="1" step="1" value="36">
       </div>
+    </div>
+  </div>
+
+  <!-- Live commercial check — verdict on whatever's currently typed in
+       the proposal cards above. Updates live as the rep edits. Sits at
+       the bottom of Step 3 so the rep sees it as the read-out *after*
+       editing, not a header *before* editing. -->
+  <div class="card live-check" id="liveCheck">
+    <h3 class="live-check-title">Live commercial check
+      <span class="live-check-status" id="liveStatus">Healthy</span>
+    </h3>
+    <div class="live-check-grid">
+      <div class="live-tile">
+        <div class="live-label">SNR per site / mo</div>
+        <div class="live-value" id="liveSnr">—</div>
+        <div class="live-sub" id="liveSnrSub">Floor: £350/mo</div>
+      </div>
+      <div class="live-tile">
+        <div class="live-label">Op margin / mo</div>
+        <div class="live-value" id="liveOpMargin">—</div>
+        <div class="live-sub">SNR × 0.75 (Finance haircut)</div>
+      </div>
+      <div class="live-tile">
+        <div class="live-label">Hardware payback</div>
+        <div class="live-value" id="livePayback">—</div>
+        <div class="live-sub" id="livePaybackSub">Target: ≤ 3 months</div>
+      </div>
+      <div class="live-tile">
+        <div class="live-label">Max hardware discount</div>
+        <div class="live-value" id="liveMaxHwDiscount">—</div>
+        <div class="live-sub" id="liveHwSub">at 3-month payback envelope</div>
+      </div>
+    </div>
+    <div class="live-check-rationale" id="liveRationale">
+      Fill in the customer's current commercial reality (Step 2) and the proposed rates below to see how the deal stacks up against Flipdish's commercial floors.
     </div>
   </div>
 
@@ -1495,11 +1586,155 @@
         ? fmtMoney(v.detail.pos.curTotal) + '/mo (today) − ' + fmtMoney(v.detail.pos.newTotal) + '/mo (Flipdish)'
         : '—');
 
-    // Live commercial check (top of Step 3)
+    // Recommendation panel (top of Step 3) and live commercial check (bottom).
+    renderRecommendation(v);
     renderLiveCheck(v);
 
     // Narrative
     $('narrativeBox').innerHTML = narrativeFor(prospect, v);
+  }
+
+  // ---------- Recommendation engine ----------
+  // For the active scopes, suggest specific rate / price moves the rep
+  // can offer. The recommendations follow Will's "biggest-perceived-win
+  // per £-of-margin-given-up" heuristic:
+  //
+  //   Hardware  → max out the discount allowed by the 3-month payback
+  //               envelope (biggest one-off customer-perceived win)
+  //   Processing → drop modestly off list (most visible recurring cut)
+  //   Sub        → keep at list (quiet, recurring revenue stays clean)
+  //   Per-txn    → keep at list (low psychological weight per £ given up)
+  //
+  // The numbers are then sense-checked against the SNR floor — if the
+  // package would push SNR below £350/mo per site, the rationale flags
+  // it so the rep knows to dial something back.
+  function computeRecommendation(p, v) {
+    var rates = LIST_RATES[p.country] || LIST_RATES.UK;
+    var rec = { rows: [], applies: {}, warnings: [] };
+
+    if (p.includeOO && rates.oo) {
+      var ooListPct = rates.oo.processing * 100;     // e.g. 5
+      // Drop ~30% off list, capped at 1pp above the Stripe processing cost
+      var ooFloorPct = (rates.ooCardPct || 0) * 100 + 1.0;
+      var ooRecPct = Math.max(ooFloorPct, ooListPct - 1.5);
+      ooRecPct = Math.round(ooRecPct * 10) / 10;
+      rec.rows.push({
+        label: 'OO processing %',
+        from: ooListPct + '%',
+        to: ooRecPct + '%',
+        delta: 'saves customer ~' + fmtMoney((ooListPct - ooRecPct) / 100 * (parseFloat(p.current && p.current.ooGmv) || 0)) + '/mo'
+      });
+      rec.applies.fdOOProcessingRate = String(ooRecPct);
+    }
+
+    if (p.includePOS && rates.pos) {
+      var posListPct = rates.pos.processing * 100;   // 1.2
+      var posFloorPct = (rates.posCardPct || 0) * 100 + 0.3;  // keep 0.3pp margin above card cost
+      var posRecPct = Math.max(posFloorPct, posListPct - 0.2);
+      posRecPct = Math.round(posRecPct * 100) / 100;
+      var posGmv = parseFloat(p.current && p.current.posGmv) || 0;
+      rec.rows.push({
+        label: 'POS processing %',
+        from: posListPct + '%',
+        to: posRecPct + '%',
+        delta: 'saves customer ~' + fmtMoney((posListPct - posRecPct) / 100 * posGmv) + '/mo'
+      });
+      rec.applies.fdPosRate = String(posRecPct);
+      // Per-txn fee: keep at list (small psychological weight)
+      rec.rows.push({
+        label: 'POS per-txn fee',
+        from: rates.pos.txnFee.toFixed(2),
+        to: rates.pos.txnFee.toFixed(2),
+        delta: 'kept at list — discounting this is less visible than processing %'
+      });
+      rec.applies.fdPosTransFee = rates.pos.txnFee.toFixed(2);
+    }
+
+    // Hardware — max discount within the payback envelope
+    var hwList = parseFloat(p.flipdish && p.flipdish.hardwareOneOff) || 0;
+    if (hwList === 0 && p.includePOS && rates.pos) {
+      hwList = rates.pos.hardwareStarter || 0;
+    }
+    if (p.includeKiosk && rates.kiosk) {
+      var kc = parseFloat(p.flipdish && p.flipdish.kioskCount) || 0;
+      hwList += kc * (parseFloat(p.flipdish && p.flipdish.kioskHwListPerUnit) || rates.kiosk.hardware);
+    }
+    var paybackEnvelope = v.paybackEnvelope || 0;
+    if (hwList > 0) {
+      var maxDiscount = Math.min(hwList, paybackEnvelope);
+      var recHw = Math.max(0, hwList - maxDiscount);
+      rec.rows.push({
+        label: 'Hardware (one-off)',
+        from: fmtMoney(hwList),
+        to: fmtMoney(recHw),
+        delta: fmtMoney(maxDiscount) + ' off (' + Math.round(maxDiscount / hwList * 100) + '% of list)'
+      });
+      rec.applies.fdHardwareOneOff = String(Math.round(recHw));
+    }
+
+    // Sub — keep at list
+    var bundleSub = parseFloat(p.flipdish && p.flipdish.monthlySub) || 0;
+    if (bundleSub > 0) {
+      rec.rows.push({
+        label: 'Bundle subscription',
+        from: fmtMoney(bundleSub),
+        to: fmtMoney(bundleSub),
+        delta: 'kept at list — recurring revenue holds clean'
+      });
+    }
+
+    // Sense-check: would the recommendation breach SNR floor?
+    if (v.snrPerSite < GUARDRAILS.snrFloorMonthly) {
+      rec.warnings.push('Even at this recommendation, SNR per site is below the £' + GUARDRAILS.snrFloorMonthly + '/mo floor — review pricing before sending.');
+    }
+
+    return rec;
+  }
+
+  function renderRecommendation(v) {
+    var hasAnything = prospect.includeOO || prospect.includePOS || prospect.includeKiosk;
+    var panel = $('recPanel');
+    if (!hasAnything) {
+      panel.style.display = 'none';
+      return;
+    }
+    panel.style.display = '';
+    var rec = computeRecommendation(prospect, v);
+    var grid = $('recGrid');
+    var rationale = $('recRationale');
+    grid.innerHTML = rec.rows.map(function (row) {
+      return '<div class="rec-row">' +
+        '<span class="rec-label">' + escapeHtml(row.label) + '</span>' +
+        '<span class="rec-values">' +
+          '<span class="from">' + escapeHtml(row.from) + '</span>' +
+          '<span class="to">' + escapeHtml(row.to) + '</span>' +
+          '<span class="delta">' + escapeHtml(row.delta) + '</span>' +
+        '</span>' +
+      '</div>';
+    }).join('');
+
+    var lines = [
+      '<p><strong>Why this mix:</strong> the biggest customer-perceived win is hardware — at this SNR the payback envelope absorbs the discount. Processing rate drops are the next-most-visible cut. Subscription stays at list to keep recurring revenue clean, and per-txn fees stay at list because they\'re less psychologically weighty than headline rate cuts.</p>'
+    ];
+    rec.warnings.forEach(function (w) {
+      lines.push('<p style="color:var(--red-strong);"><strong>⚠ ' + escapeHtml(w) + '</strong></p>');
+    });
+    rationale.innerHTML = lines.join('');
+
+    // Stash the apply payload for the button handler.
+    panel.dataset.applies = JSON.stringify(rec.applies || {});
+  }
+
+  function applyRecommendation() {
+    var panel = $('recPanel');
+    var applies = {};
+    try { applies = JSON.parse(panel.dataset.applies || '{}'); } catch (e) {}
+    Object.keys(applies).forEach(function (id) {
+      var el = $(id);
+      if (el) el.value = applies[id];
+    });
+    scheduleSave();
+    recompute();
   }
 
   // Render the Live Commercial Check panel at the top of Step 3.
@@ -1710,6 +1945,7 @@
     $('printBtn').addEventListener('click', printInternal);
     $('copyLinkBtn').addEventListener('click', copyLink);
     $('deleteBtn').addEventListener('click', deleteDeal);
+    $('recApplyBtn').addEventListener('click', applyRecommendation);
   }
 
   // ---------- Init ----------

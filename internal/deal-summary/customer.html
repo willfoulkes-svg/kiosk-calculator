@@ -165,6 +165,63 @@
   .save-callout.negative { background: var(--red-soft); color: var(--red-strong); }
   .save-callout.zero { background: #F0F4F8; color: var(--muted); }
 
+  /* ---------- Discount stack (hyped pricing tiles) ---------- */
+  .discount-stack {
+    background: linear-gradient(135deg, #FFF6D6 0%, #FFE9A8 100%);
+    border: 1px solid var(--amber-border);
+    border-radius: 16px;
+    padding: 22px 26px;
+    margin-bottom: 20px;
+  }
+  .discount-stack-intro {
+    font-size: 14px;
+    color: #6B5500;
+    margin: 0 0 14px;
+    line-height: 1.5;
+  }
+  .discount-stack-intro strong { color: #4A3A00; }
+  .stack-rows {
+    display: grid; gap: 8px;
+  }
+  .stack-row {
+    background: rgba(255,255,255,0.7);
+    border: 1px solid #E6CD66;
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap: 14px;
+    align-items: center;
+    font-size: 14px;
+  }
+  @media (max-width: 760px) {
+    .stack-row { grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px 12px; }
+    .stack-row .stack-label { grid-column: 1 / -1; font-size: 13px; }
+  }
+  .stack-row .stack-label {
+    font-weight: 600; color: #4A3A00;
+  }
+  .stack-row .stack-cell { font-variant-numeric: tabular-nums; }
+  .stack-row .stack-cell .stack-cell-label {
+    display: block; font-size: 10.5px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    color: #8A7300; margin-bottom: 2px;
+  }
+  .stack-row .stack-cell.list .stack-cell-value { color: var(--muted); text-decoration: line-through; }
+  .stack-row .stack-cell.yours .stack-cell-value { font-weight: 700; color: var(--flipdish-blue-dark); }
+  .stack-row .stack-cell.save .stack-cell-value { font-weight: 700; color: var(--green-strong); }
+  .stack-total {
+    margin-top: 12px; padding-top: 12px;
+    border-top: 1px solid #E6CD66;
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 14px;
+  }
+  .stack-total-label { font-weight: 600; color: #4A3A00; }
+  .stack-total-value {
+    font-family: 'Domine', Georgia, serif;
+    font-size: 22px; font-weight: 700; color: var(--green-strong);
+  }
+
   /* ---------- New-revenue panel (Phone AI) ---------- */
   .new-rev {
     background: var(--flipdish-blue-light);
@@ -327,6 +384,32 @@
   var CCY  = { UK: '£', IE: '€', US: '$', ES: '€' };
   var LOC  = { UK: 'United Kingdom', IE: 'Ireland', US: 'United States', ES: 'Spain' };
 
+  // Mirror of LIST_RATES in detail.html — used here to compute the
+  // "list price → your price" discount-stack section. If detail.html's
+  // LIST_RATES changes, mirror it here too.
+  var LIST_RATES = {
+    UK: {
+      oo:    { sub: 99, processing: 0.05 },
+      pos:   { sub: 99, processing: 0.012, txnFee: 0.10, hardwareStarter: 799 },
+      kiosk: { sub: 79, hardware: 1500 }
+    },
+    IE: {
+      oo:    { sub: 99, processing: 0.05 },
+      pos:   { sub: 99, processing: 0.012, txnFee: 0.10, hardwareStarter: 899 },
+      kiosk: { sub: 79, hardware: 1500 }
+    },
+    US: {
+      oo:    { sub: 249, processing: 0.05 },
+      pos:   null,
+      kiosk: { sub: 79, hardware: 2500 }
+    },
+    ES: {
+      oo:    { sub: 99, processing: 0.05 },
+      pos:   null,
+      kiosk: { sub: 79, hardware: 1500 }
+    }
+  };
+
   // ---------- URL + storage ----------
   function getQueryParam(key) {
     var q = window.location.search.replace(/^\?/, '').split('&');
@@ -467,6 +550,156 @@
       '</div>';
   }
 
+  // ---------- Discount stack (the hype) ----------
+  // For each lever the customer is buying, show "list price → your price"
+  // with the saving in £ and as a % off list. This reframes the deal as
+  // "look at what we're giving you" rather than "look at what it costs".
+  function discountStackHtml(p, country) {
+    var rates = LIST_RATES[country] || LIST_RATES.UK;
+    var f = p.flipdish || {};
+    var locations = Math.max(1, Math.round(parseFloat(p.locations)) || 1);
+    var rows = [];
+    var totalListMonthly = 0;
+    var totalYouMonthly = 0;
+    var totalListOneOff = 0;
+    var totalYouOneOff = 0;
+    var N = function (v) { var x = parseFloat(v); return isNaN(x) ? 0 : x; };
+
+    function pct(list, you) {
+      if (list <= 0) return 0;
+      return Math.round((list - you) / list * 100);
+    }
+    function rowHtml(label, listText, youText, saveText, savePct) {
+      return '' +
+        '<div class="stack-row">' +
+          '<div class="stack-label">' + escapeHtml(label) + '</div>' +
+          '<div class="stack-cell list"><span class="stack-cell-label">List price</span><span class="stack-cell-value">' + listText + '</span></div>' +
+          '<div class="stack-cell yours"><span class="stack-cell-label">Your price</span><span class="stack-cell-value">' + youText + '</span></div>' +
+          '<div class="stack-cell save"><span class="stack-cell-label">You save</span><span class="stack-cell-value">' + saveText + (savePct != null ? ' &nbsp;<small>(' + savePct + '% off)</small>' : '') + '</span></div>' +
+        '</div>';
+    }
+
+    // ---- OO processing ----
+    if (p.includeOO && rates.oo) {
+      var ooListPct = rates.oo.processing * 100;
+      var ooYouPct = N(f.ooProcessingRate);
+      if (ooYouPct < ooListPct) {
+        rows.push(rowHtml(
+          'Online ordering — processing %',
+          ooListPct + '%',
+          ooYouPct + '%',
+          (ooListPct - ooYouPct).toFixed(1) + 'pp',
+          pct(ooListPct, ooYouPct)
+        ));
+      }
+    }
+
+    // ---- POS processing rate ----
+    if (p.includePOS && rates.pos) {
+      var posListPct = rates.pos.processing * 100;
+      var posYouPct = N(f.posRate);
+      if (posYouPct > 0 && posYouPct < posListPct) {
+        rows.push(rowHtml(
+          'POS — processing rate',
+          posListPct + '%',
+          posYouPct + '%',
+          (posListPct - posYouPct).toFixed(2) + 'pp',
+          pct(posListPct, posYouPct)
+        ));
+      }
+      // ---- POS per-txn fee ----
+      var posListTxn = rates.pos.txnFee;
+      var posYouTxn = N(f.posTransFee);
+      if (posYouTxn > 0 && posYouTxn < posListTxn) {
+        rows.push(rowHtml(
+          'POS — per-transaction fee',
+          fmtMoney(posListTxn, country),
+          fmtMoney(posYouTxn, country),
+          fmtMoney(posListTxn - posYouTxn, country),
+          pct(posListTxn, posYouTxn)
+        ));
+      }
+    }
+
+    // ---- Bundle subscription ----
+    // Build the list-rate sub from the sum of per-product subs in scope.
+    var listSubMonthly = 0;
+    if (p.includeOO && rates.oo) listSubMonthly += rates.oo.sub * locations;
+    if (p.includePOS && rates.pos) listSubMonthly += rates.pos.sub * locations;
+    if (p.includeKiosk && rates.kiosk) {
+      var kc = N(f.kioskCount);
+      listSubMonthly += rates.kiosk.sub * kc;
+    }
+    var youSubMonthly = N(f.monthlySub);
+    if (listSubMonthly > 0 && youSubMonthly > 0) {
+      totalListMonthly += listSubMonthly;
+      totalYouMonthly  += youSubMonthly;
+      if (youSubMonthly < listSubMonthly) {
+        rows.push(rowHtml(
+          'Total monthly subscription',
+          fmtMoney(listSubMonthly, country) + '/mo',
+          fmtMoney(youSubMonthly, country) + '/mo',
+          fmtMoney(listSubMonthly - youSubMonthly, country) + '/mo',
+          pct(listSubMonthly, youSubMonthly)
+        ));
+      } else {
+        rows.push(rowHtml(
+          'Total monthly subscription',
+          fmtMoney(listSubMonthly, country) + '/mo',
+          fmtMoney(youSubMonthly, country) + '/mo',
+          'kept at list',
+          null
+        ));
+      }
+    }
+
+    // ---- Hardware (one-off) ----
+    var listHardware = 0;
+    if (p.includePOS && rates.pos) listHardware += rates.pos.hardwareStarter * locations;
+    if (p.includeKiosk && rates.kiosk) {
+      var kc2 = N(f.kioskCount);
+      var perUnit = N(f.kioskHwListPerUnit) || rates.kiosk.hardware;
+      listHardware += perUnit * kc2;
+    }
+    var youHardware = N(f.hardwareOneOff);
+    if (listHardware > 0 && youHardware >= 0) {
+      totalListOneOff += listHardware;
+      totalYouOneOff  += youHardware;
+      if (youHardware < listHardware) {
+        rows.push(rowHtml(
+          'Hardware (one-off)',
+          fmtMoney(listHardware, country),
+          fmtMoney(youHardware, country),
+          fmtMoney(listHardware - youHardware, country),
+          pct(listHardware, youHardware)
+        ));
+      }
+    }
+
+    if (rows.length === 0) return '';
+
+    // Total saving across the package over Year 1
+    var totalSaveMonthly = totalListMonthly - totalYouMonthly;
+    var totalSaveOneOff  = totalListOneOff - totalYouOneOff;
+    var totalSaveYearOne = (totalSaveMonthly * 12) + totalSaveOneOff;
+
+    var totalLine = '';
+    if (totalSaveYearOne > 0) {
+      totalLine = '' +
+        '<div class="stack-total">' +
+          '<span class="stack-total-label">Total package value vs list (Year 1)</span>' +
+          '<span class="stack-total-value">' + fmtMoney(totalSaveYearOne, country) + ' off</span>' +
+        '</div>';
+    }
+
+    return '' +
+      '<div class="discount-stack">' +
+        '<p class="discount-stack-intro"><strong>Your special pricing.</strong> Below is the discount we\'re putting on the table for your business — comparing standard list pricing to what you\'ll actually be paying.</p>' +
+        '<div class="stack-rows">' + rows.join('') + '</div>' +
+        totalLine +
+      '</div>';
+  }
+
   function investmentHtml(v, country) {
     var rows = [];
     if (v.fdMonthlySub > 0) rows.push({ k: 'Flipdish monthly subscription', v: fmtMoney(v.fdMonthlySub, country) + '/mo' });
@@ -557,6 +790,12 @@
         '</div>' +
       '</div>';
 
+    // Discount stack (the hype: list price → your price, per lever)
+    var stackHtml = discountStackHtml(prospect, country);
+    var stackSection = stackHtml
+      ? '<h2 class="section-title"><span class="dot"></span>Your special pricing</h2>' + stackHtml
+      : '';
+
     // Savings section (OO + POS)
     var savingsHtml = '';
     var savingsTiles = [];
@@ -603,7 +842,7 @@
       '</div>';
 
     document.getElementById('mainContent').innerHTML =
-      headerHtml + heroHtml + savingsHtml + investSectionHtml + bottomLineHtml + finePrint + actionsHtml;
+      headerHtml + heroHtml + stackSection + savingsHtml + investSectionHtml + bottomLineHtml + finePrint + actionsHtml;
 
     var printBtn = document.getElementById('printBtn');
     if (printBtn) printBtn.addEventListener('click', function () { window.print(); });
