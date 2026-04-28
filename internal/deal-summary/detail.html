@@ -378,6 +378,16 @@
     border: 1px solid rgba(0,0,0,0.05);
   }
   .offer-suggested strong { color: var(--flipdish-blue-dark); }
+  /* Embedded Live Check — sits inside the offer panel, so override the
+     coloured backgrounds with white so it reads as a "deal-health"
+     subsection rather than a competing coloured strip. */
+  .offer-panel .status-strip.embedded {
+    background: rgba(255,255,255,0.72) !important;
+    border-left: 3px solid var(--green-strong);
+  }
+  .offer-panel .status-strip.embedded.warn { border-left-color: var(--amber-strong); }
+  .offer-panel .status-strip.embedded.bust { border-left-color: var(--red-strong); }
+  .offer-panel .status-strip.embedded.idle { border-left-color: var(--muted); }
 
   /* ---------- Document upload stub ---------- */
   /* Visible UI placeholder. Extraction wires up later — this is just the
@@ -722,69 +732,14 @@
   </div>
 
 
-  <!-- ===================== STEP 3 — WHAT YOU CAN OFFER ===================== -->
-  <!-- Diagnostic + prescriptive panel introduced in v8. Compares the
-       customer's current monthly spend (Step 2) against Flipdish at list
-       and tells the rep one of three things:
-         · "You have headroom" (customer pays more than Flipdish list)
-         · "Roughly matching"  (within ±10%)
-         · "Tight at list"     (Flipdish list > current spend — careful)
-       Plus three concrete levers (sub / hardware / processing) with
-       how-far-you-can-push numbers bound by the commercial guardrails. -->
+  <!-- ===================== STEP 3 — FLIPDISH PROPOSAL ===================== -->
+  <!-- v8.2: panel order swap — proposal now sits BEFORE the "How does
+       this stack up?" panel. Reps need to type the actual SFDC quote
+       first; the diagnostic below then compares THEIR PROPOSAL (not
+       list) against the customer's current spend. -->
   <div class="step">
     <span class="num">3</span>
-    <span class="text">What you can offer <span class="sub">Compares their current spend to Flipdish list and tells you the maximum you can give without breaking the deal</span></span>
-  </div>
-
-  <div class="offer-panel idle" id="offerPanel">
-    <div class="offer-headline">
-      <span class="offer-state-pill" id="offerStatePill">Awaiting inputs</span>
-      <h3 id="offerTitle">Fill in Step 2 to unlock the prescription</h3>
-    </div>
-    <div class="offer-summary" id="offerSummary">
-      Pick a product (Online Ordering / POS / Kiosk) above and fill in what they pay today — this panel will then tell you how much room you have to discount before the deal stops working.
-    </div>
-    <div class="offer-numbers" id="offerNumbers" style="display:none;">
-      <div class="offer-num">
-        <div class="offer-num-label">They pay today</div>
-        <div class="offer-num-value" id="offerCurrentVal">—</div>
-      </div>
-      <div class="offer-num">
-        <div class="offer-num-label">Flipdish at list</div>
-        <div class="offer-num-value" id="offerListVal">—</div>
-      </div>
-      <div class="offer-num">
-        <div class="offer-num-label" id="offerDeltaLabel">Gap</div>
-        <div class="offer-num-value" id="offerDeltaVal">—</div>
-      </div>
-    </div>
-    <div class="offer-levers" id="offerLevers" style="display:none;">
-      <div class="lever">
-        <div class="lever-label">Bundled subscription</div>
-        <div class="lever-value" id="offerSubVal">—</div>
-        <div class="lever-detail" id="offerSubDetail">—</div>
-      </div>
-      <div class="lever">
-        <div class="lever-label">Hardware (one-off)</div>
-        <div class="lever-value" id="offerHwVal">—</div>
-        <div class="lever-detail" id="offerHwDetail">—</div>
-      </div>
-      <div class="lever">
-        <div class="lever-label">Processing rate</div>
-        <div class="lever-value" id="offerRateVal">—</div>
-        <div class="lever-detail" id="offerRateDetail">—</div>
-      </div>
-    </div>
-    <div class="offer-suggested" id="offerSuggested" style="display:none;"></div>
-  </div>
-
-  <!-- ===================== STEP 4 — FLIPDISH PROPOSAL ===================== -->
-  <!-- Renumbered 3 → 4 in v8 because the new "What you can offer" panel now
-       sits BETWEEN Step 2 (current spend) and the rep's actual proposal.
-       Order: prescription → proposal → validation. -->
-  <div class="step">
-    <span class="num">4</span>
-    <span class="text">Flipdish proposal <span class="sub">Type the rates from the SFDC quote · the Live Commercial Check below validates whether the deal sits inside the headroom Step 3 prescribed</span></span>
+    <span class="text">Flipdish proposal <span class="sub">Type the rates from the SFDC quote · only the cards for products you ticked above appear here</span></span>
   </div>
 
   <!-- OO proposal — processing rate only (sub lives in the Subscription
@@ -849,20 +804,91 @@
        always 12. -->
 
 
-  <!-- Live commercial check — single plain-English status strip.
-       Replaced the four-tile finance dashboard because reps don't speak
-       SNR / op margin / payback envelope. This tells the rep what they
-       actually need to know: is the deal OK to send, and how much more
-       can they give. Click the strip to expand the detail. -->
-  <div class="status-strip" id="liveCheck">
-    <span class="status-pill" id="liveStatus">Awaiting inputs</span>
-    <span class="status-message" id="liveMessage">Fill in Steps 2 and 3 to see whether this deal is approvable and how much further you can push the discounts.</span>
-    <button class="status-detail-toggle" id="liveDetailToggle" type="button" aria-expanded="false">Show the math</button>
-    <div class="status-detail" id="liveDetail" hidden>
-      <div class="detail-row"><span>Recurring revenue per site</span><span id="liveDetSnr">—</span></div>
-      <div class="detail-row"><span>Operating margin / mo (SNR × 0.75)</span><span id="liveDetOpMargin">—</span></div>
-      <div class="detail-row"><span>Hardware payback at proposed price</span><span id="liveDetPayback">—</span></div>
-      <div class="detail-row"><span>Hardware discount headroom (3-month envelope)</span><span id="liveDetMaxHw">—</span></div>
+  <!-- ===================== STEP 4 — HOW DOES THIS STACK UP? ===================== -->
+  <!-- v8.2 redesign: this panel now sits BELOW the Flipdish proposal so
+       the rep sees their ACTUAL TYPED QUOTE compared against the
+       customer's current spend (not Flipdish list). It's also fully
+       scope-aware — for OO-only deals, no hardware or POS-rate lever
+       cards appear; for kiosk-only, no processing-rate cards; etc.
+       Each lever shows: list value, what the rep typed, and a concrete
+       "to match their current spend, drop this to £X" target where
+       single-lever match is feasible. The Live Commercial Check (deal
+       health from Flipdish's side) is folded into the bottom of the
+       same panel. -->
+  <div class="step">
+    <span class="num">4</span>
+    <span class="text">How does this stack up? <span class="sub">Compares your proposal vs their current spend, shows what to tweak to match, and validates the deal is healthy for Flipdish</span></span>
+  </div>
+
+  <div class="offer-panel idle" id="offerPanel">
+    <div class="offer-headline">
+      <span class="offer-state-pill" id="offerStatePill">Awaiting inputs</span>
+      <h3 id="offerTitle">Fill in Steps 2 and 3 to see how the deal stacks up</h3>
+    </div>
+    <div class="offer-summary" id="offerSummary">
+      Pick a product (Online Ordering / POS / Kiosk) above, type what they pay today, and type your Flipdish proposal — this panel will then compare them and show you what to adjust to match.
+    </div>
+    <div class="offer-numbers" id="offerNumbers" style="display:none;">
+      <div class="offer-num">
+        <div class="offer-num-label">They pay today</div>
+        <div class="offer-num-value" id="offerCurrentVal">—</div>
+      </div>
+      <div class="offer-num">
+        <div class="offer-num-label">You proposed (recurring)</div>
+        <div class="offer-num-value" id="offerProposedVal">—</div>
+      </div>
+      <div class="offer-num">
+        <div class="offer-num-label" id="offerDeltaLabel">Gap</div>
+        <div class="offer-num-value" id="offerDeltaVal">—</div>
+      </div>
+    </div>
+
+    <!-- Scope-aware lever cards: each is hidden by default (display:none)
+         and only un-hidden by JS when the corresponding product is in
+         scope. So OO-only deals never see the hardware or POS-rate
+         cards. Kiosk-only never see processing rate cards, etc. -->
+    <div class="offer-levers" id="offerLevers" style="display:none;">
+      <div class="lever" data-lever="sub" id="lever-sub" style="display:none;">
+        <div class="lever-label">Bundled subscription</div>
+        <div class="lever-value" id="offerSubVal">—</div>
+        <div class="lever-detail" id="offerSubDetail">—</div>
+      </div>
+      <div class="lever" data-lever="ooRate" id="lever-ooRate" style="display:none;">
+        <div class="lever-label">OO processing %</div>
+        <div class="lever-value" id="offerOORateVal">—</div>
+        <div class="lever-detail" id="offerOORateDetail">—</div>
+      </div>
+      <div class="lever" data-lever="posRate" id="lever-posRate" style="display:none;">
+        <div class="lever-label">POS processing %</div>
+        <div class="lever-value" id="offerPosRateVal">—</div>
+        <div class="lever-detail" id="offerPosRateDetail">—</div>
+      </div>
+      <div class="lever" data-lever="posTxn" id="lever-posTxn" style="display:none;">
+        <div class="lever-label">POS per-transaction fee</div>
+        <div class="lever-value" id="offerPosTxnVal">—</div>
+        <div class="lever-detail" id="offerPosTxnDetail">—</div>
+      </div>
+      <div class="lever" data-lever="hardware" id="lever-hardware" style="display:none;">
+        <div class="lever-label">Hardware (one-off)</div>
+        <div class="lever-value" id="offerHwVal">—</div>
+        <div class="lever-detail" id="offerHwDetail">—</div>
+      </div>
+    </div>
+
+    <!-- Concrete "to match" prescription -->
+    <div class="offer-suggested" id="offerSuggested" style="display:none;"></div>
+
+    <!-- Folded-in Live Commercial Check — deal health from Flipdish's side. -->
+    <div class="status-strip embedded" id="liveCheck" style="margin-top:14px;margin-bottom:0;">
+      <span class="status-pill" id="liveStatus">Awaiting inputs</span>
+      <span class="status-message" id="liveMessage">Type a proposal in Step 3 to see whether the deal is healthy for Flipdish.</span>
+      <button class="status-detail-toggle" id="liveDetailToggle" type="button" aria-expanded="false">Show the math</button>
+      <div class="status-detail" id="liveDetail" hidden>
+        <div class="detail-row"><span>Recurring revenue per site</span><span id="liveDetSnr">—</span></div>
+        <div class="detail-row"><span>Operating margin / mo (SNR × 0.75)</span><span id="liveDetOpMargin">—</span></div>
+        <div class="detail-row"><span>Hardware payback at proposed price</span><span id="liveDetPayback">—</span></div>
+        <div class="detail-row"><span>Hardware discount headroom (3-month envelope)</span><span id="liveDetMaxHw">—</span></div>
+      </div>
     </div>
   </div>
 
@@ -1676,236 +1702,264 @@
         ? fmtMoney(v.detail.pos.curTotal) + '/mo (today) − ' + fmtMoney(v.detail.pos.newTotal) + '/mo (Flipdish)'
         : '—');
 
-    // What-you-can-offer panel (Step 3, v8) — diagnose customer current
-    // vs Flipdish list and prescribe the maximum the rep can give. This
-    // sits BEFORE Step 4 (rep's actual proposal) by design — prescription
-    // first, validation after.
-    renderOfferPanel(computeOfferPanel(prospect));
-
-    // Live commercial status strip (bottom of Step 4) — validates whether
-    // the rep's typed proposal sits inside the headroom Step 3 prescribed.
+    // "How does this stack up?" panel (Step 4, v8.2) — sits BELOW the
+    // rep's proposal. Compares what they typed vs the customer's current
+    // spend, scope-aware (only shows levers in active scope), and gives
+    // concrete "to match, set sub to £X" prescriptions. Live Check is
+    // folded into the bottom of the same panel.
+    renderOfferPanel(computeOfferPanel(prospect, v));
     renderLiveCheck(v);
 
     // Narrative
     $('narrativeBox').innerHTML = narrativeFor(prospect, v);
   }
 
-  // ---------- "What you can offer" engine (v8) ----------
-  // Diagnose the gap between what the customer pays today and what
-  // Flipdish would charge them at full list. Three states:
+  // ---------- "How does this stack up?" engine (v8.2) ----------
+  // Compares the REP'S PROPOSAL (what they typed in Step 3) against the
+  // customer's current monthly spend and produces three outputs:
   //
-  //   headroom — customer pays MORE today than Flipdish list. Rep has
-  //              room to discount AND still come out cheaper.
-  //   match    — customer current is within ±10% of Flipdish list.
-  //              No real room to discount — sell on platform value.
-  //   tight    — Flipdish list is MORE EXPENSIVE than what they pay
-  //              today. Discounting won't make it work; need to
-  //              reduce hardware scope, push back, or qualify out.
+  //   1. State  — 'headroom' (proposal already cheaper), 'match'
+  //               (gap exists but a single lever can close it), or
+  //               'tight' (gap can't be closed by any single lever).
   //
-  // For each state the engine also computes how far the rep can push
-  // each lever (sub / hardware / processing) without breaking the
-  // commercial guardrails (SNR floor, 3-month hardware payback, min
-  // margin above Stripe card-processing cost).
-  function computeOfferPanel(p) {
+  //   2. Levers — only the ones in active scope. For OO-only deals,
+  //               just sub + OO processing %. For POS-only, sub + POS
+  //               rate + per-txn + hardware. Each lever shows the
+  //               proposed value AND a concrete "to match, drop this
+  //               to £X" target where single-lever match is feasible.
+  //
+  //   3. Suggested play — natural-language opening offer.
+  //
+  // All targets are bound by guardrails: SNR floor (£350/mo per site),
+  // POS rate floor (Stripe + 0.3pp), OO rate floor (Stripe + 1pp),
+  // hardware discount ≤ 3-month op margin envelope.
+  function computeOfferPanel(p, v) {
     var rates = LIST_RATES[p.country] || LIST_RATES.UK;
     var locations = Math.max(1, Math.round(parseFloat(p.locations)) || 1);
     var c = p.current || {};
-    var N = function (v) { var x = parseFloat(v); return isNaN(x) ? 0 : x; };
+    var f = p.flipdish || {};
+    var N = function (x) { var n = parseFloat(x); return isNaN(n) ? 0 : n; };
 
     var hasScope = !!(p.includeOO || p.includePOS || p.includeKiosk);
-    if (!hasScope) {
-      return { state: 'idle' };
-    }
+    if (!hasScope) return { state: 'idle' };
 
-    // We need at least one current-spend signal to compare against
-    var hasCurrent = false;
-    if (p.includeOO  && N(c.ooGmv) > 0)  hasCurrent = true;
-    if (p.includePOS && N(c.posGmv) > 0) hasCurrent = true;
-    // Kiosk is a NEW offering — no displacement. If kiosk-only, we still
-    // show the panel but skip the comparison (kiosk-only deals are sold
-    // on incremental revenue, not cost replacement).
-    var kioskOnly = p.includeKiosk && !p.includeOO && !p.includePOS;
-    if (!hasCurrent && !kioskOnly) {
-      return { state: 'idle', awaitingCurrent: true };
-    }
+    var hasCurrentOO  = p.includeOO  && N(c.ooGmv)  > 0;
+    var hasCurrentPOS = p.includePOS && N(c.posGmv) > 0;
+    var hasCurrent    = hasCurrentOO || hasCurrentPOS;
+    var kioskOnly     = p.includeKiosk && !p.includeOO && !p.includePOS;
+    if (!hasCurrent && !kioskOnly) return { state: 'idle', awaitingCurrent: true };
 
-    // -------- Customer current monthly cost --------
-    var currentTotal = 0;
-    if (p.includeOO && N(c.ooGmv) > 0) {
-      var ooAov = N(c.ooAov) || N(c.aov) || 25;
-      var ooTxnCount = ooAov > 0 ? N(c.ooGmv) / ooAov : 0;
-      currentTotal += N(c.ooGmv) * (N(c.ooProcessingRate) / 100)
-                    + ooTxnCount * N(c.ooTransFee)
-                    + N(c.ooSub);
-    }
-    if (p.includePOS && N(c.posGmv) > 0) {
-      var posAov = N(c.aov) || 15;
-      var posTxnCount = posAov > 0 ? N(c.posGmv) / posAov : 0;
-      currentTotal += N(c.posGmv) * (N(c.posRate) / 100)
-                    + posTxnCount * N(c.posTransFee)
-                    + N(c.posSub);
-    }
+    var hasProposal =
+        N(f.monthlySub) > 0
+     || (p.includeOO    && N(f.ooProcessingRate) > 0)
+     || (p.includePOS   && (N(f.posRate) > 0 || N(f.posHardware) > 0))
+     || (p.includeKiosk && N(f.kioskHardware) > 0);
+    if (!hasProposal) return { state: 'idle', awaitingProposal: true };
 
-    // -------- Flipdish at-LIST monthly cost --------
-    // Recurring only — hardware sits as a one-off, compared separately.
+    // ---- Customer current monthly (pulled from the value-story result
+    //      so the math is shared, not duplicated) ----
+    var customerOOMonthly  = (v.detail.oo  && v.detail.oo.curTotal)  || 0;
+    var customerPOSMonthly = (v.detail.pos && v.detail.pos.curTotal) || 0;
+    var customerTotal = customerOOMonthly + customerPOSMonthly;
+
+    // ---- Rep's proposed monthly recurring (matching detail structure) ----
+    // OO fdTotal = OO processing only (sub is bundled)
+    // POS newTotal = POS processing + per-txn (sub is bundled)
+    // fdSub = bundled subscription across whatever's in scope
+    var fdOOMonthly  = (v.detail.oo  && v.detail.oo.fdTotal)  || 0;
+    var fdPOSMonthly = (v.detail.pos && v.detail.pos.newTotal) || 0;
+    var fdSub        = N(f.monthlySub);
+    var proposedRecurring = fdOOMonthly + fdPOSMonthly + fdSub;
+
+    // ---- Hardware (one-off, compared separately) ----
+    var proposedHardware = v.hardwareOneOff   || 0;
+    var hardwareList     = v.hardwareListTotal || 0;
+
+    // ---- Gap = how much MORE Flipdish costs the customer per month ----
+    var delta = customerTotal - proposedRecurring;
+    var gap = Math.max(0, -delta);
+
+    // ---- List-rate references (for "current vs floor" lever annotations) ----
+    var ooListPct  = (p.includeOO  && rates.oo)  ? rates.oo.processing  * 100 : 0;
+    var posListPct = (p.includePOS && rates.pos) ? rates.pos.processing * 100 : 0;
+    var posListTxn = (p.includePOS && rates.pos) ? rates.pos.txnFee : 0;
+    // Sub list = sum of in-scope list subs
     var listSubTotal = 0;
-    var listProcTotal = 0;
-    if (p.includeOO && rates.oo) {
-      listSubTotal  += rates.oo.sub;
-      listProcTotal += N(c.ooGmv) * rates.oo.processing;  // OO has no per-txn list fee
-    }
-    if (p.includePOS && rates.pos) {
-      listSubTotal  += rates.pos.sub * locations;
-      var posAov2 = N(c.aov) || 15;
-      var posTxnCount2 = posAov2 > 0 ? N(c.posGmv) / posAov2 : 0;
-      listProcTotal += N(c.posGmv) * rates.pos.processing
-                    + posTxnCount2 * rates.pos.txnFee;
-    }
-    if (p.includeKiosk && rates.kiosk) {
-      listSubTotal += rates.kiosk.sub;
-    }
-    var listMonthly = listSubTotal + listProcTotal;
+    if (p.includeOO && rates.oo)       listSubTotal += rates.oo.sub;
+    if (p.includePOS && rates.pos)     listSubTotal += rates.pos.sub * locations;
+    if (p.includeKiosk && rates.kiosk) listSubTotal += rates.kiosk.sub;
 
-    // -------- List hardware (one-off) --------
-    var listHardware = 0;
-    if (p.includePOS && rates.pos) listHardware += rates.pos.hardwareStarter * locations;
-    if (p.includeKiosk && rates.kiosk) listHardware += rates.kiosk.hardware;
+    // ---- SNR floors per lever (from guardrails) ----
+    var ooFloorPct  = (rates.ooCardPct  || 0) * 100 + 1.0;   // OO: keep 1pp above Stripe
+    var posFloorPct = (rates.posCardPct || 0) * 100 + 0.3;   // POS: keep 0.3pp above Stripe
 
-    // -------- State diagnosis --------
-    // delta > 0  → customer pays MORE today → Flipdish at list is already
-    //              cheaper → no work needed (headroom).
-    // delta ≤ 0  → Flipdish at list is more expensive than current → the
-    //              rep needs to find £delta/mo of "give" to match. The
-    //              question is whether the levers can supply that much.
-    //              If yes → "match" (closeable). If no → "tight".
-    var delta = currentTotal - listMonthly;
-    var gap = Math.max(0, -delta);  // £/mo Flipdish needs to give back to match
-
-    // -------- Lever headroom calculations (at LIST rates as baseline) --------
-    // Compute SNR at list to find the absolute ceiling for hardware discount.
-    var snrAtList = 0;
-    if (p.includeOO && rates.oo) {
-      var ooGmv = N(c.ooGmv);
-      var ooAov3 = N(c.ooAov) || N(c.aov) || 25;
-      var ooTxn3 = ooAov3 > 0 ? ooGmv / ooAov3 : 0;
-      var ooProcRev = ooGmv * rates.oo.processing;
-      var ooCardCost = ooGmv * (rates.ooCardPct || 0) + ooTxn3 * (rates.ooCardFix || 0);
-      snrAtList += (ooProcRev - ooCardCost + rates.oo.sub);
-    }
-    if (p.includePOS && rates.pos) {
-      var posGmv2 = N(c.posGmv);
-      var posAov3 = N(c.aov) || 15;
-      var posTxn3 = posAov3 > 0 ? posGmv2 / posAov3 : 0;
-      var posProcRev = posGmv2 * rates.pos.processing + posTxn3 * rates.pos.txnFee;
-      var posCardCost = posGmv2 * (rates.posCardPct || 0) + posTxn3 * (rates.posCardFix || 0);
-      snrAtList += (posProcRev - posCardCost + rates.pos.sub * locations);
-    }
-    if (p.includeKiosk && rates.kiosk) {
-      snrAtList += rates.kiosk.sub;
-    }
-    // Cross-subsidy: POS+Kiosk fully eligible, 25% of OO eligible
-    var ooSnrAtList = 0, posSnrAtList = 0, kioskSnrAtList = 0;
-    if (p.includeOO && rates.oo) {
-      var _ooGmv = N(c.ooGmv);
-      var _ooAov = N(c.ooAov) || N(c.aov) || 25;
-      var _ooTxn = _ooAov > 0 ? _ooGmv / _ooAov : 0;
-      ooSnrAtList = _ooGmv * rates.oo.processing
-                  - (_ooGmv * (rates.ooCardPct || 0) + _ooTxn * (rates.ooCardFix || 0))
-                  + rates.oo.sub;
-    }
-    if (p.includePOS && rates.pos) {
-      var _posGmv = N(c.posGmv);
-      var _posAov = N(c.aov) || 15;
-      var _posTxn = _posAov > 0 ? _posGmv / _posAov : 0;
-      posSnrAtList = _posGmv * rates.pos.processing + _posTxn * rates.pos.txnFee
-                   - (_posGmv * (rates.posCardPct || 0) + _posTxn * (rates.posCardFix || 0))
-                   + rates.pos.sub * locations;
-    }
-    if (p.includeKiosk && rates.kiosk) {
-      kioskSnrAtList = rates.kiosk.sub;
-    }
-    var eligibleSnrAtList = posSnrAtList + kioskSnrAtList + ooSnrAtList * GUARDRAILS.ooSnrCrossSubsidy;
-    var eligibleOpMarginAtList = eligibleSnrAtList * GUARDRAILS.opMarginFactor;
-    var hardwarePaybackEnvelopeAtList = Math.max(0, eligibleOpMarginAtList * GUARDRAILS.paybackTargetMonths);
-
-    // Maximum hardware discount the rep can give while staying inside the
-    // 3-month payback target — this is the absolute ceiling. We also cap
-    // it at 100% of list (can't give more than the hardware costs).
-    var maxHwDiscount = Math.min(listHardware, Math.round(hardwarePaybackEnvelopeAtList));
-    // Standard play: 20% off list. Use the smaller of "20%" and "ceiling".
-    var stdHwDiscount = Math.min(maxHwDiscount, Math.round(listHardware * 0.20));
-
-    // Subscription headroom — how much could you drop the bundled sub
-    // and still hit the SNR floor (£350/mo per site)? Total floor =
-    // floor × locations; available headroom = current SNR-at-list - floor.
-    var snrAtListPerSite = snrAtList / locations;
-    var snrHeadroomPerSite = Math.max(0, snrAtListPerSite - GUARDRAILS.snrFloorMonthly);
+    // SNR per site at proposed rates, headroom before SNR floor
+    var snrPerSite = v.snrPerSite || 0;
+    var snrHeadroomPerSite = Math.max(0, snrPerSite - GUARDRAILS.snrFloorMonthly);
     var maxSubDiscount = Math.round(snrHeadroomPerSite * locations);
-    // Don't recommend dropping the sub by more than 50% of list — past
-    // that, recurring revenue erodes too far for a healthy deal.
-    var subSafetyCap = Math.round(listSubTotal * 0.50);
-    maxSubDiscount = Math.min(maxSubDiscount, subSafetyCap);
 
-    // POS processing rate headroom — how far below list can we go and
-    // still keep at least 0.3pp margin above the Stripe POS card cost?
-    var rateHeadroomPP = 0;
-    var ratePosListPct = 0;
-    var ratePosFloorPct = 0;
-    var rateMonthlyValue = 0;  // £/mo saving the rate-floor gives the customer
-    if (p.includePOS && rates.pos) {
-      ratePosListPct = rates.pos.processing * 100;
-      ratePosFloorPct = (rates.posCardPct || 0) * 100 + 0.3;
-      rateHeadroomPP = Math.max(0, ratePosListPct - ratePosFloorPct);
-      rateMonthlyValue = (rateHeadroomPP / 100) * N(c.posGmv);
+    // Hardware payback envelope (corrected formula from v8.1):
+    // payback = discount / op_margin → max discount = 3 × op_margin
+    var eligibleOp = v.eligibleOpMargin || 0;
+    var maxHwDiscount = Math.min(hardwareList, Math.round(eligibleOp * GUARDRAILS.paybackTargetMonths));
+
+    // ---- Build the lever cards (scope-aware) ----
+    // Each lever has: key, label, valueLabel (current proposed value),
+    // detail (what it can do), and target (single-lever match target if
+    // achievable, else null).
+    var levers = [];
+
+    // BUNDLED SUB — always present if any product is in scope
+    var subTarget = null;
+    if (gap > 0 && gap <= maxSubDiscount) {
+      subTarget = Math.max(0, fdSub - gap);
+    }
+    var subDetail;
+    if (gap > 0 && subTarget != null) {
+      subDetail = 'To match their current spend with this lever alone: <strong>drop the sub to ' + fmtMoney(subTarget) + '/mo</strong> (' + fmtMoney(fdSub - subTarget) + ' off your current proposal). Floor is ' + fmtMoney(GUARDRAILS.snrFloorMonthly) + '/mo per site of recurring revenue.';
+    } else if (gap > 0) {
+      subDetail = 'Sub alone can\'t close the ' + fmtMoney(gap) + '/mo gap — only ' + fmtMoney(maxSubDiscount) + '/mo of headroom before the SNR floor.';
+    } else if (maxSubDiscount > 0) {
+      subDetail = 'You\'ve got ' + fmtMoney(maxSubDiscount) + '/mo of headroom before the SNR floor (' + fmtMoney(GUARDRAILS.snrFloorMonthly) + '/mo per site). Use sparingly — recurring revenue is the most precious lever.';
+    } else {
+      subDetail = 'No room — recurring revenue is already at the SNR floor.';
+    }
+    levers.push({
+      key: 'sub', label: 'Bundled subscription',
+      valueLabel: fmtMoney(fdSub) + '/mo', detail: subDetail, target: subTarget
+    });
+
+    // OO PROCESSING % — only if OO in scope
+    if (p.includeOO && rates.oo && hasCurrentOO) {
+      var fdOOPct = N(f.ooProcessingRate);
+      var ooHeadroomPP = Math.max(0, fdOOPct - ooFloorPct);
+      var ooMaxMonthly = (ooHeadroomPP / 100) * N(c.ooGmv);
+      var ooTarget = null;
+      if (gap > 0 && N(c.ooGmv) > 0) {
+        var ooReductionPP = (gap / N(c.ooGmv)) * 100;
+        var newPct = fdOOPct - ooReductionPP;
+        if (newPct >= ooFloorPct) ooTarget = newPct;
+      }
+      var ooDetail;
+      if (gap > 0 && ooTarget != null) {
+        ooDetail = 'To match their current spend with this lever alone: <strong>drop OO processing to ' + ooTarget.toFixed(2) + '%</strong> (' + (fdOOPct - ooTarget).toFixed(2) + 'pp off your proposal). Floor is ' + ooFloorPct.toFixed(2) + '% (Stripe ' + (rates.ooCardPct * 100).toFixed(2) + '% + 1pp).';
+      } else if (gap > 0) {
+        ooDetail = 'OO rate alone can\'t close the gap — at the ' + ooFloorPct.toFixed(2) + '% floor that\'s ' + fmtMoney(ooMaxMonthly) + '/mo of give max.';
+      } else {
+        ooDetail = 'List ' + ooListPct.toFixed(1) + '% → floor ' + ooFloorPct.toFixed(2) + '%. Up to ' + ooHeadroomPP.toFixed(2) + 'pp of room ≈ ' + fmtMoney(ooMaxMonthly) + '/mo recurring give.';
+      }
+      levers.push({
+        key: 'ooRate', label: 'OO processing %',
+        valueLabel: fdOOPct.toFixed(2) + '%', detail: ooDetail, target: ooTarget
+      });
     }
 
-    // -------- Total lever power (£/mo of "give" the rep can offer) --------
-    // Sub discount = recurring £/mo straight reduction in customer bill.
-    // Hardware discount = one-off; amortise over the contract length to
-    //                     compare against a recurring monthly gap.
-    // Rate discount    = recurring £/mo (rateHeadroomPP × monthly POS GMV).
-    var hwAmortisedMonthly = maxHwDiscount / CONTRACT_MONTHS;
-    var totalLeverPower = maxSubDiscount + hwAmortisedMonthly + rateMonthlyValue;
+    // POS PROCESSING % — only if POS in scope
+    if (p.includePOS && rates.pos && hasCurrentPOS) {
+      var fdPOSPct = N(f.posRate);
+      var posHeadroomPP = Math.max(0, fdPOSPct - posFloorPct);
+      var posMaxMonthly = (posHeadroomPP / 100) * N(c.posGmv);
+      var posTarget = null;
+      if (gap > 0 && N(c.posGmv) > 0) {
+        var posReductionPP = (gap / N(c.posGmv)) * 100;
+        var newPosPct = fdPOSPct - posReductionPP;
+        if (newPosPct >= posFloorPct) posTarget = newPosPct;
+      }
+      var posDetail;
+      if (gap > 0 && posTarget != null) {
+        posDetail = 'To match their current spend with this lever alone: <strong>drop POS processing to ' + posTarget.toFixed(2) + '%</strong> (' + (fdPOSPct - posTarget).toFixed(2) + 'pp off your proposal). Floor is ' + posFloorPct.toFixed(2) + '% (Stripe ' + (rates.posCardPct * 100).toFixed(2) + '% + 0.3pp).';
+      } else if (gap > 0) {
+        posDetail = 'POS rate alone can\'t close the gap — at the ' + posFloorPct.toFixed(2) + '% floor that\'s ' + fmtMoney(posMaxMonthly) + '/mo of give max.';
+      } else {
+        posDetail = 'List ' + posListPct.toFixed(2) + '% → floor ' + posFloorPct.toFixed(2) + '%. Up to ' + posHeadroomPP.toFixed(2) + 'pp of room ≈ ' + fmtMoney(posMaxMonthly) + '/mo recurring give.';
+      }
+      levers.push({
+        key: 'posRate', label: 'POS processing %',
+        valueLabel: fdPOSPct.toFixed(2) + '%', detail: posDetail, target: posTarget
+      });
 
-    // -------- Final state diagnosis --------
+      // POS PER-TRANSACTION FEE — small lever, no single-target match math
+      var fdPosTxn = N(f.posTransFee);
+      levers.push({
+        key: 'posTxn', label: 'POS per-transaction fee',
+        valueLabel: fmtMoney2(fdPosTxn),
+        detail: 'List ' + fmtMoney2(posListTxn) + ' per txn. Small lever — drop to ~£0.05 if you really need it, but the per-pence revenue impact is minor compared to sub or processing %.',
+        target: null
+      });
+    }
+
+    // HARDWARE — only if POS or Kiosk in scope (Web/OO has no hardware)
+    var hwInScope = (p.includePOS && rates.pos) || (p.includeKiosk && rates.kiosk);
+    if (hwInScope) {
+      var hwTarget = null;
+      // To match the gap with hardware alone: one-off discount of (gap × 12)
+      // — that's the value the customer "saves" each month over the contract.
+      // Bound by the 3-month payback envelope.
+      if (gap > 0) {
+        var requiredHwDiscount = gap * CONTRACT_MONTHS;
+        if (requiredHwDiscount <= maxHwDiscount && requiredHwDiscount <= hardwareList) {
+          hwTarget = Math.max(0, hardwareList - requiredHwDiscount);
+        }
+      }
+      var hwAmortisedMonthly = maxHwDiscount / CONTRACT_MONTHS;
+      var hwPctOff = hardwareList > 0 ? Math.round((maxHwDiscount / hardwareList) * 100) : 0;
+      var hwDetail;
+      if (gap > 0 && hwTarget != null) {
+        hwDetail = 'To match across the 12-month contract with hardware alone: <strong>drop hardware to ' + fmtMoney(hwTarget) + '</strong> (' + fmtMoney(hardwareList - hwTarget) + ' off list). Inside the 3-month payback envelope.';
+      } else if (gap > 0) {
+        hwDetail = 'Hardware alone can\'t close the gap — max ' + fmtMoney(maxHwDiscount) + ' off (≈ ' + fmtMoney(hwAmortisedMonthly) + '/mo amortised).';
+      } else {
+        hwDetail = 'List ' + fmtMoney(hardwareList) + '. Up to ' + fmtMoney(maxHwDiscount) + ' off (' + hwPctOff + '%) one-off, paid back inside 3 months. Worth ~' + fmtMoney(hwAmortisedMonthly) + '/mo of customer value across a 12-month contract.';
+      }
+      levers.push({
+        key: 'hardware', label: 'Hardware (one-off)',
+        valueLabel: fmtMoney(proposedHardware), detail: hwDetail, target: hwTarget
+      });
+    }
+
+    // ---- State diagnosis ----
+    // headroom : Flipdish proposal is already cheaper than current spend
+    // match    : gap exists AND at least one single lever can close it
+    // tight    : gap can't be closed by any single lever (multi-lever or scope reduction)
     var state;
-    var threshold = Math.max(15, listMonthly * 0.05);  // tiny-gap band
+    var nearZero = Math.max(15, customerTotal * 0.05);
     if (kioskOnly) {
-      state = 'match';                              // no current displacement
-    } else if (delta >= -threshold) {
-      // Customer paying same or more today → Flipdish already cheap. Headroom.
+      state = 'match';
+    } else if (delta >= -nearZero) {
       state = 'headroom';
-    } else if (gap <= totalLeverPower) {
-      // Gap exists but the levers can close it within commercial guardrails.
-      state = 'match';                              // "closeable" semantically
     } else {
-      // Gap is bigger than the levers can give. Reduce scope or qualify out.
-      state = 'tight';
+      var anyLeverCanClose = levers.some(function (l) { return l.target != null; });
+      state = anyLeverCanClose ? 'match' : 'tight';
     }
 
     return {
       state: state,
-      currentTotal: currentTotal,
-      listMonthly: listMonthly,
+      customerTotal: customerTotal,
+      proposedRecurring: proposedRecurring,
+      proposedHardware: proposedHardware,
+      hardwareList: hardwareList,
       listSub: listSubTotal,
-      listHardware: listHardware,
       delta: delta,
       gap: gap,
-      // levers
-      maxHwDiscount: maxHwDiscount,
-      stdHwDiscount: stdHwDiscount,
-      hwAmortisedMonthly: hwAmortisedMonthly,
+      levers: levers,
       maxSubDiscount: maxSubDiscount,
-      ratePosListPct: ratePosListPct,
-      ratePosFloorPct: ratePosFloorPct,
-      rateHeadroomPP: rateHeadroomPP,
-      rateMonthlyValue: rateMonthlyValue,
-      totalLeverPower: totalLeverPower,
-      // for context
+      maxHwDiscount: maxHwDiscount,
       kioskOnly: kioskOnly,
+      hwInScope: hwInScope,
       locations: locations
     };
   }
+
+  // Lever DOM ID map — links each scope-aware lever key to its card +
+  // value + detail elements. Cards are hidden by default; this fn
+  // un-hides only the ones that came back from computeOfferPanel.
+  var LEVER_DOM = {
+    sub:      { card: 'lever-sub',      val: 'offerSubVal',      detail: 'offerSubDetail' },
+    ooRate:   { card: 'lever-ooRate',   val: 'offerOORateVal',   detail: 'offerOORateDetail' },
+    posRate:  { card: 'lever-posRate',  val: 'offerPosRateVal',  detail: 'offerPosRateDetail' },
+    posTxn:   { card: 'lever-posTxn',   val: 'offerPosTxnVal',   detail: 'offerPosTxnDetail' },
+    hardware: { card: 'lever-hardware', val: 'offerHwVal',       detail: 'offerHwDetail' }
+  };
 
   function renderOfferPanel(o) {
     var panel = $('offerPanel');
@@ -1913,35 +1967,48 @@
     var title = $('offerTitle');
     var summary = $('offerSummary');
     var nums  = $('offerNumbers');
-    var levers = $('offerLevers');
+    var leversWrap = $('offerLevers');
     var suggested = $('offerSuggested');
 
     panel.classList.remove('idle','headroom','match','tight');
 
+    // Always reset all lever cards to hidden first — they'll be un-hidden
+    // selectively below if they came back in scope.
+    Object.keys(LEVER_DOM).forEach(function (k) {
+      var card = $(LEVER_DOM[k].card);
+      if (card) card.style.display = 'none';
+    });
+
     // Idle states
     if (o.state === 'idle') {
       panel.classList.add('idle');
-      pill.textContent = 'Awaiting inputs';
-      title.textContent = o.awaitingCurrent
-        ? 'Need their current commercial reality'
-        : 'Fill in Step 2 to unlock the prescription';
-      summary.innerHTML = o.awaitingCurrent
-        ? 'You\'ve picked a product but Step 2 is empty. Type in what they pay today (GMV, AOV, current rates) and this panel will tell you how much you can offer.'
-        : 'Pick a product (Online Ordering / POS / Kiosk) above and fill in what they pay today — this panel will then tell you how much room you have to discount before the deal stops working.';
+      if (o.awaitingProposal) {
+        pill.textContent = 'Awaiting proposal';
+        title.textContent = 'Type your Flipdish proposal in Step 3';
+        summary.innerHTML = 'The current spend (Step 2) is in. Now type your Flipdish quote into Step 3 above — at list, or whatever discount you\'re considering — and this panel will show you the comparison and what you can adjust to match.';
+      } else if (o.awaitingCurrent) {
+        pill.textContent = 'Awaiting inputs';
+        title.textContent = 'Need their current commercial reality';
+        summary.innerHTML = 'You\'ve picked a product but Step 2 is empty. Type what they pay today (GMV, AOV, current rates) and this panel will compare it to your proposal.';
+      } else {
+        pill.textContent = 'Awaiting inputs';
+        title.textContent = 'Fill in Steps 2 and 3 to see how the deal stacks up';
+        summary.innerHTML = 'Pick a product (Online Ordering / POS / Kiosk) above, type what they pay today, and type your Flipdish proposal — this panel will compare them and show you what to adjust to match.';
+      }
       nums.style.display = 'none';
-      levers.style.display = 'none';
+      leversWrap.style.display = 'none';
       suggested.style.display = 'none';
       return;
     }
 
     panel.classList.add(o.state);
     nums.style.display = '';
-    levers.style.display = '';
+    leversWrap.style.display = '';
     suggested.style.display = '';
 
-    // Headline numbers
-    $('offerCurrentVal').textContent = fmtMoney(o.currentTotal) + '/mo';
-    $('offerListVal').textContent    = fmtMoney(o.listMonthly) + '/mo';
+    // Headline numbers — comparison vs the rep's typed proposal
+    $('offerCurrentVal').textContent  = fmtMoney(o.customerTotal) + '/mo';
+    $('offerProposedVal').textContent = fmtMoney(o.proposedRecurring) + '/mo';
     var deltaVal = $('offerDeltaVal');
     var deltaLbl = $('offerDeltaLabel');
     deltaVal.classList.remove('positive','negative');
@@ -1949,12 +2016,12 @@
       deltaLbl.textContent = 'Comparison';
       deltaVal.textContent = 'Kiosk-only — no displacement';
     } else if (o.delta > 0) {
-      deltaLbl.textContent = 'Already cheaper';
-      deltaVal.textContent = '+' + fmtMoney(o.delta) + '/mo';
+      deltaLbl.textContent = 'You\'re cheaper by';
+      deltaVal.textContent = fmtMoney(o.delta) + '/mo';
       deltaVal.classList.add('positive');
     } else if (o.delta < 0) {
-      deltaLbl.textContent = 'Gap to close';
-      deltaVal.textContent = fmtMoney(-o.delta) + '/mo more';
+      deltaLbl.textContent = 'You\'re more expensive by';
+      deltaVal.textContent = fmtMoney(-o.delta) + '/mo';
       deltaVal.classList.add('negative');
     } else {
       deltaLbl.textContent = 'Gap';
@@ -1963,75 +2030,59 @@
 
     // Title + summary by state
     if (o.state === 'headroom') {
-      pill.textContent = 'You have room';
-      title.textContent = 'Plenty of room — Flipdish is already cheaper';
-      summary.innerHTML = 'Customer pays <strong>' + fmtMoney(o.currentTotal) + '/mo</strong> today. Flipdish at full list would be <strong>' + fmtMoney(o.listMonthly) + '/mo</strong> — already <strong>' + fmtMoney(o.delta) + '/mo cheaper</strong> for them. Lead with list rates. Keep discounts in your back pocket as a closing lever.';
+      pill.textContent = 'You\'re cheaper';
+      title.textContent = 'Your proposal already beats their current spend';
+      summary.innerHTML = 'Your Flipdish proposal of <strong>' + fmtMoney(o.proposedRecurring) + '/mo</strong> recurring is <strong>' + fmtMoney(o.delta) + '/mo cheaper</strong> than what they pay today (' + fmtMoney(o.customerTotal) + '/mo). You can lead with this. The levers below show how much further you could push if needed — but you don\'t need to.';
     } else if (o.state === 'tight') {
       pill.textContent = 'Won\'t close';
-      title.textContent = 'The gap is bigger than the levers can close';
-      summary.innerHTML = 'Customer pays <strong>' + fmtMoney(o.currentTotal) + '/mo</strong> today. Flipdish at full list would be <strong>' + fmtMoney(o.listMonthly) + '/mo</strong> — a <strong>' + fmtMoney(o.gap) + '/mo gap</strong>. Even maxing every lever within guardrails (~' + fmtMoney(o.totalLeverPower) + '/mo of give) won\'t close that. <strong>Reduce hardware scope</strong> (starter kit only, fewer kiosks), <strong>push back on price</strong> (Flipdish offers value beyond cost replacement), or qualify out.';
-    } else {
-      // 'match' — closeable, kiosk-only, or near-zero gap
-      if (o.kioskOnly) {
-        pill.textContent = 'Kiosk-only';
-        title.textContent = 'Kiosk-only deal — no cost displacement';
-        summary.innerHTML = 'Kiosk is incremental — there\'s nothing to displace because they don\'t have kiosks today. Sell on incremental revenue (basket lift, queue reduction). Hardware discount is your main lever.';
-      } else if (o.gap <= 0) {
-        pill.textContent = 'Roughly matching';
-        title.textContent = 'You\'re roughly matching at list';
-        summary.innerHTML = 'Customer pays <strong>' + fmtMoney(o.currentTotal) + '/mo</strong> today; Flipdish at list is <strong>' + fmtMoney(o.listMonthly) + '/mo</strong> — they\'re close. Don\'t lead with a discount. Sell platform value (kiosk, AI, FMM, OO direct-to-customer). The 20%-off-hardware sweetener still fits inside the envelope if you need it.';
-      } else {
-        pill.textContent = 'Closeable with discounts';
-        title.textContent = 'You can close the gap — but you\'ll need discounts';
-        summary.innerHTML = 'Customer pays <strong>' + fmtMoney(o.currentTotal) + '/mo</strong> today. Flipdish at full list would be <strong>' + fmtMoney(o.listMonthly) + '/mo</strong> — a <strong>' + fmtMoney(o.gap) + '/mo gap to close</strong>. The levers below add up to ~<strong>' + fmtMoney(o.totalLeverPower) + '/mo</strong> of give within guardrails — enough to close it, but not roomy. Use them carefully.';
-      }
-    }
-
-    // Lever cards — each shows list value AND how much £/mo of "give" the
-    // lever can supply (so the rep can compare against the gap).
-    // 1. Bundled subscription
-    $('offerSubVal').textContent = fmtMoney(o.listSub) + '/mo';
-    if (o.maxSubDiscount <= 0) {
-      $('offerSubDetail').textContent = 'No room to discount — recurring revenue is already at the SNR floor (' + fmtMoney(GUARDRAILS.snrFloorMonthly) + '/mo per site).';
-    } else {
-      $('offerSubDetail').textContent = 'Can drop by up to ' + fmtMoney(o.maxSubDiscount) + '/mo (recurring) before hitting the SNR floor (' + fmtMoney(GUARDRAILS.snrFloorMonthly) + '/mo per site).';
-    }
-
-    // 2. Hardware (one-off)
-    $('offerHwVal').textContent = fmtMoney(o.listHardware);
-    if (o.listHardware === 0) {
-      $('offerHwDetail').textContent = 'No hardware in scope.';
-    } else if (o.maxHwDiscount <= 0) {
-      $('offerHwDetail').textContent = 'No room — the deal\'s op margin can\'t absorb any hardware discount inside the 3-month payback target.';
-    } else {
-      var maxPct = Math.round((o.maxHwDiscount / o.listHardware) * 100);
-      $('offerHwDetail').textContent = 'Up to ' + fmtMoney(o.maxHwDiscount) + ' off (' + maxPct + '%) one-off — payback in 3 months. Worth ~' + fmtMoney(o.hwAmortisedMonthly) + '/mo of value across a 12-month contract.';
-    }
-
-    // 3. Processing rate (POS)
-    if (o.ratePosListPct > 0) {
-      $('offerRateVal').textContent = o.ratePosListPct.toFixed(2) + '%';
-      $('offerRateDetail').textContent = o.rateHeadroomPP > 0
-        ? 'List ' + o.ratePosListPct.toFixed(2) + '% → floor ' + o.ratePosFloorPct.toFixed(2) + '% (Stripe + 0.3pp). Up to ' + o.rateHeadroomPP.toFixed(2) + 'pp of room ≈ ' + fmtMoney(o.rateMonthlyValue) + '/mo recurring give.'
-        : 'POS list is already at the floor — no room.';
-    } else {
-      $('offerRateVal').textContent = '—';
-      $('offerRateDetail').textContent = 'No POS in scope (or POS not sold in this market).';
-    }
-
-    // Suggested opening offer — different by state
-    if (o.state === 'tight') {
-      suggested.innerHTML = '<strong>Suggested opening:</strong> Don\'t lead with this scope. The gap of ' + fmtMoney(o.gap) + '/mo can\'t be closed within the guardrails. Reduce hardware (starter kit, fewer kiosks), push back on price as a platform investment (kiosk, AI, FMM), or qualify out at the small-operator scale.';
-    } else if (o.state === 'headroom') {
-      suggested.innerHTML = '<strong>Suggested opening:</strong> Sub <strong>' + fmtMoney(o.listSub) + '/mo</strong>, hardware <strong>' + fmtMoney(o.listHardware) + '</strong> (no discount), processing at list. You\'re already cheaper than what they pay today — keep discounts in your back pocket as a closing lever.';
+      title.textContent = 'No single lever closes the gap';
+      summary.innerHTML = 'Your proposal of <strong>' + fmtMoney(o.proposedRecurring) + '/mo</strong> is <strong>' + fmtMoney(o.gap) + '/mo more expensive</strong> than what they pay today. None of the levers below — at their floor — can close that gap on their own. Either combine multiple levers, reduce scope (starter kit only, fewer kiosks), or push back on price (Flipdish offers value beyond cost replacement).';
     } else if (o.kioskOnly) {
-      suggested.innerHTML = '<strong>Suggested opening:</strong> Sub at list. On hardware, the standard 20% off sweetener (max ' + fmtMoney(o.maxHwDiscount) + ' off) keeps the deal in the payback envelope.';
-    } else if (o.gap <= 0) {
-      // Match (within tight-band)
-      suggested.innerHTML = '<strong>Suggested opening:</strong> Sub <strong>' + fmtMoney(o.listSub) + '/mo</strong>, hardware <strong>' + fmtMoney(o.listHardware - o.stdHwDiscount) + '</strong> (' + fmtMoney(o.stdHwDiscount) + ' off as the standard sweetener), processing at list. Sell platform value rather than price.';
+      pill.textContent = 'Kiosk-only';
+      title.textContent = 'Kiosk-only deal — no current cost to displace';
+      summary.innerHTML = 'Kiosk is incremental — there\'s nothing to displace because they don\'t have kiosks today. Sell on incremental revenue (basket lift, queue reduction). Hardware discount is your main lever.';
     } else {
-      // Closeable but with a real gap
-      suggested.innerHTML = '<strong>Suggested opening:</strong> Lead with hardware <strong>' + fmtMoney(o.listHardware - o.maxHwDiscount) + '</strong> (' + fmtMoney(o.maxHwDiscount) + ' off — max within payback) plus sub at list. That\'s ~' + fmtMoney(o.hwAmortisedMonthly) + '/mo of value to the customer; if they need more, drop the bundled sub by up to ' + fmtMoney(o.maxSubDiscount) + '/mo.';
+      // match — closeable
+      pill.textContent = 'Closeable';
+      title.textContent = 'A single lever can close the gap';
+      summary.innerHTML = 'Your proposal of <strong>' + fmtMoney(o.proposedRecurring) + '/mo</strong> is <strong>' + fmtMoney(o.gap) + '/mo more expensive</strong> than what they pay today (' + fmtMoney(o.customerTotal) + '/mo). The lever cards below show concrete targets — pick one and adjust your Step 3 quote to match.';
+    }
+
+    // Render the scope-aware lever cards
+    (o.levers || []).forEach(function (lever) {
+      var dom = LEVER_DOM[lever.key];
+      if (!dom) return;
+      var card = $(dom.card);
+      if (!card) return;
+      card.style.display = '';
+      var valEl = $(dom.val); if (valEl) valEl.textContent = lever.valueLabel;
+      var detEl = $(dom.detail); if (detEl) detEl.innerHTML = lever.detail;
+    });
+
+    // Suggested play
+    if (o.state === 'headroom') {
+      suggested.innerHTML = '<strong>Suggested play:</strong> Hold at your current proposal. You\'re already cheaper than their incumbent — sell on platform value, not on price. If they push for a sweetener, hardware discount is the cheapest lever for Flipdish.';
+    } else if (o.state === 'tight') {
+      suggested.innerHTML = '<strong>Suggested play:</strong> Reduce scope (starter kit only, fewer tills/kiosks), push back on price as a platform investment (kiosk, AI, FMM, OO direct-to-customer), or qualify out at the small-operator scale. Single-lever match isn\'t available within the guardrails.';
+    } else if (o.kioskOnly) {
+      suggested.innerHTML = '<strong>Suggested play:</strong> Sell on incremental revenue. Use the hardware-discount lever above as a deal-closer.';
+    } else {
+      // closeable — pick the lever with the smallest impact (preserves margin)
+      // Prefer hardware (one-off, doesn\'t erode recurring revenue) > rate > sub
+      var first = (o.levers || []).filter(function (l) { return l.target != null; });
+      var preferred = first.find(function (l) { return l.key === 'hardware'; })
+                   || first.find(function (l) { return l.key === 'posRate' || l.key === 'ooRate'; })
+                   || first[0];
+      if (preferred) {
+        var leverNames = { sub: 'bundled sub', ooRate: 'OO processing %', posRate: 'POS processing %', hardware: 'hardware' };
+        var label = leverNames[preferred.key] || preferred.label;
+        var targetTxt = preferred.key === 'hardware'
+          ? fmtMoney(preferred.target)
+          : (preferred.key === 'sub' ? fmtMoney(preferred.target) + '/mo' : preferred.target.toFixed(2) + '%');
+        suggested.innerHTML = '<strong>Suggested play:</strong> Cheapest single-lever close is the ' + label + ' — adjust to <strong>' + targetTxt + '</strong> in Step 3 and the deal matches their current spend. The other lever cards above show alternatives if you\'d rather use a different mix.';
+      } else {
+        suggested.innerHTML = '<strong>Suggested play:</strong> See the levers above for the gap-closing options.';
+      }
     }
   }
 
