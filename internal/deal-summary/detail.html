@@ -216,6 +216,18 @@
   @media (max-width: 760px) {
     .grid2, .grid3 { grid-template-columns: 1fr; }
   }
+  /* v8.9: Deal Details — 2x2 grid (name + locations / contact + owner)
+     Prospect name takes the wider column on row 1; locations is narrow. */
+  .deal-details-grid {
+    display: grid;
+    grid-template-columns: 2.4fr 1fr;
+    gap: 12px 16px;
+  }
+  .deal-details-grid .deal-details-name { grid-column: 1; }
+  @media (max-width: 760px) {
+    .deal-details-grid { grid-template-columns: 1fr; }
+  }
+
   /* v8.8: side-by-side current — In-store left, Direct ordering right */
   .current-grid {
     display: grid;
@@ -227,21 +239,26 @@
   /* When only one of the two cards is visible (other has display:none),
      the visible one fills the row — the empty grid track collapses. */
 
-  /* Marketplace context card — neutral, no warm/cool theme since it's
-     not a cost-replacement comparison */
-  .card-marketplace {
-    background: #FAFCFE;
-    border-left: 3px solid #8B7CC4;
+  /* v8.9: marketplace strip lives inside the OO current card as a
+     subtle sub-section — visually quiet so it doesn't compete with
+     the primary cost-replacement fields above it. */
+  .market-strip {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed rgba(224, 114, 61, 0.25);
   }
-  .card-marketplace h3 { color: #5B4D8E; border-bottom-color: rgba(139, 124, 196, 0.18); }
-  .card-marketplace-note {
-    margin: 12px 0 0;
-    padding: 10px 12px;
-    background: rgba(139, 124, 196, 0.08);
-    border-radius: 8px;
-    font-size: 12.5px;
+  .market-strip-title {
+    font-size: 12px; font-weight: 600;
+    color: var(--peach-dark);
+    text-transform: uppercase; letter-spacing: 0.07em;
+    margin-bottom: 10px;
+  }
+  .market-strip-note {
+    margin: 10px 0 0;
+    font-size: 11.5px;
     line-height: 1.5;
-    color: #4F4070;
+    color: var(--muted);
+    font-style: italic;
   }
   .field { display: flex; flex-direction: column; }
   .field.full { grid-column: 1 / -1; }
@@ -602,21 +619,21 @@
     color: var(--muted); line-height: 1.5;
   }
 
-  /* ---------- Scope tiles (v8.8) — big, friendly, with icons ---------- */
+  /* ---------- Scope tiles (v8.9) — 3-up grid, tighter cards ---------- */
   .scope-row {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
+    gap: 10px;
     margin-bottom: 18px;
   }
-  @media (max-width: 720px) { .scope-row { grid-template-columns: 1fr; } }
+  @media (max-width: 540px) { .scope-row { grid-template-columns: 1fr; } }
   .scope-tile {
     position: relative;
     display: flex; flex-direction: column;
-    align-items: flex-start; gap: 4px;
-    padding: 18px 18px 14px;
+    align-items: flex-start; gap: 3px;
+    padding: 13px 14px;
     border: 1.5px solid rgba(15, 23, 42, 0.08);
-    border-radius: 12px;
+    border-radius: 11px;
     background: white;
     cursor: pointer;
     user-select: none;
@@ -631,25 +648,25 @@
   .scope-tile input { position: absolute; opacity: 0; pointer-events: none; }
   .scope-tile-icon {
     display: inline-flex; align-items: center; justify-content: center;
-    width: 40px; height: 40px;
-    border-radius: 10px;
+    width: 32px; height: 32px;
+    border-radius: 8px;
     background: var(--flipdish-blue-light);
     color: var(--flipdish-blue);
-    margin-bottom: 6px;
+    margin-bottom: 4px;
   }
-  .scope-tile-icon svg { width: 22px; height: 22px; }
+  .scope-tile-icon svg { width: 18px; height: 18px; }
   .scope-tile-label {
-    font-size: 16px; font-weight: 700;
+    font-size: 14.5px; font-weight: 700;
     color: var(--flipdish-dark);
     letter-spacing: -0.012em;
   }
   .scope-tile-sub {
-    font-size: 12.5px; color: var(--muted);
+    font-size: 11.5px; color: var(--muted);
   }
   .scope-tile-check {
-    position: absolute; top: 12px; right: 12px;
+    position: absolute; top: 10px; right: 10px;
     display: inline-flex; align-items: center; justify-content: center;
-    width: 22px; height: 22px;
+    width: 18px; height: 18px;
     border-radius: 999px;
     background: transparent;
     border: 1.5px solid rgba(15, 23, 42, 0.15);
@@ -739,7 +756,29 @@
   .narrative p:last-child { margin-bottom: 0; }
   .narrative strong { color: var(--flipdish-blue-dark); }
 
-  /* ---------- Actions ---------- */
+  /* ---------- Actions (v8.9: cleaner action bar) ---------- */
+  .action-bar {
+    display: flex; justify-content: space-between;
+    align-items: center; gap: 14px; flex-wrap: wrap;
+    margin: 24px 0 12px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  .action-primary { font-size: 14px !important; font-weight: 600 !important; padding: 10px 18px !important; }
+  .action-secondary { display: flex; gap: 4px; }
+  .btn-icon {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 12px;
+    background: transparent;
+    border: 0; border-radius: 8px;
+    cursor: pointer; font: inherit; font-size: 13px; font-weight: 500;
+    color: var(--muted);
+    transition: all .12s ease;
+  }
+  .btn-icon svg { width: 14px; height: 14px; }
+  .btn-icon:hover { background: rgba(15, 23, 42, 0.05); color: var(--flipdish-blue); }
+  .btn-icon-danger:hover { background: rgba(192, 57, 43, 0.08); color: var(--red-strong); }
+  /* Old .action-row kept as a fallback if any stragglers reference it */
   .action-row {
     display: flex; justify-content: space-between;
     align-items: center; gap: 10px; flex-wrap: wrap;
@@ -835,13 +874,14 @@
     <span class="text">Deal details <span class="sub">Who you're selling to and who's selling</span></span>
   </div>
   <div class="card">
-    <div class="grid3" style="margin-bottom:14px;">
-      <div class="field" style="grid-column: 1 / -1;">
+    <!-- v8.9: 2x2 grid — prospect name + locations on row 1, contact +
+         owner on row 2. Replaces the previous full-width name with a
+         lot of vertical blank. -->
+    <div class="deal-details-grid">
+      <div class="field deal-details-name">
         <label>Prospect business name</label>
         <input id="prospectName" type="text" placeholder="e.g. Billy's Pizza" autocomplete="off">
       </div>
-    </div>
-    <div class="grid3">
       <div class="field">
         <label>Number of locations</label>
         <input id="locations" type="number" min="1" step="1" value="1">
@@ -990,34 +1030,31 @@
           <input id="curOOTransFee" type="number" min="0" step="0.01" placeholder="e.g. 0.05">
         </div>
       </div>
+      <!-- v8.9: marketplace context lives here, not in its own card.
+           Heavy marketplace volume = stronger case for direct ordering,
+           kiosk and hardware investment. Not part of the cost-replacement
+           maths (per architecture rule), just deal context. -->
+      <div class="market-strip">
+        <div class="market-strip-title">+ Marketplaces (Deliveroo / Uber Eats / JustEat)</div>
+        <div class="grid2">
+          <div class="field">
+            <label>Monthly marketplace revenue <span class="hint">(combined)</span></label>
+            <input id="curMarketGmv" type="number" min="0" step="100" placeholder="e.g. 10000">
+          </div>
+          <div class="field">
+            <label>Average commission % <span class="hint">(typical 25–35%)</span></label>
+            <input id="curMarketCommission" type="number" min="0" step="0.5" placeholder="e.g. 30">
+          </div>
+        </div>
+        <p class="market-strip-note">Not part of the cost-replacement maths — but heavy marketplace dependence strengthens the case for direct ordering, kiosk and hardware investment. Use it in the pitch.</p>
+      </div>
     </div>
   </div>
 
-  <!-- v8.8 — Marketplaces (Deliveroo / Uber Eats / JustEat). NOT a cost-
-       replacement comparison — Flipdish doesn't compete with marketplaces.
-       Captured here as deal context: heavy marketplace dependence is a
-       strong reason to push direct ordering, kiosk and hardware
-       investment. Informs the value pitch but doesn't change the math. -->
-  <div class="card card-marketplace" id="card-marketplaces">
-    <h3>Marketplace context <span class="hint" style="font-weight:400;font-size:12.5px;color:var(--muted);margin-left:6px;">(Deliveroo / Uber Eats / JustEat — not cost-replaced, but informs the deal)</span></h3>
-    <div class="grid3">
-      <div class="field">
-        <label>Monthly marketplace revenue <span class="hint">(combined)</span></label>
-        <input id="curMarketGmv" type="number" min="0" step="100" placeholder="e.g. 10000">
-      </div>
-      <div class="field">
-        <label>Marketplace commission % <span class="hint">(typical 25–35%)</span></label>
-        <input id="curMarketCommission" type="number" min="0" step="0.5" placeholder="e.g. 30">
-      </div>
-      <div class="field">
-        <label>Top platform</label>
-        <input id="curMarketPrimary" type="text" placeholder="e.g. Deliveroo">
-      </div>
-    </div>
-    <p class="card-marketplace-note">
-      Heavy marketplace dependence strengthens the case for direct ordering, kiosk and hardware investment — even if it doesn't move the cost-replacement maths. Use this in the value pitch.
-    </p>
-  </div>
+  <!-- v8.9: Marketplace fields moved INTO the OO current card (above) as
+       a sub-section, since they're conceptually about the same revenue
+       channel from the customer's perspective. "Top platform" dropped
+       — Will: doesn't matter for the maths/pitch. -->
 
 
   <!-- ===================== STEP 3 — FLIPDISH PROPOSAL ===================== -->
@@ -1094,6 +1131,12 @@
        surface it then; no point asking reps to fill a field that's
        always 12. -->
 
+
+  <!-- v8.9: Step 4 (heading + offer panel) wrapped in #stackUpSection so
+       the whole thing can be hidden until the linear flow is complete.
+       Will: showing "Awaiting inputs" is a waste of space; just don't
+       show the section. -->
+  <section id="stackUpSection" style="display:none;">
 
   <!-- ===================== STEP 4 — HOW DOES THIS STACK UP? ===================== -->
   <!-- v8.2 redesign: this panel now sits BELOW the Flipdish proposal so
@@ -1198,32 +1241,32 @@
     </div>
   </div>
 
+  </section><!-- /#stackUpSection -->
+
   <!-- Step 5 (Value Story) deleted — Will: "I don't think the value story
        serves any purpose on this page really, it feels like that should
        be on the customer facing page". customer.html already renders
        the full customer-facing value story when the rep clicks Open
        customer page. -->
 
-  <!-- ===================== ACTIONS ===================== -->
-  <div class="action-row">
-    <div class="left">
-      <button class="btn btn-primary" type="button" id="openCustomerBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        Open customer cost-justification page
-      </button>
-      <button class="btn" type="button" id="printBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-        Print internal summary
-      </button>
-      <button class="btn" type="button" id="copyLinkBtn">
+  <!-- ===================== ACTIONS (v8.9: cleaner action bar) ===================== -->
+  <div class="action-bar">
+    <button class="btn btn-primary action-primary" type="button" id="openCustomerBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Open customer page
+    </button>
+    <div class="action-secondary">
+      <button class="btn-icon" type="button" id="copyLinkBtn" title="Copy deal link">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-        <span id="copyLinkLabel">Copy deal link</span>
+        <span id="copyLinkLabel">Copy link</span>
       </button>
-    </div>
-    <div class="right">
-      <button class="btn btn-danger" type="button" id="deleteBtn">
+      <button class="btn-icon" type="button" id="printBtn" title="Print internal summary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Print
+      </button>
+      <button class="btn-icon btn-icon-danger" type="button" id="deleteBtn" title="Delete deal">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>
-        Delete deal
+        Delete
       </button>
     </div>
   </div>
@@ -1467,7 +1510,7 @@
 
   // ---------- DOM helpers ----------
   function $(id) { return document.getElementById(id); }
-  function val(id) { return $(id).value; }
+  function val(id) { var el = $(id); return el ? el.value : ''; }
   function num(id) { var v = parseFloat($(id).value); return isNaN(v) ? 0 : v; }
 
   // ---------- Hydrate: prospect object -> form ----------
@@ -1548,7 +1591,8 @@
       // but informs the value pitch.
       marketGmv:        val('curMarketGmv'),
       marketCommission: val('curMarketCommission'),
-      marketPrimary:    val('curMarketPrimary').trim()
+      // marketPrimary removed in v8.9 — Will: "top platform doesn't matter"
+      marketPrimary:    ''
     };
     prospect.flipdish = {
       // OO
@@ -1974,9 +2018,17 @@
     // Without this, streams lag behind the user's latest keystroke by the
     // full 400ms debounce window.
     if (!isInitializing) collect();
-    // v8.8: re-apply scope visibility so the bundled-sub card appears
-    // as soon as the rep types a proposal-side rate or hardware value.
-    if (!isInitializing) applyScopeVisibility();
+    // v8.8: gate the bundled-sub card visibility on whether any proposal
+    // rate/hardware has been entered. (Don't re-run full applyScopeVisibility
+    // here — it triggers prefill which writes the form on stale state.)
+    if (!isInitializing && $('card-bundleSub')) {
+      var anyScopeNow = $('includeOO').checked || $('includePOS').checked || $('includeKiosk').checked;
+      var hasProp =
+          ($('includeOO').checked    && parseFloat($('fdOOProcessingRate').value) > 0)
+       || ($('includePOS').checked   && (parseFloat($('fdPosRate').value) > 0 || parseFloat($('fdPosHardware').value) > 0))
+       || ($('includeKiosk').checked && parseFloat($('fdKioskHardware').value) > 0);
+      $('card-bundleSub').style.display = (anyScopeNow && hasProp) ? '' : 'none';
+    }
     var v = computeValueStory(prospect);
 
     // Step 5 (Value Story hero / streams / narrative) removed in v8.3 —
@@ -1988,6 +2040,11 @@
     // scope-aware, with concrete "to match" + "cost to Flipdish"
     // prescriptions. Live Check folded in at the bottom.
     var o = computeOfferPanel(prospect, v);
+    // v8.9: hide the entire Step 4 section until the rep has past the
+    // idle state — i.e. picked scope, entered current spend, and started
+    // the proposal. Showing "Awaiting inputs" the whole time was waste.
+    var stackUp = $('stackUpSection');
+    if (stackUp) stackUp.style.display = (o.state === 'idle') ? 'none' : '';
     renderOfferPanel(o);
     var rec = computeRecommendedDeal(prospect, v, o);
     renderRecommendedDeal(rec, prospect, o);
@@ -2906,7 +2963,7 @@
       'prospectName','locations','contactName','ownerName',
       'curOOProvider','curOOGmv','curOOAov','curOOSub','curOOProcessingRate','curOOTransFee',
       'curPosProvider','curPosGmv','curAov','curPosRate','curPosTransFee','curPosSub',
-      'curMarketGmv','curMarketCommission','curMarketPrimary',
+      'curMarketGmv','curMarketCommission',
       'fdOOProcessingRate',
       'fdPosRate','fdPosTransFee','fdPosHardware',
       'fdKioskHardware',
