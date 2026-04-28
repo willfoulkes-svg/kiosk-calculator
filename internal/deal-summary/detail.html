@@ -529,6 +529,27 @@
     padding: 4px 4px 0;
   }
 
+  /* v8.16: volume tier pill - sits under the locations input.
+     Shows the rep what tier the deal qualifies for (Single-site,
+     Small group, Mid-market, Multi-site, Enterprise) and the
+     suggested discount % off list. Informational only; doesn't
+     auto-change any proposal values. */
+  .vol-tier-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--flipdish-blue-light);
+    color: var(--flipdish-blue-dark);
+    font-size: 11.5px; font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  .vol-tier-pill.tier-enterprise { background: #FFE5A1; color: #6B4F00; }
+  .vol-tier-pill[hidden] { display: none; }
+  .vol-tier-pill .vol-tier-pct {
+    font-weight: 500; opacity: 0.8;
+  }
+
   /* v8.8: side-by-side current - In-store left, Direct ordering right */
   .current-grid {
     display: grid;
@@ -1240,6 +1261,7 @@
       <div class="field">
         <label>Number of locations</label>
         <input id="locations" type="number" min="1" step="1" value="1">
+        <span class="vol-tier-pill" id="volTierPill" aria-live="polite"></span>
       </div>
       <div class="field">
         <label>Primary contact</label>
@@ -1280,12 +1302,11 @@
     </div>
   </div>
 
-  <!-- Scope toggles - which levers are we playing with in this deal.
-       Note: the Deal Room compares Flipdish against the customer's current
-       cost on the two recurring streams where we displace a direct
-       competitor (online ordering, in-store). Value-generation products
-       like Phone AI, Kiosk, FMM, QROP live in their own standalone
-       calculators and roll up into the bundle subscription below. -->
+  <!-- Scope toggles - which products are in this deal. v8.16: all four
+       Flipdish products that have processing or hardware levers are first-
+       class here (OO, POS, Kiosk, QROP). Phone AI, FMM and any other
+       value-add subscriptions roll up into the bundled sub field below
+       (single all-in figure from the SFDC quote). -->
   <div class="scope-row" id="scopeToggles">
     <label class="scope-tile" data-toggle="includeOO">
       <input type="checkbox" id="includeOO">
@@ -1293,7 +1314,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="2"/><line x1="2" y1="9" x2="22" y2="9"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
       </span>
       <span class="scope-tile-label">Online Ordering</span>
-      <span class="scope-tile-sub">Web · app · QR</span>
+      <span class="scope-tile-sub">Web &amp; app · own-brand</span>
       <span class="scope-tile-check" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
       </span>
@@ -1316,6 +1337,17 @@
       </span>
       <span class="scope-tile-label">Kiosk</span>
       <span class="scope-tile-sub">In-store self-order</span>
+      <span class="scope-tile-check" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </span>
+    </label>
+    <label class="scope-tile" data-toggle="includeQROP">
+      <input type="checkbox" id="includeQROP">
+      <span class="scope-tile-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><line x1="14" y1="14" x2="14" y2="20"/><line x1="20" y1="14" x2="20" y2="20"/><line x1="14" y1="17" x2="20" y2="17"/></svg>
+      </span>
+      <span class="scope-tile-label">QROP</span>
+      <span class="scope-tile-sub">QR order &amp; pay at table</span>
       <span class="scope-tile-check" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
       </span>
@@ -1404,6 +1436,39 @@
         <p class="market-strip-note">Marketplaces charge heavy commission and own the customer relationship. Flipdish brings that revenue back in-house through direct ordering, kiosk and POS - reclaiming margin and the customer.</p>
       </div>
     </div>
+
+    <!-- v8.16: Kiosk projected volume - kiosk has no incumbent to
+         displace, but the SNR math still needs GMV/AOV inputs to
+         compute kiosk processing revenue. -->
+    <div class="card" id="card-currentKiosk" style="display:none;">
+      <h3>Kiosk - projected volume <span class="hint" style="font-weight:400;font-size:12.5px;color:var(--muted);margin-left:6px;">(incremental, no incumbent to displace)</span></h3>
+      <div class="grid2">
+        <div class="field">
+          <label>Projected monthly kiosk GMV</label>
+          <input id="curKioskGmv" type="number" min="0" step="100" value="8000">
+        </div>
+        <div class="field">
+          <label>Projected average kiosk order value</label>
+          <input id="curKioskAov" type="number" min="0" step="0.5" value="20">
+        </div>
+      </div>
+    </div>
+
+    <!-- v8.16: QROP projected volume - same shape as kiosk, no
+         incumbent to displace, just a forecast feeding the SNR math. -->
+    <div class="card" id="card-currentQROP" style="display:none;">
+      <h3>QROP - projected volume <span class="hint" style="font-weight:400;font-size:12.5px;color:var(--muted);margin-left:6px;">(incremental, no incumbent to displace)</span></h3>
+      <div class="grid2">
+        <div class="field">
+          <label>Projected monthly QROP GMV</label>
+          <input id="curQROPGmv" type="number" min="0" step="100" value="6000">
+        </div>
+        <div class="field">
+          <label>Projected average QROP order value</label>
+          <input id="curQROPAov" type="number" min="0" step="0.5" value="22">
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- v8.9: Marketplace fields moved INTO the OO current card (above) as
@@ -1479,8 +1544,40 @@
               <div class="lever-meta"><span class="lever-floor">3.00%</span><span class="lever-list">7.00%</span></div>
             </div>
           </div>
+          <div class="field" id="fdKioskRateField" style="display:none;">
+            <label>Kiosk processing %</label>
+            <div class="lever-control">
+              <input id="fdKioskRate" type="number" min="0" step="0.05" value="1.5">
+              <input type="range" class="lever-slider" data-target="fdKioskRate" min="0.5" max="2" step="0.05" value="1.5">
+              <div class="lever-meta"><span class="lever-floor">0.50%</span><span class="lever-list">2.00%</span></div>
+            </div>
+          </div>
+          <div class="field" id="fdKioskTransFeeField" style="display:none;">
+            <label>Kiosk per-transaction fee</label>
+            <div class="lever-control">
+              <input id="fdKioskTransFee" type="number" min="0" step="0.01" value="0.20">
+              <input type="range" class="lever-slider" data-target="fdKioskTransFee" min="0" max="0.30" step="0.01" value="0.20">
+              <div class="lever-meta"><span class="lever-floor">£0.00</span><span class="lever-list">£0.30</span></div>
+            </div>
+          </div>
+          <div class="field" id="fdQROPRateField" style="display:none;">
+            <label>QROP processing %</label>
+            <div class="lever-control">
+              <input id="fdQROPRate" type="number" min="0" step="0.05" value="1.5">
+              <input type="range" class="lever-slider" data-target="fdQROPRate" min="0.5" max="2" step="0.05" value="1.5">
+              <div class="lever-meta"><span class="lever-floor">0.50%</span><span class="lever-list">2.00%</span></div>
+            </div>
+          </div>
+          <div class="field" id="fdQROPTransFeeField" style="display:none;">
+            <label>QROP per-order fee</label>
+            <div class="lever-control">
+              <input id="fdQROPTransFee" type="number" min="0" step="0.01" value="0.20">
+              <input type="range" class="lever-slider" data-target="fdQROPTransFee" min="0" max="0.30" step="0.01" value="0.20">
+              <div class="lever-meta"><span class="lever-floor">£0.00</span><span class="lever-list">£0.30</span></div>
+            </div>
+          </div>
           <div class="field" id="fdMonthlySubField" style="display:none;">
-            <label>Bundled sub <span class="hint">(all-in monthly across all products)</span></label>
+            <label>Bundled sub <span class="hint">(all-in monthly across all products - includes Phone AI, FMM and any bundled extras from the SFDC quote)</span></label>
             <div class="lever-control">
               <input id="fdMonthlySub" type="number" min="0" step="1" value="129">
               <input type="range" class="lever-slider" data-target="fdMonthlySub" min="119" max="139" step="1" value="129">
@@ -1512,7 +1609,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="18" x2="12" y2="21"/></svg>
       </span>
       <span class="lever-section-title">Hardware <span class="lever-section-sub">- one-off</span></span>
-      <span class="lever-section-goal">Hard cap: 3-month payback</span>
+      <span class="lever-section-goal" id="sectionHardwareGoal">Hard cap: 3-month payback</span>
     </div>
     <div class="lever-section-body">
       <div class="lever-section-fields">
@@ -1560,7 +1657,7 @@
       </div>
       <aside class="lever-verdict" id="verdictHardware" aria-live="polite">
         <div class="lever-verdict-title">Hardware payback</div>
-        <div class="lever-verdict-row headline"><span class="vlabel">3-month envelope</span><span class="vval" id="vHwEnvelope">-</span></div>
+        <div class="lever-verdict-row headline"><span class="vlabel" id="vHwEnvelopeLabel">3-month envelope</span><span class="vval" id="vHwEnvelope">-</span></div>
         <hr class="lever-verdict-rule">
         <div class="lever-verdict-row"><span class="vlabel">Hardware list</span><span class="vval" id="vHwList">-</span></div>
         <div class="lever-verdict-row"><span class="vlabel">Your proposal</span><span class="vval" id="vHwProposal">-</span></div>
@@ -1647,31 +1744,40 @@
   //
   // Markets where a product isn't sold are set to null (e.g. POS in US/ES).
   // ====================================================================
+  // v8.16: kiosk + QROP now have processing rate + per-transaction fee.
+  // Both treat card costs as online (ooCardPct / ooCardFix). Subs shown
+  // here are the standalone list - in practice both subs are bundled
+  // with the rest of the deal at a cheaper blended figure (the rep
+  // types that bundled total into the Bundled Sub field).
   var LIST_RATES = {
     UK: {
       oo:    { sub: 99, processing: 0.05 },
       pos:   { sub: 99, processing: 0.012, txnFee: 0.10, hardwareStarter: 799 },
-      kiosk: { sub: 79, hardware: 1500 },
+      kiosk: { sub: 79, processing: 0.015, txnFee: 0.20, hardware: 1500 },
+      qrop:  { sub: 49, processing: 0.015, txnFee: 0.20 },
       posCardPct: 0.0070, posCardFix: 0.006,
       ooCardPct:  0.0064, ooCardFix:  0.016
     },
     IE: {
       oo:    { sub: 99, processing: 0.05 },
       pos:   { sub: 99, processing: 0.012, txnFee: 0.10, hardwareStarter: 899 },
-      kiosk: { sub: 79, hardware: 1500 },
+      kiosk: { sub: 79, processing: 0.015, txnFee: 0.20, hardware: 1500 },
+      qrop:  { sub: 49, processing: 0.015, txnFee: 0.20 },
       posCardPct: 0.0052, posCardFix: 0.008,
       ooCardPct:  0.0048, ooCardFix:  0.018
     },
     US: {
       oo:    { sub: 249, processing: 0.05 },
       pos:   null,   // POS not sold in US
-      kiosk: { sub: 79, hardware: 2500 },
+      kiosk: { sub: 79, processing: 0.015, txnFee: 0.20, hardware: 2500 },
+      qrop:  { sub: 49, processing: 0.015, txnFee: 0.20 },
       ooCardPct: 0.0255, ooCardFix: 0.018
     },
     ES: {
       oo:    { sub: 99, processing: 0.05 },
       pos:   null,   // POS not sold in ES
-      kiosk: { sub: 79, hardware: 1500 },
+      kiosk: { sub: 79, processing: 0.015, txnFee: 0.20, hardware: 1500 },
+      qrop:  { sub: 49, processing: 0.015, txnFee: 0.20 },
       ooCardPct: 0.0051, ooCardFix: 0.018
     }
   };
@@ -1726,11 +1832,16 @@
       includeOO: false,
       includePOS: false,
       includeKiosk: false,
+      includeQROP: false,
       current: {
         ooProvider: '', ooGmv: '', ooAov: '', ooSub: '',
         ooProcessingRate: '', ooTransFee: '',
         posProvider: '', posGmv: '', aov: '',
         posRate: '', posTransFee: '', posSub: '',
+        // v8.16: kiosk + QROP have no incumbent to displace, but we
+        // still capture projected GMV/AOV for the SNR math.
+        kioskGmv: '', kioskAov: '',
+        qropGmv: '', qropAov: '',
         // v8.8: marketplace context (Deliveroo/Uber Eats/JustEat) -
         // not part of cost-replacement maths but saved with the deal.
         marketGmv: '', marketCommission: '', marketPrimary: ''
@@ -1745,6 +1856,8 @@
         ooProcessingRate: '',
         posRate: '', posTransFee: '', posHardware: '', posHardwareList: '',
         kioskCount: '', kioskHardware: '', kioskHardwareList: '',
+        kioskRate: '', kioskTransFee: '',
+        qropRate: '', qropTransFee: '',
         monthlySub: ''
       },
       createdAt: Date.now(),
@@ -1861,6 +1974,57 @@
   // single-unit list rates as the auto-fill BASELINE; the rep
   // overwrites with their actual SFDC totals.
 
+  // v8.16: volume tier table - the more locations, the bigger the
+  // discount the rep can defend AND the longer the hardware payback
+  // window Flipdish accepts. Bigger customers = more revenue at stake
+  // = lower per-site churn = cushion for longer payback.
+  //
+  // Tweakable - Will to refine the brackets / discount % / payback
+  // months based on actual commercial policy.
+  var VOLUME_TIERS = [
+    { min: 1,  max: 1,    label: 'Single-site', discountPct: 0,    paybackMonths: 3,   cls: '' },
+    { min: 2,  max: 4,    label: 'Small group', discountPct: 3,    paybackMonths: 3.5, cls: '' },
+    { min: 5,  max: 9,    label: 'Mid-market',  discountPct: 6,    paybackMonths: 4,   cls: '' },
+    { min: 10, max: 24,   label: 'Multi-site',  discountPct: 10,   paybackMonths: 6,   cls: '' },
+    { min: 25, max: 9999, label: 'Enterprise',  discountPct: null, paybackMonths: 9,   cls: 'tier-enterprise' }
+  ];
+  function currentVolumeTier(locations) {
+    var n = Math.max(1, Math.round(parseFloat(locations)) || 1);
+    for (var i = 0; i < VOLUME_TIERS.length; i++) {
+      var t = VOLUME_TIERS[i];
+      if (n >= t.min && n <= t.max) return t;
+    }
+    return VOLUME_TIERS[0];
+  }
+  // Helper - read the tier-specific payback cap from a prospect.
+  // Falls back to the legacy 3-month constant if anything is off.
+  function paybackMonthsFor(prospectOrLocations) {
+    var loc = (prospectOrLocations && prospectOrLocations.locations != null)
+      ? prospectOrLocations.locations
+      : prospectOrLocations;
+    var tier = currentVolumeTier(loc);
+    return tier && tier.paybackMonths ? tier.paybackMonths : GUARDRAILS.paybackTargetMonths;
+  }
+  function fmtMonths(m) {
+    // 3 -> "3", 3.5 -> "3.5"
+    return (m % 1 === 0) ? String(m) : m.toFixed(1);
+  }
+  function updateVolumeTierPill() {
+    var pill = $('volTierPill');
+    if (!pill) return;
+    var tier = currentVolumeTier(($('locations') || {}).value);
+    pill.className = 'vol-tier-pill' + (tier.cls ? ' ' + tier.cls : '');
+    var pbBit = ' · ' + fmtMonths(tier.paybackMonths) + '-mo payback';
+    // v8.16: dropped the "~X% off list" suggestion. The slider verdicts
+    // already tell the rep what's healthy as they discount; suggesting
+    // a target discount % from the volume tier was redundant noise.
+    var html = tier.label + pbBit;
+    if (tier.cls === 'tier-enterprise') {
+      html += ' <span class="vol-tier-pct">flag for CRO review</span>';
+    }
+    pill.innerHTML = html;
+  }
+
   // v8.16: page title reflects the prospect business name once typed.
   // "Deal Building" → "Deal Building - Billy's Pizza".
   function updatePageTitle() {
@@ -1880,7 +2044,7 @@
     var snap = $('dealSnapshot');
     if (!snap) return;
 
-    var anyScope = !!(p.includeOO || p.includePOS || p.includeKiosk);
+    var anyScope = !!(p.includeOO || p.includePOS || p.includeKiosk || p.includeQROP);
     if (!anyScope) {
       snap.classList.remove('show');
       snap.innerHTML = '';
@@ -1895,6 +2059,7 @@
     if (p.includePOS)   products.push('POS');
     if (p.includeOO)    products.push('OO');
     if (p.includeKiosk) products.push('Kiosk');
+    if (p.includeQROP)  products.push('QROP');
     var productLabel = products.join(' + ');
 
     // Proposal recurring (SNR per site × locations)
@@ -1916,7 +2081,10 @@
     var snrFloor = GUARDRAILS.snrFloorMonthly;
     var paybackMonths = v.paybackMonths;
     var snrOK = snrPerSite >= snrFloor;
-    var paybackOK = !(hwDiscount > 0 && paybackMonths != null && paybackMonths > GUARDRAILS.paybackTargetMonths);
+    // v8.16: tier-driven payback cap - check against the target months
+    // computed for this prospect's location count.
+    var tierPaybackCap = (v && v.paybackTargetMonths) || paybackMonthsFor(p);
+    var paybackOK = !(hwDiscount > 0 && paybackMonths != null && paybackMonths > tierPaybackCap);
     var allOK = snrOK && paybackOK;
     var pillClass, pillText;
     if (proposalSnr === 0) {
@@ -1939,6 +2107,10 @@
     var fdPosRate    = parseFloat(($('fdPosRate') || {}).value) || 0;
     var fdPosTxn     = parseFloat(($('fdPosTransFee') || {}).value) || 0;
     var fdOORate     = parseFloat(($('fdOOProcessingRate') || {}).value) || 0;
+    var fdKioskRate  = parseFloat(($('fdKioskRate') || {}).value) || 0;
+    var fdKioskTxn   = parseFloat(($('fdKioskTransFee') || {}).value) || 0;
+    var fdQROPRate   = parseFloat(($('fdQROPRate') || {}).value) || 0;
+    var fdQROPTxn    = parseFloat(($('fdQROPTransFee') || {}).value) || 0;
     var fdHwTotal = (parseFloat(($('fdPosHardware') || {}).value) || 0) +
                     (parseFloat(($('fdKioskHardware') || {}).value) || 0);
 
@@ -1966,6 +2138,20 @@
     }
     if (p.includeOO && fdOORate > 0) {
       parts.push('<strong>OO ' + fdOORate.toFixed(2) + '%</strong>');
+    }
+    if (p.includeKiosk && fdKioskRate > 0) {
+      var kioskBit = '<strong>Kiosk ' + fdKioskRate.toFixed(2) + '%</strong>';
+      if (fdKioskTxn > 0) {
+        kioskBit += ' + <strong>' + fmtTxn(fdKioskTxn) + '</strong>';
+      }
+      parts.push(kioskBit);
+    }
+    if (p.includeQROP && fdQROPRate > 0) {
+      var qropBit = '<strong>QROP ' + fdQROPRate.toFixed(2) + '%</strong>';
+      if (fdQROPTxn > 0) {
+        qropBit += ' + <strong>' + fmtTxn(fdQROPTxn) + '</strong>';
+      }
+      parts.push(qropBit);
     }
     if (hwList > 0) {
       if (hwDiscount > 0) {
@@ -2001,6 +2187,7 @@
     $('includeOO').checked = !!prospect.includeOO;
     $('includePOS').checked = !!prospect.includePOS;
     $('includeKiosk').checked = !!prospect.includeKiosk;
+    if ($('includeQROP')) $('includeQROP').checked = !!prospect.includeQROP;
 
     var c = prospect.current || {};
     // OO - direct ordering: provider + revenue + AOV + sub + processing %
@@ -2018,6 +2205,11 @@
     hyd('curPosRate',           c.posRate);
     hyd('curPosTransFee',       c.posTransFee);
     hyd('curPosSub',            c.posSub);
+    // Kiosk + QROP projected volume (no incumbent to displace)
+    hyd('curKioskGmv',          c.kioskGmv);
+    hyd('curKioskAov',          c.kioskAov);
+    hyd('curQROPGmv',           c.qropGmv);
+    hyd('curQROPAov',           c.qropAov);
     // Marketplace context (Deliveroo / Uber Eats / JustEat)
     hyd('curMarketGmv',         c.marketGmv);
     hyd('curMarketCommission',  c.marketCommission);
@@ -2031,6 +2223,11 @@
     hyd('fdPosHardwareList',    f.posHardwareList);
     hyd('fdKioskHardware',      f.kioskHardware);
     hyd('fdKioskHardwareList',  f.kioskHardwareList);
+    // v8.16: kiosk + QROP processing levers
+    hyd('fdKioskRate',          f.kioskRate);
+    hyd('fdKioskTransFee',      f.kioskTransFee);
+    hyd('fdQROPRate',           f.qropRate);
+    hyd('fdQROPTransFee',       f.qropTransFee);
     // v8.16: kiosk count field removed from the form. Older saved deals
     // may still have a kioskCount value in localStorage - left untouched
     // for back-compat but no longer surfaced or used.
@@ -2040,6 +2237,7 @@
     applyScopeVisibility();
     updateSaveStamp();
     updatePageTitle();
+    updateVolumeTierPill();
   }
 
   // ---------- Collect: form -> prospect object ----------
@@ -2053,6 +2251,7 @@
     prospect.includeOO = $('includeOO').checked;
     prospect.includePOS = $('includePOS').checked;
     prospect.includeKiosk = $('includeKiosk').checked;
+    prospect.includeQROP = $('includeQROP') ? $('includeQROP').checked : false;
 
     prospect.current = {
       // OO - direct ordering provider. Includes a per-transaction fee
@@ -2071,6 +2270,11 @@
       posRate:          val('curPosRate'),
       posTransFee:      val('curPosTransFee'),
       posSub:           val('curPosSub'),
+      // v8.16: kiosk + QROP projected volume
+      kioskGmv:         val('curKioskGmv'),
+      kioskAov:         val('curKioskAov'),
+      qropGmv:          val('curQROPGmv'),
+      qropAov:          val('curQROPAov'),
       // v8.8: Marketplace context - not used in cost-replacement maths,
       // but informs the value pitch.
       marketGmv:        val('curMarketGmv'),
@@ -2090,6 +2294,11 @@
       // (across however many kiosks are in the deal).
       kioskHardware:    val('fdKioskHardware'),
       kioskHardwareList: val('fdKioskHardwareList'),
+      // v8.16: kiosk + QROP processing rate + per-transaction fee
+      kioskRate:        val('fdKioskRate'),
+      kioskTransFee:    val('fdKioskTransFee'),
+      qropRate:         val('fdQROPRate'),
+      qropTransFee:     val('fdQROPTransFee'),
       // Single bundled subscription from the SFDC quote
       monthlySub:       val('fdMonthlySub')
       // (contractMonths is the CONTRACT_MONTHS constant - not stored)
@@ -2102,9 +2311,12 @@
     var ooOn    = $('includeOO').checked;
     var posOn   = $('includePOS').checked;
     var kioskOn = $('includeKiosk').checked;
-    var anyScope = ooOn || posOn || kioskOn;
-    $('card-currentOO').style.display    = ooOn  ? '' : 'none';
-    $('card-currentPOS').style.display   = posOn ? '' : 'none';
+    var qropOn  = $('includeQROP') ? $('includeQROP').checked : false;
+    var anyScope = ooOn || posOn || kioskOn || qropOn;
+    $('card-currentOO').style.display    = ooOn   ? '' : 'none';
+    $('card-currentPOS').style.display   = posOn  ? '' : 'none';
+    if ($('card-currentKiosk')) $('card-currentKiosk').style.display = kioskOn ? '' : 'none';
+    if ($('card-currentQROP'))  $('card-currentQROP').style.display  = qropOn  ? '' : 'none';
 
     // v8.16: Step 3 is now split into Section A (fees & subs) and
     // Section B (hardware). Each FIELD container toggles independently
@@ -2113,21 +2325,24 @@
     if ($('fdPosRateField'))         $('fdPosRateField').style.display         = posOn ? '' : 'none';
     if ($('fdPosTransFeeField'))     $('fdPosTransFeeField').style.display     = posOn ? '' : 'none';
     if ($('fdOOProcessingRateField')) $('fdOOProcessingRateField').style.display = ooOn ? '' : 'none';
+    if ($('fdKioskRateField'))       $('fdKioskRateField').style.display       = kioskOn ? '' : 'none';
+    if ($('fdKioskTransFeeField'))   $('fdKioskTransFeeField').style.display   = kioskOn ? '' : 'none';
+    if ($('fdQROPRateField'))        $('fdQROPRateField').style.display        = qropOn  ? '' : 'none';
+    if ($('fdQROPTransFeeField'))    $('fdQROPTransFeeField').style.display    = qropOn  ? '' : 'none';
     if ($('fdPosHardwareField'))     $('fdPosHardwareField').style.display     = posOn ? '' : 'none';
     if ($('fdKioskHardwareField'))   $('fdKioskHardwareField').style.display   = kioskOn ? '' : 'none';
 
-    // Bundled-sub field - same gate as before: any scope ticked AND at
-    // least one proposal-side input filled. Will: "Total monthly
-    // subscription should only appear once we've added in the rest
-    // of the proposal."
+    // Bundled-sub field - same gate: any scope ticked AND at least one
+    // proposal-side input filled.
     var hasProposalInput =
         (ooOn    && parseFloat($('fdOOProcessingRate').value) > 0)
      || (posOn   && (parseFloat($('fdPosRate').value) > 0 || parseFloat($('fdPosHardware').value) > 0))
-     || (kioskOn && parseFloat($('fdKioskHardware').value) > 0);
+     || (kioskOn && (parseFloat(($('fdKioskRate') || {}).value) > 0 || parseFloat($('fdKioskHardware').value) > 0))
+     || (qropOn  && parseFloat(($('fdQROPRate') || {}).value) > 0);
     if ($('fdMonthlySubField')) $('fdMonthlySubField').style.display = (anyScope && hasProposalInput) ? '' : 'none';
 
     // Section wrappers visible iff any of their child fields are visible.
-    var sectionFeesVisible = posOn || ooOn || (anyScope && hasProposalInput);
+    var sectionFeesVisible = posOn || ooOn || kioskOn || qropOn || (anyScope && hasProposalInput);
     var sectionHardwareVisible = posOn || kioskOn;
     if ($('sectionFees'))     $('sectionFees').style.display     = sectionFeesVisible     ? '' : 'none';
     if ($('sectionHardware')) $('sectionHardware').style.display = sectionHardwareVisible ? '' : 'none';
@@ -2171,11 +2386,18 @@
     }
     if ($('includeKiosk').checked && rates.kiosk) {
       fillIfBlank('fdKioskHardware', rates.kiosk.hardware);
+      // v8.16: kiosk processing rate + per-txn fee from list
+      fillIfBlank('fdKioskRate', rates.kiosk.processing * 100);
+      fillIfBlank('fdKioskTransFee', rates.kiosk.txnFee);
+    }
+    if ($('includeQROP') && $('includeQROP').checked && rates.qrop) {
+      fillIfBlank('fdQROPRate', rates.qrop.processing * 100);
+      fillIfBlank('fdQROPTransFee', rates.qrop.txnFee);
     }
     // v8.16: Bundled sub defaults to £129 (Flipdish's typical bundle
     // figure across deals). Rep overwrites with the actual SFDC quote
     // figure - the slider gives ±10 fine-tuning around the typed value.
-    var anyScope = $('includeOO').checked || $('includePOS').checked || $('includeKiosk').checked;
+    var anyScope = $('includeOO').checked || $('includePOS').checked || $('includeKiosk').checked || ($('includeQROP') && $('includeQROP').checked);
     if (anyScope) {
       var subEl = $('fdMonthlySub');
       if (subEl) {
@@ -2251,6 +2473,14 @@
         ccy + '0 (free)', 'List ' + fmt(kioskHwBaseline));
       var kioskListLabel = $('fdKioskHardwareListLabel');
       if (kioskListLabel) kioskListLabel.textContent = 'List ' + fmt(kioskHwBaseline);
+      // v8.16: kiosk processing + per-txn sliders (fixed-range)
+      setSliderBounds('fdKioskRate', 0.5, 2, '0.50%', '2.00%');
+      setSliderBounds('fdKioskTransFee', 0, 0.30, ccy + '0.00', ccy + '0.30');
+    }
+    if (rates.qrop) {
+      // v8.16: QROP processing + per-order sliders (fixed-range)
+      setSliderBounds('fdQROPRate', 0.5, 2, '0.50%', '2.00%');
+      setSliderBounds('fdQROPTransFee', 0, 0.30, ccy + '0.00', ccy + '0.30');
     }
     // v8.16: bundled sub can be anything (£3, €74, $150, £500+).
     // Min always 0 in the active currency. Max = max(typed x 2, 300)
@@ -2387,11 +2617,45 @@
     }
 
     // -------- Kiosk (no current displacement, just Flipdish-side spend) --------
-    // v7: hardware is a per-product field; subscription is bundled
-    // (lives in flipdish.monthlySub for the whole deal).
+    // v8.16: kiosk now generates processing revenue too. Rep types
+    // projected GMV + AOV in Step 2 + processing rate / per-txn in
+    // Section A. Sub portion still lives in the bundled monthlySub.
     if (p.includeKiosk) {
+      var kioskGmv = N(c.kioskGmv);
+      var kioskAov = N(c.kioskAov);
+      var kioskTxn = kioskAov > 0 ? (kioskGmv / kioskAov) : 0;
+      var fdKioskRate    = N(f.kioskRate) / 100;
+      var fdKioskTxnFee  = N(f.kioskTransFee);
+      var fdKioskProcRev = (kioskGmv * fdKioskRate) + (kioskTxn * fdKioskTxnFee);
       result.detail.kiosk = {
-        hardware: N(f.kioskHardware)
+        hardware: N(f.kioskHardware),
+        gmv: kioskGmv,
+        aov: kioskAov,
+        txn: kioskTxn,
+        fdRate: N(f.kioskRate),
+        fdTxnFee: fdKioskTxnFee,
+        fdProcRev: fdKioskProcRev
+      };
+    }
+
+    // -------- QROP (no current displacement, just Flipdish-side spend) --------
+    // v8.16: QROP processes orders at the table. Same shape as kiosk -
+    // GMV/AOV from Step 2, processing rate + per-order fee from
+    // Section A. Sub portion in the bundled monthlySub.
+    if (p.includeQROP) {
+      var qropGmv = N(c.qropGmv);
+      var qropAov = N(c.qropAov);
+      var qropTxn = qropAov > 0 ? (qropGmv / qropAov) : 0;
+      var fdQROPRate    = N(f.qropRate) / 100;
+      var fdQROPTxnFee  = N(f.qropTransFee);
+      var fdQROPProcRev = (qropGmv * fdQROPRate) + (qropTxn * fdQROPTxnFee);
+      result.detail.qrop = {
+        gmv: qropGmv,
+        aov: qropAov,
+        txn: qropTxn,
+        fdRate: N(f.qropRate),
+        fdTxnFee: fdQROPTxnFee,
+        fdProcRev: fdQROPProcRev
       };
     }
 
@@ -2436,16 +2700,18 @@
     // attribute portions of the bundled sub across active products by
     // the ratio of their list subs. Reasonable approximation given we
     // can't recover what SFDC's bundle discount applied to which line.
-    var subOO = 0, subPOS = 0, subKiosk = 0;
-    if (rates.oo || rates.pos || rates.kiosk) {
+    var subOO = 0, subPOS = 0, subKiosk = 0, subQROP = 0;
+    if (rates.oo || rates.pos || rates.kiosk || rates.qrop) {
       var listOO    = (p.includeOO    && rates.oo)    ? rates.oo.sub                    : 0;
       var listPOS   = (p.includePOS   && rates.pos)   ? rates.pos.sub * locations       : 0;
       var listKiosk = (p.includeKiosk && rates.kiosk) ? rates.kiosk.sub                 : 0;
-      var listTotal = listOO + listPOS + listKiosk;
+      var listQROP  = (p.includeQROP  && rates.qrop)  ? rates.qrop.sub                  : 0;
+      var listTotal = listOO + listPOS + listKiosk + listQROP;
       if (listTotal > 0) {
         subOO    = totalMonthlySub * (listOO    / listTotal);
         subPOS   = totalMonthlySub * (listPOS   / listTotal);
         subKiosk = totalMonthlySub * (listKiosk / listTotal);
+        subQROP  = totalMonthlySub * (listQROP  / listTotal);
       }
     }
 
@@ -2469,22 +2735,44 @@
       result.detail.snrPOS = posProcRev + posTxnRev - posCardCost + subPOS;
       snrTotal += result.detail.snrPOS;
     }
+    // v8.16: kiosk SNR now includes processing revenue (rate × GMV +
+    // per-txn × txn count). Card costs treated as ONLINE (ooCardPct/Fix).
     if (p.includeKiosk && rates.kiosk) {
-      result.detail.snrKiosk = subKiosk;
+      var kd = result.detail.kiosk || {};
+      var kioskGmv = kd.gmv || 0;
+      var kioskTxnCount = kd.txn || 0;
+      var kioskProcRev = (kioskGmv * (N(f.kioskRate) / 100)) + (kioskTxnCount * N(f.kioskTransFee));
+      var kioskCardCost = (kioskGmv * (rates.ooCardPct || 0)) + (kioskTxnCount * (rates.ooCardFix || 0));
+      result.detail.snrKiosk = kioskProcRev - kioskCardCost + subKiosk;
       snrTotal += result.detail.snrKiosk;
+    }
+    // v8.16: QROP SNR same shape as kiosk - online card costs.
+    if (p.includeQROP && rates.qrop) {
+      var qd = result.detail.qrop || {};
+      var qropGmv = qd.gmv || 0;
+      var qropTxnCount = qd.txn || 0;
+      var qropProcRev = (qropGmv * (N(f.qropRate) / 100)) + (qropTxnCount * N(f.qropTransFee));
+      var qropCardCost = (qropGmv * (rates.ooCardPct || 0)) + (qropTxnCount * (rates.ooCardFix || 0));
+      result.detail.snrQROP = qropProcRev - qropCardCost + subQROP;
+      snrTotal += result.detail.snrQROP;
     }
     var snrPerSite = snrTotal / locations;
     result.snrPerSite = snrPerSite;
     result.opMarginMonthly = snrTotal * GUARDRAILS.opMarginFactor;
 
     // Hardware payback envelope under cross-subsidy rule (option b):
-    // POS + Kiosk SNR fully eligible; 25% of OO SNR is also eligible.
+    // POS + Kiosk + QROP SNR fully eligible; 25% of OO SNR is also eligible.
     var eligibleSnr =
         (result.detail.snrPOS   || 0)
       + (result.detail.snrKiosk || 0)
+      + (result.detail.snrQROP  || 0)
       + ((result.detail.snrOO || 0) * GUARDRAILS.ooSnrCrossSubsidy);
     var eligibleOpMargin = eligibleSnr * GUARDRAILS.opMarginFactor;
-    result.paybackEnvelope = eligibleOpMargin * GUARDRAILS.paybackTargetMonths;
+    // v8.16: payback cap is now tier-driven, not a fixed 3 months.
+    // 1 site = 3mo, 5 sites = 4mo, 10 sites = 6mo, etc.
+    var tierPaybackMonths = paybackMonthsFor(p);
+    result.paybackTargetMonths = tierPaybackMonths;
+    result.paybackEnvelope = eligibleOpMargin * tierPaybackMonths;
     result.maxHardwareDiscount = Math.max(0, result.paybackEnvelope);
     result.eligibleOpMargin = eligibleOpMargin;
 
@@ -2624,8 +2912,21 @@
       var posCardCost = (posRev * (rates.posCardPct || 0)) + (posTxn * (rates.posCardFix || 0));
       listSnr += posListProc + posListTxn - posCardCost + (rates.pos.sub * locations);
     }
-    if (p.includeKiosk && rates.kiosk) {
-      listSnr += rates.kiosk.sub;
+    if (p.includeKiosk && rates.kiosk && v.detail && v.detail.kiosk) {
+      var kd = v.detail.kiosk;
+      var kioskRev = kd.gmv || 0, kioskTxn = kd.txn || 0;
+      var kioskListProc = kioskRev * (rates.kiosk.processing || 0);
+      var kioskListTxn  = kioskTxn * (rates.kiosk.txnFee || 0);
+      var kioskCardCost = (kioskRev * (rates.ooCardPct || 0)) + (kioskTxn * (rates.ooCardFix || 0));
+      listSnr += kioskListProc + kioskListTxn - kioskCardCost + rates.kiosk.sub;
+    }
+    if (p.includeQROP && rates.qrop && v.detail && v.detail.qrop) {
+      var qd = v.detail.qrop;
+      var qropRev = qd.gmv || 0, qropTxn = qd.txn || 0;
+      var qropListProc = qropRev * (rates.qrop.processing || 0);
+      var qropListTxn  = qropTxn * (rates.qrop.txnFee || 0);
+      var qropCardCost = (qropRev * (rates.ooCardPct || 0)) + (qropTxn * (rates.ooCardFix || 0));
+      listSnr += qropListProc + qropListTxn - qropCardCost + rates.qrop.sub;
     }
     var proposalSnr = (v.snrPerSite || 0) * locations;
     var giveUp = listSnr - proposalSnr;
@@ -2711,7 +3012,13 @@
     var hwDisc   = Math.max(0, hwList - hwProp);
     var headroom = envelope - hwDisc;
 
+    // v8.16: tier-driven payback label - "3-month envelope" for single-site,
+    // "4-month envelope" for Mid-market (5-9 sites), etc.
+    var pbCap = v.paybackTargetMonths || paybackMonthsFor(p);
+    var pbCapTxt = fmtMonths(pbCap);
     if ($('vHwEnvelope')) $('vHwEnvelope').textContent = fmt(envelope);
+    if ($('vHwEnvelopeLabel')) $('vHwEnvelopeLabel').textContent = pbCapTxt + '-month envelope';
+    if ($('sectionHardwareGoal')) $('sectionHardwareGoal').textContent = 'Hard cap: ' + pbCapTxt + '-month payback';
     if ($('vHwList'))     $('vHwList').textContent     = fmt(hwList);
     if ($('vHwProposal')) $('vHwProposal').textContent = fmt(hwProp);
     if ($('vHwDiscount')) $('vHwDiscount').textContent = fmt(hwDisc);
@@ -2743,10 +3050,10 @@
         pillB.className = 'lever-verdict-pill ok';
         pillB.textContent = 'At list';
         noteB.textContent = 'Envelope is set by Section A\'s op margin. Drop fees further → envelope shrinks.';
-      } else if (v.paybackMonths != null && v.paybackMonths > GUARDRAILS.paybackTargetMonths) {
+      } else if (v.paybackMonths != null && v.paybackMonths > (v.paybackTargetMonths || 3)) {
         pillB.className = 'lever-verdict-pill bad';
         pillB.textContent = 'Over payback';
-        noteB.textContent = 'Hardware discount exceeds the 3-month payback envelope. Pull the hardware slider up or reduce Section A discounts to grow the envelope.';
+        noteB.textContent = 'Hardware discount exceeds the ' + fmtMonths(v.paybackTargetMonths || 3) + '-month payback envelope for this volume tier. Pull the hardware slider up or reduce Section A discounts to grow the envelope.';
       } else {
         pillB.className = 'lever-verdict-pill ok';
         pillB.textContent = 'Within cap';
@@ -2764,21 +3071,25 @@
     if (!isInitializing) collect();
     // v8.16: page title reflects the prospect business name as it's typed.
     updatePageTitle();
+    // v8.16: volume tier pill follows the locations count.
+    updateVolumeTierPill();
     // v8.16: gate the bundled-sub field + Section A wrapper on whether
     // any proposal rate/hardware has been entered. (Don't re-run full
     // applyScopeVisibility here - it triggers prefill which writes the
     // form on stale state.)
     if (!isInitializing) {
-      var anyScopeNow = $('includeOO').checked || $('includePOS').checked || $('includeKiosk').checked;
+      var qropOnNow   = $('includeQROP') ? $('includeQROP').checked : false;
+      var anyScopeNow = $('includeOO').checked || $('includePOS').checked || $('includeKiosk').checked || qropOnNow;
       var hasProp =
           ($('includeOO').checked    && parseFloat($('fdOOProcessingRate').value) > 0)
        || ($('includePOS').checked   && (parseFloat($('fdPosRate').value) > 0 || parseFloat($('fdPosHardware').value) > 0))
-       || ($('includeKiosk').checked && parseFloat($('fdKioskHardware').value) > 0);
+       || ($('includeKiosk').checked && (parseFloat(($('fdKioskRate') || {}).value) > 0 || parseFloat($('fdKioskHardware').value) > 0))
+       || (qropOnNow                 && parseFloat(($('fdQROPRate') || {}).value) > 0);
       if ($('fdMonthlySubField')) {
         $('fdMonthlySubField').style.display = (anyScopeNow && hasProp) ? '' : 'none';
       }
       if ($('sectionFees')) {
-        var sectionFeesVisibleNow = $('includePOS').checked || $('includeOO').checked || (anyScopeNow && hasProp);
+        var sectionFeesVisibleNow = $('includePOS').checked || $('includeOO').checked || $('includeKiosk').checked || qropOnNow || (anyScopeNow && hasProp);
         $('sectionFees').style.display = sectionFeesVisibleNow ? '' : 'none';
       }
     }
@@ -3606,8 +3917,10 @@
       btn.addEventListener('click', function () { setCountry(btn.dataset.country); });
     });
     // Scope toggles
-    ['includeOO','includePOS','includeKiosk'].forEach(function (id) {
-      $(id).addEventListener('change', function () {
+    ['includeOO','includePOS','includeKiosk','includeQROP'].forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener('change', function () {
         applyScopeVisibility();
         scheduleSave();
         recompute();
@@ -3619,10 +3932,14 @@
       'prospectName','locations','contactName','ownerName',
       'curOOProvider','curOOGmv','curOOAov','curOOSub','curOOProcessingRate','curOOTransFee',
       'curPosProvider','curPosGmv','curAov','curPosRate','curPosTransFee','curPosSub',
+      'curKioskGmv','curKioskAov',
+      'curQROPGmv','curQROPAov',
       'curMarketGmv','curMarketCommission',
       'fdOOProcessingRate',
       'fdPosRate','fdPosTransFee','fdPosHardware','fdPosHardwareList',
       'fdKioskHardware','fdKioskHardwareList',
+      'fdKioskRate','fdKioskTransFee',
+      'fdQROPRate','fdQROPTransFee',
       'fdMonthlySub'
     ];
     allInputIds.forEach(function (id) {

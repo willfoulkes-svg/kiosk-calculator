@@ -387,26 +387,32 @@
   // Mirror of LIST_RATES in detail.html - used here to compute the
   // "list price → your price" discount-stack section. If detail.html's
   // LIST_RATES changes, mirror it here too.
+  // v8.16: kiosk now has processing rate + per-txn fee, and QROP is
+  // a first-class product. Mirror detail.html's LIST_RATES exactly.
   var LIST_RATES = {
     UK: {
       oo:    { sub: 99, processing: 0.05 },
       pos:   { sub: 99, processing: 0.012, txnFee: 0.10, hardwareStarter: 799 },
-      kiosk: { sub: 79, hardware: 1500 }
+      kiosk: { sub: 79, processing: 0.015, txnFee: 0.20, hardware: 1500 },
+      qrop:  { sub: 49, processing: 0.015, txnFee: 0.20 }
     },
     IE: {
       oo:    { sub: 99, processing: 0.05 },
       pos:   { sub: 99, processing: 0.012, txnFee: 0.10, hardwareStarter: 899 },
-      kiosk: { sub: 79, hardware: 1500 }
+      kiosk: { sub: 79, processing: 0.015, txnFee: 0.20, hardware: 1500 },
+      qrop:  { sub: 49, processing: 0.015, txnFee: 0.20 }
     },
     US: {
       oo:    { sub: 249, processing: 0.05 },
       pos:   null,
-      kiosk: { sub: 79, hardware: 2500 }
+      kiosk: { sub: 79, processing: 0.015, txnFee: 0.20, hardware: 2500 },
+      qrop:  { sub: 49, processing: 0.015, txnFee: 0.20 }
     },
     ES: {
       oo:    { sub: 99, processing: 0.05 },
       pos:   null,
-      kiosk: { sub: 79, hardware: 1500 }
+      kiosk: { sub: 79, processing: 0.015, txnFee: 0.20, hardware: 1500 },
+      qrop:  { sub: 49, processing: 0.015, txnFee: 0.20 }
     }
   };
 
@@ -631,6 +637,58 @@
       }
     }
 
+    // v8.16: ---- Kiosk processing rate ----
+    if (p.includeKiosk && rates.kiosk && rates.kiosk.processing != null) {
+      var kioskListPct = rates.kiosk.processing * 100;
+      var kioskYouPct = N(f.kioskRate);
+      if (kioskYouPct > 0 && kioskYouPct < kioskListPct) {
+        rows.push(rowHtml(
+          'Kiosk - processing rate',
+          kioskListPct + '%',
+          kioskYouPct + '%',
+          (kioskListPct - kioskYouPct).toFixed(2) + 'pp',
+          pct(kioskListPct, kioskYouPct)
+        ));
+      }
+      var kioskListTxn = rates.kiosk.txnFee;
+      var kioskYouTxn = N(f.kioskTransFee);
+      if (kioskListTxn != null && kioskYouTxn > 0 && kioskYouTxn < kioskListTxn) {
+        rows.push(rowHtml(
+          'Kiosk - per-transaction fee',
+          fmtMoney(kioskListTxn, country),
+          fmtMoney(kioskYouTxn, country),
+          fmtMoney(kioskListTxn - kioskYouTxn, country),
+          pct(kioskListTxn, kioskYouTxn)
+        ));
+      }
+    }
+
+    // v8.16: ---- QROP processing rate + per-order fee ----
+    if (p.includeQROP && rates.qrop) {
+      var qropListPct = rates.qrop.processing * 100;
+      var qropYouPct = N(f.qropRate);
+      if (qropYouPct > 0 && qropYouPct < qropListPct) {
+        rows.push(rowHtml(
+          'QROP - processing rate',
+          qropListPct + '%',
+          qropYouPct + '%',
+          (qropListPct - qropYouPct).toFixed(2) + 'pp',
+          pct(qropListPct, qropYouPct)
+        ));
+      }
+      var qropListTxn = rates.qrop.txnFee;
+      var qropYouTxn = N(f.qropTransFee);
+      if (qropListTxn != null && qropYouTxn > 0 && qropYouTxn < qropListTxn) {
+        rows.push(rowHtml(
+          'QROP - per-order fee',
+          fmtMoney(qropListTxn, country),
+          fmtMoney(qropYouTxn, country),
+          fmtMoney(qropListTxn - qropYouTxn, country),
+          pct(qropListTxn, qropYouTxn)
+        ));
+      }
+    }
+
     // ---- Subscription (bundled - single figure from SFDC quote) ----
     // List = sum of in-scope per-product list subs; Yours = bundled
     // monthlySub. The discount IS the bundle discount.
@@ -638,6 +696,8 @@
     if (p.includeOO    && rates.oo)    listSubMonthly += rates.oo.sub;
     if (p.includePOS   && rates.pos)   listSubMonthly += rates.pos.sub * locations;
     if (p.includeKiosk && rates.kiosk) listSubMonthly += rates.kiosk.sub;
+    // v8.16: QROP is a first-class product now - include its sub in the list comparison
+    if (p.includeQROP  && rates.qrop)  listSubMonthly += rates.qrop.sub;
     var youSubMonthly = N(f.monthlySub);
     if (listSubMonthly > 0 && youSubMonthly > 0) {
       totalListMonthly += listSubMonthly;
@@ -761,7 +821,8 @@
     var country = prospect.country || 'UK';
     var v = computeValueStory(prospect);
 
-    var hasAnything = prospect.includeOO || prospect.includePOS;
+    // v8.16: Kiosk and QROP are first-class products too - any of the four counts.
+    var hasAnything = prospect.includeOO || prospect.includePOS || prospect.includeKiosk || prospect.includeQROP;
 
     // Build the header
     var headerHtml = '' +
