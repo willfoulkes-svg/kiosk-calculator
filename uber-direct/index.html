@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Flipdish + Uber Direct vs Marketplace Delivery — Value Calculator</title>
+<title>Flipdish + Uber Direct vs Marketplace Delivery - Value Calculator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Domine:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -297,7 +297,7 @@
   table.bands td.takerate.r-bad      { background: var(--red-soft); color: var(--red-strong); }
   table.bands td.savings { font-weight: 600; color: var(--flipdish-blue-dark); }
   table.bands td.savings.negative { color: var(--red-strong); }
-  /* Restaurant delivery cost should never go negative — flag if it does */
+  /* Restaurant delivery cost should never go negative - flag if it does */
   table.bands td.cell-restcost.negative {
     color: var(--red-strong);
     font-weight: 600;
@@ -426,7 +426,7 @@
   </header>
 
   <h1 id="pageTitle">Stop paying 30% to marketplaces for delivery</h1>
-  <p class="lede">Compare a restaurant's take-home on marketplace delivery (UberEats, Deliveroo, Just Eat) vs ordering via Flipdish with Uber Direct handling delivery. The Uber Direct rate is fixed by distance band — adjust what the customer pays per band to find a healthy take rate.</p>
+  <p class="lede">Compare a restaurant's take-home on marketplace delivery (UberEats, Deliveroo, Just Eat) vs ordering via Flipdish with Uber Direct handling delivery. The Uber Direct rate is fixed by distance band - adjust what the customer pays per band to find a healthy take rate.</p>
 
   <!-- COUNTRY SELECTOR -->
   <div class="country-bar">
@@ -471,10 +471,10 @@
 
   <!-- Market notes -->
   <div class="market-note us-note">
-    <strong>US Uber Direct flat fees</strong> — toggle <em>Within California</em> if the restaurant operates in CA (rates are higher across all distance bands).
+    <strong>US Uber Direct flat fees</strong> - toggle <em>Within California</em> if the restaurant operates in CA (rates are higher across all distance bands).
   </div>
   <div class="market-note ie-note">
-    <strong>Ireland note</strong> — Uber Direct rates here include 23% VAT. If the restaurant is VAT-registered, toggle <em>VAT registered</em> to see the savings net of reclaimed VAT.
+    <strong>Ireland note</strong> - Uber Direct rates here include 23% VAT. If the restaurant is VAT-registered, toggle <em>VAT registered</em> to see the savings net of reclaimed VAT.
   </div>
 
   <!-- BAND TABLE (working area first) -->
@@ -483,9 +483,9 @@
       Uber Direct cost &amp; take rate by distance
       <span class="legend">
         <span><i style="background:var(--green-soft);"></i>≤10%</span>
-        <span><i style="background:var(--green-light);"></i>11–15%</span>
-        <span><i style="background:white;border:1px solid var(--border);"></i>16–20%</span>
-        <span><i style="background:var(--amber-soft);"></i>21–25%</span>
+        <span><i style="background:var(--green-light);"></i>11-15%</span>
+        <span><i style="background:white;border:1px solid var(--border);"></i>16-20%</span>
+        <span><i style="background:var(--amber-soft);"></i>21-25%</span>
         <span><i style="background:var(--red-soft);"></i>&gt;25%</span>
       </span>
     </h2>
@@ -507,12 +507,12 @@
   <div class="hero">
     <div>
       <div class="label" id="heroLabel">Annual saving vs marketplaces</div>
-      <div class="big" id="heroBig">—</div>
+      <div class="big" id="heroBig">-</div>
       <div class="sub" id="heroSub">Across all distance bands</div>
     </div>
     <div class="secondary">
       <div class="label-sec">Monthly</div>
-      <div class="big-sec" id="heroMonthly">—</div>
+      <div class="big-sec" id="heroMonthly">-</div>
     </div>
   </div>
 
@@ -520,15 +520,15 @@
   <div class="detail-grid" style="margin-bottom:14px;">
     <div class="detail">
       <div class="k">Average saved per order</div>
-      <div class="v" id="kAvgSave">—</div>
+      <div class="v" id="kAvgSave">-</div>
     </div>
     <div class="detail">
       <div class="k">Average Flipdish take rate</div>
-      <div class="v" id="kAvgTake">—</div>
+      <div class="v" id="kAvgTake">-</div>
     </div>
     <div class="detail">
       <div class="k">Bands at healthy take rate</div>
-      <div class="v" id="kHealthy">—</div>
+      <div class="v" id="kHealthy">-</div>
     </div>
   </div>
 
@@ -539,7 +539,7 @@
       <h2>Project your margins in three ways</h2>
       <ol>
         <li><strong>Pass on more of the delivery fee to the customer.</strong> Edit the <em>Customer pays</em> column above to see what the take rate looks like at each distance.</li>
-        <li><strong>Set a minimum AOV.</strong> A bigger basket spreads the same delivery cost — push AOV up in the inputs and watch the take rate drop.</li>
+        <li><strong>Set a minimum AOV.</strong> A bigger basket spreads the same delivery cost - push AOV up in the inputs and watch the take rate drop.</li>
         <li><strong>Mark up D2C prices to match marketplaces.</strong> If they're already marking up on UberEats / Deliveroo, why not on their own ordering channel?</li>
       </ol>
     </div>
@@ -585,14 +585,14 @@
       currency: '$', vat: false, ca: true,
       defaults: { aov: 20, mpRate: 30, fdRate: 5.0, deliveries: 70 },
       bandsOutsideCA: [
-        { range: '0–5 mi',  rate: 5.99, custFee: 4.00 },
-        { range: '5–8 mi',  rate: 7.99, custFee: 5.00 },
-        { range: '8–10 mi', rate: 8.99, custFee: 7.00 }
+        { range: '0-5 mi',  rate: 5.99, custFee: 4.00 },
+        { range: '5-8 mi',  rate: 7.99, custFee: 5.00 },
+        { range: '8-10 mi', rate: 8.99, custFee: 7.00 }
       ],
       bandsWithinCA: [
-        { range: '0–5 mi',  rate: 7.99,  custFee: 4.00 },
-        { range: '5–8 mi',  rate: 9.99,  custFee: 5.00 },
-        { range: '8–10 mi', rate: 10.99, custFee: 7.00 }
+        { range: '0-5 mi',  rate: 7.99,  custFee: 4.00 },
+        { range: '5-8 mi',  rate: 9.99,  custFee: 5.00 },
+        { range: '8-10 mi', rate: 10.99, custFee: 7.00 }
       ]
     }
   };
@@ -607,21 +607,21 @@
   let isInitializing = true;  // suppresses flash animation on page load
 
   const fmtMoney = n => {
-    if (!isFinite(n)) return '—';
+    if (!isFinite(n)) return '-';
     const sign = n < 0 ? '-' : '';
     const abs = Math.abs(n);
     return sign + currency + abs.toLocaleString(undefined, { maximumFractionDigits: 0 });
   };
   const fmtMoney2 = n => {
-    if (!isFinite(n)) return '—';
+    if (!isFinite(n)) return '-';
     const sign = n < 0 ? '-' : '';
     const abs = Math.abs(n);
     return sign + currency + abs.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 });
   };
-  const fmtPct  = n => isFinite(n) ? (n).toFixed(0) + '%' : '—';
-  const fmtPct1 = n => isFinite(n) ? (n).toFixed(1) + '%' : '—';
-  const fmtMoneySafe = n => isFinite(n) ? fmtMoney(n) : '—';
-  const fmtMoney2Safe = n => isFinite(n) ? fmtMoney2(n) : '—';
+  const fmtPct  = n => isFinite(n) ? (n).toFixed(0) + '%' : '-';
+  const fmtPct1 = n => isFinite(n) ? (n).toFixed(1) + '%' : '-';
+  const fmtMoneySafe = n => isFinite(n) ? fmtMoney(n) : '-';
+  const fmtMoney2Safe = n => isFinite(n) ? fmtMoney2(n) : '-';
 
   function takeRateClass(pct) {
     if (pct <= 10) return 'r-good';
@@ -676,17 +676,17 @@
           <td>${b.range}</td>
           <td>${currency}${b.rate.toFixed(2)}</td>
           <td class="editable"><input type="number" step="0.05" min="0" value="${b.custFee}" data-i="${i}" class="custFeeInput"></td>
-          <td class="cell-restcost">—</td>
-          <td class="cell-fdcost">—</td>
-          <td class="takerate cell-take">—</td>
-          <td class="cell-mpcom">—</td>
-          <td class="savings cell-save">—</td>
+          <td class="cell-restcost">-</td>
+          <td class="cell-fdcost">-</td>
+          <td class="takerate cell-take">-</td>
+          <td class="cell-mpcom">-</td>
+          <td class="savings cell-save">-</td>
       `;
       if (showVat) {
         row += `
-          <td class="vat-col cell-vatback">—</td>
-          <td class="vat-col takerate cell-takevat">—</td>
-          <td class="vat-col savings cell-savevat">—</td>
+          <td class="vat-col cell-vatback">-</td>
+          <td class="vat-col takerate cell-takevat">-</td>
+          <td class="vat-col savings cell-savevat">-</td>
         `;
       }
       row += `</tr>`;
@@ -797,7 +797,7 @@
         }
       };
       // Restaurant delivery cost: flag in red if customer fee exceeds the rate
-      // (that band's customer fee is set higher than Uber's charge — unusual / likely user typo)
+      // (that band's customer fee is set higher than Uber's charge - unusual / likely user typo)
       const restCostClass = 'cell-restcost' + (restCost < 0 ? ' negative' : '');
       setCell('.cell-restcost', fmtMoney2Safe(restCost), restCostClass);
       setCell('.cell-fdcost',   fmtMoney2Safe(fdCost));
@@ -838,23 +838,23 @@
     const monthlySavings    = avgSavingPerOrder * deliveries;
     const annualSavings     = monthlySavings * 12;
 
-    // Page title — use marketplace rate
+    // Page title - use marketplace rate
     $('pageTitle').textContent = `Stop paying ${Math.round(mpRate)}% to marketplaces for delivery`;
 
-    // If AOV is 0 or less, take rates become infinite/nonsense — show em-dash fallbacks
+    // If AOV is 0 or less, take rates become infinite/nonsense - show em-dash fallbacks
     const validAov = aov > 0;
 
     // Hero
-    $('heroBig').textContent     = validAov ? fmtMoney(annualSavings) + '/yr'  : '—';
-    $('heroMonthly').textContent = validAov ? fmtMoney(monthlySavings) + '/mo' : '—';
+    $('heroBig').textContent     = validAov ? fmtMoney(annualSavings) + '/yr'  : '-';
+    $('heroMonthly').textContent = validAov ? fmtMoney(monthlySavings) + '/mo' : '-';
     $('heroSub').textContent     = validAov
       ? `Average across ${n} distance bands · ${deliveries.toLocaleString()} deliveries / month` + (showVat ? ' · ex VAT' : '')
       : 'Enter an Average Order Value above 0 to see savings';
 
     // Detail cards
-    $('kAvgSave').textContent = validAov ? fmtMoney2(avgSavingPerOrder) : '—';
-    $('kAvgTake').textContent = validAov ? fmtPct1(avgTakeRate)         : '—';
-    $('kHealthy').textContent = validAov ? `${healthyCount} of ${n}`    : '—';
+    $('kAvgSave').textContent = validAov ? fmtMoney2(avgSavingPerOrder) : '-';
+    $('kAvgTake').textContent = validAov ? fmtPct1(avgTakeRate)         : '-';
+    $('kHealthy').textContent = validAov ? `${healthyCount} of ${n}`    : '-';
   }
 
   // ---------- Initial render ----------

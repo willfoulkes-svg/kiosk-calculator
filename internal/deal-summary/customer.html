@@ -354,7 +354,7 @@
       </g>
     </svg>
   </div>
-  <div class="date-stamp" id="dateStamp">—</div>
+  <div class="date-stamp" id="dateStamp">-</div>
 </div>
 
 <div class="wrap">
@@ -375,7 +375,7 @@
 
 <script>
   // ====================================================================
-  // customer.html — external cost-justification view.
+  // customer.html - external cost-justification view.
   // Reads the prospect from localStorage via ?id=..., renders a
   // customer-friendly summary of the value story. No inputs, no edits.
   // ====================================================================
@@ -384,7 +384,7 @@
   var CCY  = { UK: '£', IE: '€', US: '$', ES: '€' };
   var LOC  = { UK: 'United Kingdom', IE: 'Ireland', US: 'United States', ES: 'Spain' };
 
-  // Mirror of LIST_RATES in detail.html — used here to compute the
+  // Mirror of LIST_RATES in detail.html - used here to compute the
   // "list price → your price" discount-stack section. If detail.html's
   // LIST_RATES changes, mirror it here too.
   var LIST_RATES = {
@@ -437,7 +437,7 @@
 
   // ---------- Money formatter ----------
   function fmtMoney(n, country) {
-    if (!isFinite(n)) return '—';
+    if (!isFinite(n)) return '-';
     var sym = CCY[country] || '£';
     var s = n < 0 ? '-' : '';
     return s + sym + Math.abs(n).toLocaleString('en-US', { maximumFractionDigits: 0 });
@@ -536,8 +536,8 @@
       '<div class="compare">' +
         '<div class="compare-title">Direct online ordering</div>' +
         '<div class="row"><span class="k">Monthly online revenue</span><span class="v">' + fmtMoney(d.gmv, country) + '</span></div>' +
-        '<div class="row"><span class="k">' + providerLabel + ' — all-in monthly</span><span class="v">-' + fmtMoney(d.curTotal, country) + '</span></div>' +
-        '<div class="row"><span class="k">Flipdish — all-in monthly</span><span class="v">-' + fmtMoney(d.fdTotal, country) + '</span></div>' +
+        '<div class="row"><span class="k">' + providerLabel + ' - all-in monthly</span><span class="v">-' + fmtMoney(d.curTotal, country) + '</span></div>' +
+        '<div class="row"><span class="k">Flipdish - all-in monthly</span><span class="v">-' + fmtMoney(d.fdTotal, country) + '</span></div>' +
         '<div class="total-row"><span>Monthly saving</span><span class="v">' + fmtMoney(v.ooSavings, country) + '</span></div>' +
         saveCallout(v.ooSavings, country) +
       '</div>';
@@ -551,8 +551,8 @@
       '<div class="compare">' +
         '<div class="compare-title">POS &amp; in-store</div>' +
         '<div class="row"><span class="k">Monthly in-store revenue</span><span class="v">' + fmtMoney(d.gmv, country) + '</span></div>' +
-        '<div class="row"><span class="k">' + providerLabel + ' — all-in monthly</span><span class="v">-' + fmtMoney(d.curTotal, country) + '</span></div>' +
-        '<div class="row"><span class="k">Flipdish — all-in monthly</span><span class="v">-' + fmtMoney(d.newTotal, country) + '</span></div>' +
+        '<div class="row"><span class="k">' + providerLabel + ' - all-in monthly</span><span class="v">-' + fmtMoney(d.curTotal, country) + '</span></div>' +
+        '<div class="row"><span class="k">Flipdish - all-in monthly</span><span class="v">-' + fmtMoney(d.newTotal, country) + '</span></div>' +
         '<div class="total-row"><span>Monthly saving</span><span class="v">' + fmtMoney(v.posSavings, country) + '</span></div>' +
         saveCallout(v.posSavings, country) +
       '</div>';
@@ -593,7 +593,7 @@
       var ooYouPct = N(f.ooProcessingRate);
       if (ooYouPct < ooListPct) {
         rows.push(rowHtml(
-          'Online ordering — processing %',
+          'Online ordering - processing %',
           ooListPct + '%',
           ooYouPct + '%',
           (ooListPct - ooYouPct).toFixed(1) + 'pp',
@@ -608,7 +608,7 @@
       var posYouPct = N(f.posRate);
       if (posYouPct > 0 && posYouPct < posListPct) {
         rows.push(rowHtml(
-          'POS — processing rate',
+          'POS - processing rate',
           posListPct + '%',
           posYouPct + '%',
           (posListPct - posYouPct).toFixed(2) + 'pp',
@@ -620,7 +620,7 @@
       var posYouTxn = N(f.posTransFee);
       if (posYouTxn > 0 && posYouTxn < posListTxn) {
         rows.push(rowHtml(
-          'POS — per-transaction fee',
+          'POS - per-transaction fee',
           fmtMoney(posListTxn, country),
           fmtMoney(posYouTxn, country),
           fmtMoney(posListTxn - posYouTxn, country),
@@ -629,7 +629,7 @@
       }
     }
 
-    // ---- Subscription (bundled — single figure from SFDC quote) ----
+    // ---- Subscription (bundled - single figure from SFDC quote) ----
     // List = sum of in-scope per-product list subs; Yours = bundled
     // monthlySub. The discount IS the bundle discount.
     var listSubMonthly = 0;
@@ -659,7 +659,7 @@
       }
     }
 
-    // ---- Hardware (one-off) — sum per-product values ----
+    // ---- Hardware (one-off) - sum per-product values ----
     var listHardware = 0;
     var youHardware = 0;
     if (p.includePOS && rates.pos) {
@@ -707,7 +707,7 @@
 
     return '' +
       '<div class="discount-stack">' +
-        '<p class="discount-stack-intro"><strong>Your special pricing.</strong> Below is the discount we\'re putting on the table for your business — comparing standard list pricing to what you\'ll actually be paying.</p>' +
+        '<p class="discount-stack-intro"><strong>Your special pricing.</strong> Below is the discount we\'re putting on the table for your business - comparing standard list pricing to what you\'ll actually be paying.</p>' +
         '<div class="stack-rows">' + rows.join('') + '</div>' +
         totalLine +
       '</div>';
@@ -730,11 +730,11 @@
       return 'On these numbers the monthly figures don\'t yet show a positive return. Ask your Flipdish rep to review the rates.';
     }
     if (v.paybackMonths === 0) {
-      return 'No hardware one-off to recover — you\'re net-positive from day one.';
+      return 'No hardware one-off to recover - you\'re net-positive from day one.';
     }
     if (v.paybackMonths <= 12) {
       var whole = Math.round(v.paybackMonths);
-      return 'The ' + fmtMoney(v.hardwareOneOff, country) + ' hardware investment pays back in roughly <strong>' + whole + ' month' + (whole === 1 ? '' : 's') + '</strong> — after that, the full monthly saving is yours.';
+      return 'The ' + fmtMoney(v.hardwareOneOff, country) + ' hardware investment pays back in roughly <strong>' + whole + ' month' + (whole === 1 ? '' : 's') + '</strong> - after that, the full monthly saving is yours.';
     }
     var yrs = (v.paybackMonths / 12).toFixed(1);
     return 'The ' + fmtMoney(v.hardwareOneOff, country) + ' hardware investment pays back in about <strong>' + yrs + ' years</strong> on these numbers.';

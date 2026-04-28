@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Deal Room — Flipdish Internal</title>
+<title>Deal Room - Flipdish Internal</title>
 <meta name="robots" content="noindex, nofollow">
 <script src="../auth.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -386,7 +386,7 @@
       </div>
 
       <details class="detail-expand" id="currentDetail" style="display:none;">
-        <summary>Add detail (provider, AOV — for richer talk track)</summary>
+        <summary>Add detail (provider, AOV - for richer talk track)</summary>
         <div class="detail-fields">
           <div class="product-block" data-detail="oo" id="curDetail-oo" style="display:none;">
             <h3>OO detail</h3>
@@ -409,7 +409,7 @@
     <!-- Column 2: Your Flipdish proposal -->
     <div class="col" id="col-proposal">
       <h2>Your Flipdish proposal</h2>
-      <div id="proposalEmpty" class="empty">Tick a product above. Pre-fills with list rates — adjust to fit the SFDC quote.</div>
+      <div id="proposalEmpty" class="empty">Tick a product above. Pre-fills with list rates - adjust to fit the SFDC quote.</div>
 
       <div class="product-block" data-prod="oo" id="propBlock-oo" style="display:none;">
         <h3>Online ordering</h3>
@@ -463,7 +463,7 @@
         <span class="pill" id="vsPill">Idle</span>
         <div class="body">
           <div class="head-line" id="vsHead">Tick a product to begin</div>
-          <div class="reason" id="vsReason">—</div>
+          <div class="reason" id="vsReason">-</div>
         </div>
       </div>
 
@@ -471,12 +471,12 @@
         <span class="pill" id="healthPill">Idle</span>
         <div class="body">
           <div class="head-line" id="healthHead">Awaiting proposal</div>
-          <div class="reason" id="healthReason">—</div>
+          <div class="reason" id="healthReason">-</div>
         </div>
       </div>
 
       <div class="levers-block" id="leversBlock" style="display:none;">
-        <h3>To match — single-lever options</h3>
+        <h3>To match - single-lever options</h3>
         <div id="leverLines"></div>
       </div>
     </div>
@@ -573,7 +573,7 @@
     };
   }
 
-  // Migrate older schemas (1–8) into v9 shape
+  // Migrate older schemas (1-8) into v9 shape
   function migrate(p) {
     if (!p) return blank();
     if (p.schema >= 9) return p;
@@ -645,12 +645,12 @@
   function $(s) { return document.getElementById(s); }
   function N(v) { var x = parseFloat(v); return isNaN(x) ? 0 : x; }
   function fmtMoney(n) {
-    if (!isFinite(n)) return '—';
+    if (!isFinite(n)) return '-';
     var s = n < 0 ? '-' : '';
     return s + CCY[prospect.country] + Math.abs(Math.round(n)).toLocaleString('en-US');
   }
   function fmtMoney2(n) {
-    if (!isFinite(n)) return '—';
+    if (!isFinite(n)) return '-';
     return CCY[prospect.country] + Number(n).toFixed(2);
   }
   function getQueryId() {
@@ -680,7 +680,7 @@
     prospect.flipdish.monthlySub      = $('fdMonthlySub').value;
 
     // ---- Back-compat shim for customer.html and index.html ----
-    // Those pages were built against schemas 1–8 and read per-line
+    // Those pages were built against schemas 1-8 and read per-line
     // breakdown fields (c.ooSub, c.ooProcessingRate, c.ooTransFee,
     // f.ooProcessingRate). v9 simplifies the customer-side input to just
     // a bill total + revenue, so we denormalise: write the bill total
@@ -759,7 +759,7 @@
     $('proposalEmpty').style.display = anyScope ? 'none' : '';
     $('proposalTotalRow').style.display = anyScope ? '' : 'none';
 
-    // Country-availability: POS not sold in US/ES — auto-untick
+    // Country-availability: POS not sold in US/ES - auto-untick
     var rates = LIST_RATES[prospect.country] || LIST_RATES.UK;
     var posScope = document.querySelector('.scope label[data-scope="includePOS"]');
     if (posScope) posScope.style.display = rates.pos ? '' : 'none';
@@ -822,7 +822,7 @@
   //   Kiosk_SNR = sub_share_kiosk
   // Sub_share_x = bundled_sub × list_x_sub / sum(list subs in scope)
   // SNR per site = total / locations.
-  // Op margin = SNR × 0.75 (per site or total — used consistently)
+  // Op margin = SNR × 0.75 (per site or total - used consistently)
   // Eligible op margin (for hardware payback) =
   //   (POS_SNR + Kiosk_SNR + 0.25 × OO_SNR) × 0.75
   // Hardware envelope = 3 × eligible op margin.
@@ -883,7 +883,7 @@
     r.hardwareList = listHw;
     r.hardwareDiscount = Math.max(0, listHw - r.proposedHardware);
 
-    // SNR — split bundled sub by list-rate ratios
+    // SNR - split bundled sub by list-rate ratios
     var listOOSub = oo ? rates.oo.sub : 0;
     var listPOSSub = pos ? rates.pos.sub * locations : 0;
     var listKioskSub = kiosk ? rates.kiosk.sub : 0;
@@ -922,7 +922,7 @@
     return r;
   }
 
-  // Single-lever match targets — what concrete value the rep would
+  // Single-lever match targets - what concrete value the rep would
   // need to set each lever to so that the deal recurring matches the
   // customer's current bill total. Returns null where the lever can't
   // close the gap inside its guardrail floor.
@@ -932,7 +932,7 @@
     var d = r.detail;
     var gap = r.proposedRecurring - r.customerTotal; // +ve = Flipdish more expensive
     var arr = [];
-    if (gap <= 0) return arr;  // no need to match — already cheaper or equal
+    if (gap <= 0) return arr;  // no need to match - already cheaper or equal
 
     // SUB lever: drop sub by `gap`, but stay above SNR floor
     var snrFloorTotal = GUARDRAILS.snrFloorMonthly * locations;
@@ -995,7 +995,7 @@
     if (!r.anyScope) {
       vsPill.textContent = 'Idle';
       vsHead.textContent = 'Tick a product to begin';
-      vsReason.textContent = '—';
+      vsReason.textContent = '-';
     } else if (r.customerTotal === 0) {
       vsPill.textContent = 'Awaiting';
       vsHead.textContent = 'Enter their monthly bill';
@@ -1017,18 +1017,18 @@
         vsHead.innerHTML = 'You match their current spend exactly';
         vsReason.innerHTML = 'Customer £' + Math.round(r.customerTotal) + '/mo · Flipdish £' + Math.round(r.proposedRecurring) + '/mo.';
       } else {
-        // Flipdish more expensive — closeable or won't close
+        // Flipdish more expensive - closeable or won't close
         var targets = leverTargets(r);
         var anyClose = targets.some(function (t) { return t.target != null; });
         if (anyClose) {
           vsRow.classList.add('amber');
           vsPill.textContent = 'Closeable';
-          vsHead.innerHTML = 'You\'re <strong>' + fmtMoney(-delta) + '/mo more expensive</strong> — see levers';
+          vsHead.innerHTML = 'You\'re <strong>' + fmtMoney(-delta) + '/mo more expensive</strong> - see levers';
           vsReason.innerHTML = 'Customer £' + Math.round(r.customerTotal) + '/mo · Flipdish £' + Math.round(r.proposedRecurring) + '/mo. Single-lever options below.';
         } else {
           vsRow.classList.add('red');
           vsPill.textContent = "Won't close";
-          vsHead.innerHTML = 'Gap of <strong>' + fmtMoney(-delta) + '/mo</strong> — no single lever can close it';
+          vsHead.innerHTML = 'Gap of <strong>' + fmtMoney(-delta) + '/mo</strong> - no single lever can close it';
           vsReason.innerHTML = 'Either combine multiple levers, reduce hardware scope, or push back on price.';
         }
       }
@@ -1040,7 +1040,7 @@
     if (!r.anyScope || r.proposedRecurring === 0) {
       hPill.textContent = 'Idle';
       hHead.textContent = 'Awaiting proposal';
-      hReason.textContent = '—';
+      hReason.textContent = '-';
     } else {
       var floor = GUARDRAILS.snrFloorMonthly;
       var below = r.snrPerSite < floor;
@@ -1071,7 +1071,7 @@
       }
     }
 
-    // Levers — only show when there's a gap to close
+    // Levers - only show when there's a gap to close
     var leversBlock = $('leversBlock');
     var leversWrap = $('leverLines');
     if (r.anyScope && r.proposedRecurring > r.customerTotal && r.customerTotal > 0) {
@@ -1089,7 +1089,7 @@
           targetEl.textContent = '→ ' + t.fmt(t.target);
         } else {
           targetEl.className = 'target dim';
-          targetEl.textContent = t.note ? '— ' + t.note : '— no room';
+          targetEl.textContent = t.note ? '- ' + t.note : '- no room';
         }
         line.appendChild(labelEl);
         line.appendChild(targetEl);

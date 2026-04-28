@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Flipdish + Fox Delivery vs Marketplace Delivery — Value Calculator</title>
+<title>Flipdish + Fox Delivery vs Marketplace Delivery - Value Calculator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Domine:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -139,7 +139,7 @@
     gap: 12px;
     margin-bottom: 18px;
   }
-  /* Fox is IE-only — 4 columns instead of 5 (no market picker) */
+  /* Fox is IE-only - 4 columns instead of 5 (no market picker) */
   .inputs-bar.inputs-bar-fox {
     grid-template-columns: repeat(4, minmax(0,1fr));
   }
@@ -278,7 +278,7 @@
   table.bands td.takerate.r-bad      { background: var(--red-soft); color: var(--red-strong); }
   table.bands td.savings { font-weight: 600; color: var(--flipdish-blue-dark); }
   table.bands td.savings.negative { color: var(--red-strong); }
-  /* Restaurant delivery cost should never go negative — flag if it does */
+  /* Restaurant delivery cost should never go negative - flag if it does */
   table.bands td.cell-restcost.negative {
     color: var(--red-strong);
     font-weight: 600;
@@ -396,9 +396,9 @@
   </header>
 
   <h1 id="pageTitle">Stop paying 33% to marketplaces for delivery</h1>
-  <p class="lede">Compare a restaurant's take-home on marketplace delivery (Just Eat, Deliveroo) vs ordering via Flipdish with Fox Delivery handling delivery in Ireland. The Fox Delivery rate is fixed by distance band — adjust what the customer pays per band to find a healthy take rate. All figures are ex-VAT: Fox charges VAT separately and it's reclaimable on both sides.</p>
+  <p class="lede">Compare a restaurant's take-home on marketplace delivery (Just Eat, Deliveroo) vs ordering via Flipdish with Fox Delivery handling delivery in Ireland. The Fox Delivery rate is fixed by distance band - adjust what the customer pays per band to find a healthy take rate. All figures are ex-VAT: Fox charges VAT separately and it's reclaimable on both sides.</p>
 
-  <!-- COUNTRY (Ireland only — Fox Delivery is IE-exclusive) -->
+  <!-- COUNTRY (Ireland only - Fox Delivery is IE-exclusive) -->
   <div class="country-bar">
     <span class="country-bar-label">Country</span>
     <div class="country-buttons">
@@ -432,9 +432,9 @@
       Fox Delivery cost &amp; take rate by distance
       <span class="legend">
         <span><i style="background:var(--green-soft);"></i>≤10%</span>
-        <span><i style="background:var(--green-light);"></i>11–15%</span>
-        <span><i style="background:white;border:1px solid var(--border);"></i>16–20%</span>
-        <span><i style="background:var(--amber-soft);"></i>21–25%</span>
+        <span><i style="background:var(--green-light);"></i>11-15%</span>
+        <span><i style="background:white;border:1px solid var(--border);"></i>16-20%</span>
+        <span><i style="background:var(--amber-soft);"></i>21-25%</span>
         <span><i style="background:var(--red-soft);"></i>&gt;25%</span>
       </span>
     </h2>
@@ -456,12 +456,12 @@
   <div class="hero">
     <div>
       <div class="label" id="heroLabel">Annual saving vs marketplaces</div>
-      <div class="big" id="heroBig">—</div>
+      <div class="big" id="heroBig">-</div>
       <div class="sub" id="heroSub">Across all distance bands</div>
     </div>
     <div class="secondary">
       <div class="label-sec">Monthly</div>
-      <div class="big-sec" id="heroMonthly">—</div>
+      <div class="big-sec" id="heroMonthly">-</div>
     </div>
   </div>
 
@@ -469,15 +469,15 @@
   <div class="detail-grid" style="margin-bottom:14px;">
     <div class="detail">
       <div class="k">Average saved per order</div>
-      <div class="v" id="kAvgSave">—</div>
+      <div class="v" id="kAvgSave">-</div>
     </div>
     <div class="detail">
       <div class="k">Average Flipdish take rate</div>
-      <div class="v" id="kAvgTake">—</div>
+      <div class="v" id="kAvgTake">-</div>
     </div>
     <div class="detail">
       <div class="k">Bands at healthy take rate</div>
-      <div class="v" id="kHealthy">—</div>
+      <div class="v" id="kHealthy">-</div>
     </div>
   </div>
 
@@ -487,8 +487,8 @@
     <div class="tips">
       <h2>Protect the restaurant's margins in three ways</h2>
       <ol>
-        <li><strong>Pass on more of the delivery fee to the customer.</strong> Edit the <em>End User Delivery Fee</em> column above to see what the take rate looks like at each distance. The sheet defaults to a 50/50 split — try nudging it upward.</li>
-        <li><strong>Set a minimum AOV for delivery.</strong> A bigger basket spreads the same delivery cost — push AOV up in the inputs and watch the take rate drop sharply.</li>
+        <li><strong>Pass on more of the delivery fee to the customer.</strong> Edit the <em>End User Delivery Fee</em> column above to see what the take rate looks like at each distance. The sheet defaults to a 50/50 split - try nudging it upward.</li>
+        <li><strong>Set a minimum AOV for delivery.</strong> A bigger basket spreads the same delivery cost - push AOV up in the inputs and watch the take rate drop sharply.</li>
         <li><strong>Mark up D2C prices to match marketplaces.</strong> If the restaurant is already marking up on Just Eat / Deliveroo, why not on their own Flipdish ordering channel?</li>
       </ol>
     </div>
@@ -501,7 +501,7 @@
 </div>
 
 <script>
-  // ---------- Fox Delivery — Ireland (rates ex-VAT) ----------
+  // ---------- Fox Delivery - Ireland (rates ex-VAT) ----------
   // Source: Marketplace vs Flipdish+Fox Delivery cost calculator (Google Sheets)
   const foxBands = [
     { range: '3 km', rate: 7.50,  custFee: 4.00 },
@@ -519,20 +519,20 @@
   let isInitializing = true;    // suppresses flash animation on page load
 
   const fmtMoney = n => {
-    if (!isFinite(n)) return '—';
+    if (!isFinite(n)) return '-';
     const sign = n < 0 ? '-' : '';
     const abs = Math.abs(n);
     return sign + CURRENCY + abs.toLocaleString(undefined, { maximumFractionDigits: 0 });
   };
   const fmtMoney2 = n => {
-    if (!isFinite(n)) return '—';
+    if (!isFinite(n)) return '-';
     const sign = n < 0 ? '-' : '';
     const abs = Math.abs(n);
     return sign + CURRENCY + abs.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 });
   };
-  const fmtPct       = n => isFinite(n) ? (n).toFixed(0) + '%' : '—';
-  const fmtPct1      = n => isFinite(n) ? (n).toFixed(1) + '%' : '—';
-  const fmtMoney2Safe = n => isFinite(n) ? fmtMoney2(n) : '—';
+  const fmtPct       = n => isFinite(n) ? (n).toFixed(0) + '%' : '-';
+  const fmtPct1      = n => isFinite(n) ? (n).toFixed(1) + '%' : '-';
+  const fmtMoney2Safe = n => isFinite(n) ? fmtMoney2(n) : '-';
 
   function takeRateClass(pct) {
     if (pct <= 10) return 'r-good';
@@ -566,11 +566,11 @@
         <td>${b.range}</td>
         <td>${CURRENCY}${b.rate.toFixed(2)}</td>
         <td class="editable"><input type="number" step="0.05" min="0" value="${b.custFee}" data-i="${i}" class="custFeeInput"></td>
-        <td class="cell-restcost">—</td>
-        <td class="cell-fdcost">—</td>
-        <td class="takerate cell-take">—</td>
-        <td class="cell-mpcom">—</td>
-        <td class="savings cell-save">—</td>
+        <td class="cell-restcost">-</td>
+        <td class="cell-fdcost">-</td>
+        <td class="takerate cell-take">-</td>
+        <td class="cell-mpcom">-</td>
+        <td class="savings cell-save">-</td>
       </tr>
     `).join('');
 
@@ -658,20 +658,20 @@
     // Page title reflects the marketplace rate
     $('pageTitle').textContent = `Stop paying ${Math.round(mpRate)}% to marketplaces for delivery`;
 
-    // If AOV is 0 or less, take rates become infinite/nonsense — show em-dash fallbacks
+    // If AOV is 0 or less, take rates become infinite/nonsense - show em-dash fallbacks
     const validAov = aov > 0;
 
     // Hero
-    $('heroBig').textContent     = validAov ? fmtMoney(annualSavings) + '/yr'  : '—';
-    $('heroMonthly').textContent = validAov ? fmtMoney(monthlySavings) + '/mo' : '—';
+    $('heroBig').textContent     = validAov ? fmtMoney(annualSavings) + '/yr'  : '-';
+    $('heroMonthly').textContent = validAov ? fmtMoney(monthlySavings) + '/mo' : '-';
     $('heroSub').textContent     = validAov
       ? `Average across ${n} distance bands · ${deliveries.toLocaleString()} deliveries / month · ex VAT`
       : 'Enter an Average Order Value above 0 to see savings';
 
     // Detail cards
-    $('kAvgSave').textContent = validAov ? fmtMoney2(avgSavingPerOrder) : '—';
-    $('kAvgTake').textContent = validAov ? fmtPct1(avgTakeRate)         : '—';
-    $('kHealthy').textContent = validAov ? `${healthyCount} of ${n}`    : '—';
+    $('kAvgSave').textContent = validAov ? fmtMoney2(avgSavingPerOrder) : '-';
+    $('kAvgTake').textContent = validAov ? fmtPct1(avgTakeRate)         : '-';
+    $('kHealthy').textContent = validAov ? `${healthyCount} of ${n}`    : '-';
   }
 
   // ---------- Initial render ----------

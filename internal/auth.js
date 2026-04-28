@@ -1,9 +1,9 @@
 /* ----------------------------------------------------------------
-   Flipdish Internal Calculators — simple password gate
+   Flipdish Internal Calculators - simple password gate
    ----------------------------------------------------------------
    This is a SOFT gate. The password sits in plain JS and anyone
    who views source can read it. It exists to keep casual / public
-   visitors out of internal tools — it is NOT real security.
+   visitors out of internal tools - it is NOT real security.
    Replace with SSO / Vercel password protection when available.
    ---------------------------------------------------------------- */
 (function () {
@@ -11,12 +11,12 @@
   var PASSWORD    = 'Flipdish';
 
   // --------------------------------------------------------------
-  // Log-out pill — injected once the tab is unlocked. Clicking it
+  // Log-out pill - injected once the tab is unlocked. Clicking it
   // clears the session and drops the user back on the hub.
   // --------------------------------------------------------------
   function injectLogoutPill() {
     // Guard: body not ready yet (rare, but possible if auth.js is
-    // loaded with a bare <script src>) — try again once DOM is ready.
+    // loaded with a bare <script src>) - try again once DOM is ready.
     if (!document.body) {
       document.addEventListener('DOMContentLoaded', injectLogoutPill);
       return;
@@ -57,20 +57,20 @@
     ].join('');
     btn.addEventListener('click', function () {
       try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
-      // Internal calcs live at /internal/{name}/ — the hub is two levels up.
+      // Internal calcs live at /internal/{name}/ - the hub is two levels up.
       window.location.href = '../../';
     });
     document.body.appendChild(btn);
   }
 
-  // If this tab has already been unlocked, skip the gate — just drop
+  // If this tab has already been unlocked, skip the gate - just drop
   // the log-out pill on the page.
   try {
     if (sessionStorage.getItem(SESSION_KEY) === '1') {
       injectLogoutPill();
       return;
     }
-  } catch (e) { /* sessionStorage blocked — fall through and ask anyway */ }
+  } catch (e) { /* sessionStorage blocked - fall through and ask anyway */ }
 
   function buildGate() {
     // Styles
@@ -169,7 +169,7 @@
         style.remove();
         injectLogoutPill();
       } else {
-        err.textContent = 'Wrong password — try again.';
+        err.textContent = 'Wrong password - try again.';
         input.value = '';
         input.focus();
       }

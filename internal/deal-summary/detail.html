@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Deal Room — Flipdish Internal</title>
+<title>Deal Room - Flipdish Internal</title>
 <meta name="robots" content="noindex, nofollow">
 
 <!-- Password gate -->
@@ -35,7 +35,7 @@
     /* Cross-product accent (orange) */
     --fam: #D97706;
     --fam-soft: #FDECD3;
-    /* v8.7: warm/cool theme pair — "their" side vs "your" side */
+    /* v8.7: warm/cool theme pair - "their" side vs "your" side */
     --peach-soft: #FFF1E6;
     --peach-tint: #FFE5D2;
     --peach-strong: #E0723D;
@@ -127,6 +127,27 @@
     font-weight: 600;
   }
 
+  /* ---------- Page title (v8.16) ----------
+     Sits between the "All deals" breadcrumb and the country pills.
+     Big serif title gives the page a clear identity. */
+  .page-title {
+    font-family: 'Domine', Georgia, serif;
+    font-size: 30px;
+    font-weight: 600;
+    color: var(--flipdish-blue-dark);
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+    margin: 18px 0 4px;
+  }
+  .page-title-sub {
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--muted);
+    margin: 0 0 18px;
+    line-height: 1.45;
+  }
+
   /* ---------- Steps (v8.7: icons + warm/cool variants) ---------- */
   .step {
     display: flex; align-items: center; gap: 12px;
@@ -139,7 +160,7 @@
     font-size: 12px; font-weight: 600; flex: 0 0 auto;
     letter-spacing: 0;
   }
-  /* Step icon — small monoline SVG in a circular tint chip */
+  /* Step icon - small monoline SVG in a circular tint chip */
   .step .step-icon {
     display: inline-flex; align-items: center; justify-content: center;
     width: 34px; height: 34px; border-radius: 10px;
@@ -148,10 +169,10 @@
     flex: 0 0 auto;
   }
   .step .step-icon svg { width: 18px; height: 18px; }
-  /* Warm variant — used on "Their current commercial reality" */
+  /* Warm variant - used on "Their current commercial reality" */
   .step.step-warm .num { background: var(--peach-strong); }
   .step.step-warm .step-icon { background: var(--peach-soft); color: var(--peach-dark); }
-  /* Cool variant — used on "Flipdish proposal" */
+  /* Cool variant - used on "Flipdish proposal" */
   .step.step-cool .num { background: var(--flipdish-blue); }
   .step.step-cool .step-icon { background: var(--skyblue-soft); color: var(--flipdish-blue-dark); }
 
@@ -172,7 +193,7 @@
   /* ---------- Cards (v8.5: softer borders, cleaner h3s) ----------
      v8.7 adds warm (peach) theme to "Their current" cards and cool
      (sky-blue) theme to "Flipdish proposal" cards via ID prefix
-     selectors — visually pairs "theirs" against "ours". */
+     selectors - visually pairs "theirs" against "ours". */
   [id^="card-current"] {
     background: linear-gradient(180deg, #FFF7EF 0%, #FFFAF5 100%);
     border-left: 3px solid var(--peach-strong);
@@ -211,9 +232,9 @@
   @media (max-width: 760px) {
     .grid2, .grid3 { grid-template-columns: 1fr; }
   }
-  /* v8.10: Deal Details uses .grid2 (proven 2-col helper) — no custom CSS needed */
+  /* v8.10: Deal Details uses .grid2 (proven 2-col helper) - no custom CSS needed */
 
-  /* v8.16: .workspace-grid removed — Step 3 is now two stacked
+  /* v8.16: .workspace-grid removed - Step 3 is now two stacked
      lever-sections, each with its own per-section mini-verdict. The
      full-width "How does this stack up?" panel sits below them. */
 
@@ -272,7 +293,7 @@
     font-style: italic;
     font-weight: 500;
   }
-  /* Section B: hard cap, not soft optimisation — bolder amber accent */
+  /* Section B: hard cap, not soft optimisation - bolder amber accent */
   #sectionHardware .lever-section-goal {
     color: #B7791F;
     font-style: normal;
@@ -360,7 +381,7 @@
   .lever-verdict-pill.bad   { background: #FBE0E0; color: #9B1C1C; }
   .lever-verdict-pill.idle  { background: #EAEEF6; color: #5C6478; }
 
-  /* v8.14: SFDC pull placeholder — sits at the top of Step 3, looks
+  /* v8.14: SFDC pull placeholder - sits at the top of Step 3, looks
      like a clickable card but is disabled until the API is wired. */
   .sfdc-strip {
     display: flex; align-items: center; gap: 12px;
@@ -437,7 +458,7 @@
   .lever-meta .lever-floor { color: var(--peach-dark); }
   .lever-meta .lever-list { color: var(--flipdish-blue); }
 
-  /* v8.8: side-by-side current — In-store left, Direct ordering right */
+  /* v8.8: side-by-side current - In-store left, Direct ordering right */
   .current-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -446,10 +467,10 @@
   }
   @media (max-width: 1000px) { .current-grid { grid-template-columns: 1fr; } }
   /* When only one of the two cards is visible (other has display:none),
-     the visible one fills the row — the empty grid track collapses. */
+     the visible one fills the row - the empty grid track collapses. */
 
   /* v8.9: marketplace strip lives inside the OO current card as a
-     subtle sub-section — visually quiet so it doesn't compete with
+     subtle sub-section - visually quiet so it doesn't compete with
      the primary cost-replacement fields above it. */
   .market-strip {
     margin-top: 14px;
@@ -506,7 +527,7 @@
   /* ---------- Live commercial status strip ---------- */
   /* Replaces the old four-tile commercial check. One pill + one
      plain-English line + an optional "Show the math" expand. Reps
-     don't need SNR / op margin jargon front-and-centre — they need
+     don't need SNR / op margin jargon front-and-centre - they need
      a verdict and a next step. */
   .status-strip {
     background: var(--green-soft);
@@ -565,7 +586,7 @@
   }
 
   /* ---------- "What you can offer" panel (Step 3, v8) ---------- */
-  /* Three colour states — green/headroom, grey/match, amber-red/tight.
+  /* Three colour states - green/headroom, grey/match, amber-red/tight.
      Used for diagnosis + prescription BEFORE the rep types their actual
      proposal in Step 4. Colour mirrors the verdict so reps can read the
      state at a glance. */
@@ -752,7 +773,7 @@
     color: rgba(255, 255, 255, 0.72);
     font-style: italic;
   }
-  /* Hardware zone gets a subtle amber accent on the goal text — it's
+  /* Hardware zone gets a subtle amber accent on the goal text - it's
      a HARD cap, not a soft optimisation */
   #recZoneHardware .rec-zone-goal { color: #FFE5A1; font-style: normal; font-weight: 600; }
   .rec-line {
@@ -815,7 +836,7 @@
     border: 1px solid rgba(0,0,0,0.05);
   }
   .offer-suggested strong { color: var(--flipdish-blue-dark); }
-  /* Embedded Live Check — compact, white, distinct from the coloured offer panel */
+  /* Embedded Live Check - compact, white, distinct from the coloured offer panel */
   .offer-panel .status-strip.embedded {
     background: #FFFFFF !important;
     border: 1px solid rgba(15, 23, 42, 0.05);
@@ -869,7 +890,7 @@
     color: var(--muted); line-height: 1.5;
   }
 
-  /* ---------- Scope tiles (v8.9) — 3-up grid, tighter cards ---------- */
+  /* ---------- Scope tiles (v8.9) - 3-up grid, tighter cards ---------- */
   .scope-row {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1102,6 +1123,12 @@
     All deals
   </a>
 
+  <!-- ===================== PAGE TITLE (v8.16) ===================== -->
+  <!-- Title updates live: "Deal Building" → "Deal Building - Billy's Pizza"
+       once the rep types a prospect business name in Step 1. -->
+  <h1 class="page-title" id="pageTitle">Deal Building</h1>
+  <p class="page-title-sub">Build the proposal, see the live commercial impact, and walk into the conversation knowing the deal is healthy.</p>
+
   <!-- ===================== TOP ROW (v8.8): country first, save stamp ===================== -->
   <!-- Will: country toggle should be the main top thing; prospect name
        moves into Step 1 ("Deal Details"). -->
@@ -1112,10 +1139,10 @@
       <button class="country-pill" data-country="US" type="button">🇺🇸 US</button>
       <button class="country-pill" data-country="ES" type="button">🇪🇸 ES</button>
     </div>
-    <span class="save-stamp" id="saveStamp"><span class="dot"></span><span id="saveStampText">—</span></span>
+    <span class="save-stamp" id="saveStamp"><span class="dot"></span><span id="saveStampText">-</span></span>
   </div>
 
-  <!-- ===================== STEP 1 — DEAL DETAILS ===================== -->
+  <!-- ===================== STEP 1 - DEAL DETAILS ===================== -->
   <div class="step">
     <span class="num">1</span>
     <span class="step-icon" aria-hidden="true">
@@ -1148,7 +1175,7 @@
     </div>
   </div>
 
-  <!-- ===================== STEP 2 — CURRENT REALITY ===================== -->
+  <!-- ===================== STEP 2 - CURRENT REALITY ===================== -->
   <div class="step step-warm">
     <span class="num">2</span>
     <span class="step-icon" aria-hidden="true">
@@ -1157,7 +1184,7 @@
     <span class="text">Their current commercial reality <span class="sub">What the customer processes and pays today</span></span>
   </div>
 
-  <!-- Document upload stub — UI in place, extraction wires up later
+  <!-- Document upload stub - UI in place, extraction wires up later
        alongside the Supabase migration. -->
   <div class="card upload-card" id="card-uploadStub">
     <div class="upload-grid">
@@ -1171,12 +1198,12 @@
       </div>
       <div class="upload-text">
         <div class="upload-title">Drop a current provider statement <span class="badge-soon">Coming soon</span></div>
-        <p class="upload-desc">Drop in a Foodhub, Mealzo, OrderYoyo, Toast, Square or Clover invoice/statement (PDF or image) and we'll read the rates and pre-fill the cards below. Until this is wired, fill in the numbers manually below — same fields, same outcome.</p>
+        <p class="upload-desc">Drop in a Foodhub, Mealzo, OrderYoyo, Toast, Square or Clover invoice/statement (PDF or image) and we'll read the rates and pre-fill the cards below. Until this is wired, fill in the numbers manually below - same fields, same outcome.</p>
       </div>
     </div>
   </div>
 
-  <!-- Scope toggles — which levers are we playing with in this deal.
+  <!-- Scope toggles - which levers are we playing with in this deal.
        Note: the Deal Room compares Flipdish against the customer's current
        cost on the two recurring streams where we displace a direct
        competitor (online ordering, in-store). Value-generation products
@@ -1218,12 +1245,12 @@
     </label>
   </div>
 
-  <!-- v8.8: side-by-side current — In-store left, Direct ordering right.
+  <!-- v8.8: side-by-side current - In-store left, Direct ordering right.
        Will: very long list with too much blank space; pair them up. -->
   <div class="current-grid">
-    <!-- In-store current (POS + Kiosk — anything in the four walls) -->
+    <!-- In-store current (POS + Kiosk - anything in the four walls) -->
     <div class="card" id="card-currentPOS" style="display:none;">
-      <h3>In-store — today</h3>
+      <h3>In-store - today</h3>
       <div class="grid2">
         <div class="field">
           <label>Current POS provider</label>
@@ -1252,9 +1279,9 @@
       </div>
     </div>
 
-    <!-- Direct ordering current — provider comparison -->
+    <!-- Direct ordering current - provider comparison -->
     <div class="card" id="card-currentOO" style="display:none;">
-      <h3>Direct ordering — today <span class="hint" style="font-weight:400;font-size:12.5px;color:var(--muted);margin-left:6px;">(not marketplace channels)</span></h3>
+      <h3>Direct ordering - today <span class="hint" style="font-weight:400;font-size:12.5px;color:var(--muted);margin-left:6px;">(not marketplace channels)</span></h3>
       <div class="grid2">
         <div class="field">
           <label>Current provider</label>
@@ -1293,11 +1320,11 @@
             <input id="curMarketGmv" type="number" min="0" step="100" placeholder="e.g. 10000">
           </div>
           <div class="field">
-            <label>Average commission % <span class="hint">(typical 25–35%)</span></label>
+            <label>Average commission % <span class="hint">(typical 25-35%)</span></label>
             <input id="curMarketCommission" type="number" min="0" step="0.5" placeholder="e.g. 30">
           </div>
         </div>
-        <p class="market-strip-note">Not part of the cost-replacement maths — but heavy marketplace dependence strengthens the case for direct ordering, kiosk and hardware investment. Use it in the pitch.</p>
+        <p class="market-strip-note">Not part of the cost-replacement maths - but heavy marketplace dependence strengthens the case for direct ordering, kiosk and hardware investment. Use it in the pitch.</p>
       </div>
     </div>
   </div>
@@ -1305,7 +1332,7 @@
   <!-- v8.9: Marketplace fields moved INTO the OO current card (above) as
        a sub-section, since they're conceptually about the same revenue
        channel from the customer's perspective. "Top platform" dropped
-       — Will: doesn't matter for the maths/pitch. -->
+       - Will: doesn't matter for the maths/pitch. -->
 
 
   <!-- v8.16: Step 3 split into TWO discount sections by lever class.
@@ -1313,18 +1340,18 @@
        own goal, levers and live mini-verdict. The "How does this stack
        up?" panel sits FULL-WIDTH below both, so the rep makes per-class
        trade-offs first then sanity-checks the whole package vs current
-       spend. Will: "the discounting needs to be split into 2 sections —
+       spend. Will: "the discounting needs to be split into 2 sections -
        Hardware discounting and Fees & subs." Critical link: Section B's
        hardware envelope shrinks/grows live with Section A's choices,
        because lower fees = thinner op margin = smaller payback envelope. -->
 
-  <!-- ===================== STEP 3 — FLIPDISH PROPOSAL ===================== -->
+  <!-- ===================== STEP 3 - FLIPDISH PROPOSAL ===================== -->
   <div class="step step-cool">
     <span class="num">3</span>
     <span class="step-icon" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
     </span>
-    <span class="text">Flipdish proposal <span class="sub">Two discount levers — fees & subs (recurring) and hardware (one-off). Each has its own goal and live verdict.</span></span>
+    <span class="text">Flipdish proposal <span class="sub">Two discount levers - fees & subs (recurring) and hardware (one-off). Each has its own goal and live verdict.</span></span>
   </div>
 
   <!-- SFDC pull placeholder (unchanged) -->
@@ -1338,14 +1365,14 @@
     </span>
   </button>
 
-  <!-- ====== SECTION A — Fees & subs ====== -->
+  <!-- ====== SECTION A - Fees & subs ====== -->
   <div class="lever-section" id="sectionFees" style="display:none;">
     <div class="lever-section-head">
       <span class="lever-section-letter">A</span>
       <span class="lever-section-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><polyline points="21 4 21 12 13 12"/></svg>
       </span>
-      <span class="lever-section-title">Fees &amp; subscriptions <span class="lever-section-sub">— recurring</span></span>
+      <span class="lever-section-title">Fees &amp; subscriptions <span class="lever-section-sub">- recurring</span></span>
       <span class="lever-section-goal">Goal: minimise damage to recurring revenue</span>
     </div>
     <div class="lever-section-body">
@@ -1383,25 +1410,25 @@
       </div>
       <aside class="lever-verdict" id="verdictFees" aria-live="polite">
         <div class="lever-verdict-title">Recurring impact</div>
-        <div class="lever-verdict-row"><span class="vlabel">At list (no discount)</span><span class="vval" id="vFeesList">—</span></div>
-        <div class="lever-verdict-row headline"><span class="vlabel">At your proposal</span><span class="vval" id="vFeesProposal">—</span></div>
-        <div class="lever-verdict-row delta"><span class="vlabel">Recurring give-up</span><span class="vval" id="vFeesDelta">—</span></div>
+        <div class="lever-verdict-row"><span class="vlabel">At list (no discount)</span><span class="vval" id="vFeesList">-</span></div>
+        <div class="lever-verdict-row headline"><span class="vlabel">At your proposal</span><span class="vval" id="vFeesProposal">-</span></div>
+        <div class="lever-verdict-row delta"><span class="vlabel">Recurring give-up</span><span class="vval" id="vFeesDelta">-</span></div>
         <hr class="lever-verdict-rule">
-        <div class="lever-verdict-row"><span class="vlabel">Op margin / mo</span><span class="vval" id="vFeesOpMargin">—</span></div>
+        <div class="lever-verdict-row"><span class="vlabel">Op margin / mo</span><span class="vval" id="vFeesOpMargin">-</span></div>
         <span class="lever-verdict-pill idle" id="vFeesPill">Awaiting input</span>
         <div class="lever-verdict-note">Op margin funds Section B's hardware envelope. Drop fees further → envelope shrinks.</div>
       </aside>
     </div>
   </div>
 
-  <!-- ====== SECTION B — Hardware ====== -->
+  <!-- ====== SECTION B - Hardware ====== -->
   <div class="lever-section" id="sectionHardware" style="display:none;">
     <div class="lever-section-head">
       <span class="lever-section-letter">B</span>
       <span class="lever-section-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="18" x2="12" y2="21"/></svg>
       </span>
-      <span class="lever-section-title">Hardware <span class="lever-section-sub">— one-off</span></span>
+      <span class="lever-section-title">Hardware <span class="lever-section-sub">- one-off</span></span>
       <span class="lever-section-goal">Hard cap: 3-month payback</span>
     </div>
     <div class="lever-section-body">
@@ -1431,31 +1458,31 @@
       </div>
       <aside class="lever-verdict" id="verdictHardware" aria-live="polite">
         <div class="lever-verdict-title">Hardware payback</div>
-        <div class="lever-verdict-row headline"><span class="vlabel">3-month envelope</span><span class="vval" id="vHwEnvelope">—</span></div>
+        <div class="lever-verdict-row headline"><span class="vlabel">3-month envelope</span><span class="vval" id="vHwEnvelope">-</span></div>
         <hr class="lever-verdict-rule">
-        <div class="lever-verdict-row"><span class="vlabel">Hardware list</span><span class="vval" id="vHwList">—</span></div>
-        <div class="lever-verdict-row"><span class="vlabel">Your proposal</span><span class="vval" id="vHwProposal">—</span></div>
-        <div class="lever-verdict-row delta"><span class="vlabel">Discount given</span><span class="vval" id="vHwDiscount">—</span></div>
+        <div class="lever-verdict-row"><span class="vlabel">Hardware list</span><span class="vval" id="vHwList">-</span></div>
+        <div class="lever-verdict-row"><span class="vlabel">Your proposal</span><span class="vval" id="vHwProposal">-</span></div>
+        <div class="lever-verdict-row delta"><span class="vlabel">Discount given</span><span class="vval" id="vHwDiscount">-</span></div>
         <hr class="lever-verdict-rule">
-        <div class="lever-verdict-row"><span class="vlabel">Headroom left</span><span class="vval" id="vHwHeadroom">—</span></div>
-        <div class="lever-verdict-row"><span class="vlabel">Payback at proposal</span><span class="vval" id="vHwPayback">—</span></div>
+        <div class="lever-verdict-row"><span class="vlabel">Headroom left</span><span class="vval" id="vHwHeadroom">-</span></div>
+        <div class="lever-verdict-row"><span class="vlabel">Payback at proposal</span><span class="vval" id="vHwPayback">-</span></div>
         <span class="lever-verdict-pill idle" id="vHwPill">Awaiting input</span>
         <div class="lever-verdict-note" id="vHwNote">Envelope is set by Section A's op margin. Tighten fees → envelope shrinks.</div>
       </aside>
     </div>
   </div>
 
-  <!-- ===================== STEP 4 — HOW DOES THIS STACK UP? ===================== -->
+  <!-- ===================== STEP 4 - HOW DOES THIS STACK UP? ===================== -->
   <!-- v8.16: stack-up panel now sits full-width below the two lever
        sections. One combined view of "your proposal vs their current
        spend" + Recommended Deal + single Apply button. -->
   <section id="stackUpSection">
 
-  <!-- ===================== STEP 4 — HOW DOES THIS STACK UP? ===================== -->
+  <!-- ===================== STEP 4 - HOW DOES THIS STACK UP? ===================== -->
   <!-- v8.2 redesign: this panel now sits BELOW the Flipdish proposal so
        the rep sees their ACTUAL TYPED QUOTE compared against the
        customer's current spend (not Flipdish list). It's also fully
-       scope-aware — for OO-only deals, no hardware or POS-rate lever
+       scope-aware - for OO-only deals, no hardware or POS-rate lever
        cards appear; for kiosk-only, no processing-rate cards; etc.
        Each lever shows: list value, what the rep typed, and a concrete
        "to match their current spend, drop this to £X" target where
@@ -1476,20 +1503,20 @@
       <h3 id="offerTitle">Fill in Steps 2 and 3 to see how the deal stacks up</h3>
     </div>
     <div class="offer-summary" id="offerSummary">
-      Pick a product (Online Ordering / POS / Kiosk) above, type what they pay today, and type your Flipdish proposal — this panel will then compare them and show you what to adjust to match.
+      Pick a product (Online Ordering / POS / Kiosk) above, type what they pay today, and type your Flipdish proposal - this panel will then compare them and show you what to adjust to match.
     </div>
     <div class="offer-numbers" id="offerNumbers" style="display:none;">
       <div class="offer-num">
         <div class="offer-num-label">They pay today</div>
-        <div class="offer-num-value" id="offerCurrentVal">—</div>
+        <div class="offer-num-value" id="offerCurrentVal">-</div>
       </div>
       <div class="offer-num">
         <div class="offer-num-label">You proposed (recurring)</div>
-        <div class="offer-num-value" id="offerProposedVal">—</div>
+        <div class="offer-num-value" id="offerProposedVal">-</div>
       </div>
       <div class="offer-num">
         <div class="offer-num-label" id="offerDeltaLabel">Gap</div>
-        <div class="offer-num-value" id="offerDeltaVal">—</div>
+        <div class="offer-num-value" id="offerDeltaVal">-</div>
       </div>
     </div>
 
@@ -1500,32 +1527,32 @@
     <div class="offer-levers" id="offerLevers" style="display:none;">
       <div class="lever" data-lever="sub" id="lever-sub" style="display:none;">
         <div class="lever-label">Bundled subscription</div>
-        <div class="lever-value" id="offerSubVal">—</div>
-        <div class="lever-detail" id="offerSubDetail">—</div>
+        <div class="lever-value" id="offerSubVal">-</div>
+        <div class="lever-detail" id="offerSubDetail">-</div>
       </div>
       <div class="lever" data-lever="ooRate" id="lever-ooRate" style="display:none;">
         <div class="lever-label">OO processing %</div>
-        <div class="lever-value" id="offerOORateVal">—</div>
-        <div class="lever-detail" id="offerOORateDetail">—</div>
+        <div class="lever-value" id="offerOORateVal">-</div>
+        <div class="lever-detail" id="offerOORateDetail">-</div>
       </div>
       <div class="lever" data-lever="posRate" id="lever-posRate" style="display:none;">
         <div class="lever-label">POS processing %</div>
-        <div class="lever-value" id="offerPosRateVal">—</div>
-        <div class="lever-detail" id="offerPosRateDetail">—</div>
+        <div class="lever-value" id="offerPosRateVal">-</div>
+        <div class="lever-detail" id="offerPosRateDetail">-</div>
       </div>
       <div class="lever" data-lever="posTxn" id="lever-posTxn" style="display:none;">
         <div class="lever-label">POS per-transaction fee</div>
-        <div class="lever-value" id="offerPosTxnVal">—</div>
-        <div class="lever-detail" id="offerPosTxnDetail">—</div>
+        <div class="lever-value" id="offerPosTxnVal">-</div>
+        <div class="lever-detail" id="offerPosTxnDetail">-</div>
       </div>
       <div class="lever" data-lever="hardware" id="lever-hardware" style="display:none;">
         <div class="lever-label">Hardware (one-off)</div>
-        <div class="lever-value" id="offerHwVal">—</div>
-        <div class="lever-detail" id="offerHwDetail">—</div>
+        <div class="lever-value" id="offerHwVal">-</div>
+        <div class="lever-detail" id="offerHwDetail">-</div>
       </div>
     </div>
 
-    <!-- Recommended deal (v8.13) — split into two zones with separate
+    <!-- Recommended deal (v8.13) - split into two zones with separate
          goals: recurring give (fees + sub) wants to MINIMISE recurring
          revenue damage; one-off give (hardware) has a HARD cap at
          3-month payback. Each zone has its own grid; either zone can
@@ -1541,7 +1568,7 @@
           <span class="rec-zone-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><polyline points="21 4 21 12 13 12"/></svg>
           </span>
-          <span class="rec-zone-title">Recurring give <span class="rec-zone-sub">— fees & subscription</span></span>
+          <span class="rec-zone-title">Recurring give <span class="rec-zone-sub">- fees & subscription</span></span>
           <span class="rec-zone-goal">Goal: minimise damage to recurring revenue</span>
         </div>
         <div class="rec-deal-grid" id="recDealGridRecurring"></div>
@@ -1552,7 +1579,7 @@
           <span class="rec-zone-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="18" x2="12" y2="21"/></svg>
           </span>
-          <span class="rec-zone-title">One-off give <span class="rec-zone-sub">— hardware</span></span>
+          <span class="rec-zone-title">One-off give <span class="rec-zone-sub">- hardware</span></span>
           <span class="rec-zone-goal">Hard cap: 3-month payback</span>
         </div>
         <div class="rec-deal-grid" id="recDealGridHardware"></div>
@@ -1563,26 +1590,26 @@
     </div>
 
     <!-- Legacy suggested-play (kept hidden as fallback for cases the rec
-         engine doesn't cover — e.g. scope picked but no current entered) -->
+         engine doesn't cover - e.g. scope picked but no current entered) -->
     <div class="offer-suggested" id="offerSuggested" style="display:none;"></div>
 
-    <!-- Folded-in Live Commercial Check — deal health from Flipdish's side. -->
+    <!-- Folded-in Live Commercial Check - deal health from Flipdish's side. -->
     <div class="status-strip embedded" id="liveCheck" style="margin-top:14px;margin-bottom:0;">
       <span class="status-pill" id="liveStatus">Awaiting inputs</span>
       <span class="status-message" id="liveMessage">Type a proposal in Step 3 to see whether the deal is healthy for Flipdish.</span>
       <button class="status-detail-toggle" id="liveDetailToggle" type="button" aria-expanded="false">Show the math</button>
       <div class="status-detail" id="liveDetail" hidden>
-        <div class="detail-row"><span>Recurring revenue per site</span><span id="liveDetSnr">—</span></div>
-        <div class="detail-row"><span>Operating margin / mo (SNR × 0.75)</span><span id="liveDetOpMargin">—</span></div>
-        <div class="detail-row"><span>Hardware payback at proposed price</span><span id="liveDetPayback">—</span></div>
-        <div class="detail-row"><span>Hardware discount headroom (3-month envelope)</span><span id="liveDetMaxHw">—</span></div>
+        <div class="detail-row"><span>Recurring revenue per site</span><span id="liveDetSnr">-</span></div>
+        <div class="detail-row"><span>Operating margin / mo (SNR × 0.75)</span><span id="liveDetOpMargin">-</span></div>
+        <div class="detail-row"><span>Hardware payback at proposed price</span><span id="liveDetPayback">-</span></div>
+        <div class="detail-row"><span>Hardware discount headroom (3-month envelope)</span><span id="liveDetMaxHw">-</span></div>
       </div>
     </div>
   </div>
 
   </section><!-- /#stackUpSection -->
 
-  <!-- Step 5 (Value Story) deleted — Will: "I don't think the value story
+  <!-- Step 5 (Value Story) deleted - Will: "I don't think the value story
        serves any purpose on this page really, it feels like that should
        be on the customer facing page". customer.html already renders
        the full customer-facing value story when the rep clicks Open
@@ -1618,10 +1645,10 @@
 
 <script>
   // ====================================================================
-  // Deal Room — commercial-inputs model.
+  // Deal Room - commercial-inputs model.
   // The rep captures what the customer processes and pays today, then the
   // key numbers from the SFDC quote. The value story is auto-computed.
-  // No product picker, no price book — SFDC owns that.
+  // No product picker, no price book - SFDC owns that.
   // ====================================================================
 
   var STORAGE_KEY = 'flipdishProspects';
@@ -1634,15 +1661,15 @@
   // Single source of truth for what Flipdish charges a standard customer
   // and the commercial floors the discount optimiser must respect.
   //
-  // Mirrored in /.auto-memory/reference_flipdish_list_rates.md — keep
+  // Mirrored in /.auto-memory/reference_flipdish_list_rates.md - keep
   // both in sync if Finance refreshes any number.
   //
-  //   sub             — list monthly subscription
-  //   processing      — list percentage charged to merchant (decimal)
-  //   txnFee          — list per-transaction fee charged to merchant
-  //   hardwareStarter — list price for the standard hardware kit
-  //   posCardPct/Fix  — Flipdish's POS card-processing cost (Stripe)
-  //   ooCardPct/Fix   — Flipdish's OO card-processing cost (Stripe)
+  //   sub             - list monthly subscription
+  //   processing      - list percentage charged to merchant (decimal)
+  //   txnFee          - list per-transaction fee charged to merchant
+  //   hardwareStarter - list price for the standard hardware kit
+  //   posCardPct/Fix  - Flipdish's POS card-processing cost (Stripe)
+  //   ooCardPct/Fix   - Flipdish's OO card-processing cost (Stripe)
   //
   // Markets where a product isn't sold are set to null (e.g. POS in US/ES).
   // ====================================================================
@@ -1677,7 +1704,7 @@
   var GUARDRAILS = {
     opMarginFactor:      0.75,   // SNR × 0.75 = monthly op margin
     paybackTargetMonths: 3,      // hardware payback envelope = 3 × eligible op margin
-    snrFloorMonthly:     350,    // per site — soft warning when crossed
+    snrFloorMonthly:     350,    // per site - soft warning when crossed
     ooSnrCrossSubsidy:   0.25    // 25% of monthly OO SNR offsets hardware payback (option b)
   };
   // Flipdish only offers 12-month contracts; this is a constant rather
@@ -1709,7 +1736,7 @@
   }
   function saveAll(list) {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); return true; }
-    catch (e) { alert('Could not save — localStorage may be full or blocked.'); return false; }
+    catch (e) { alert('Could not save - localStorage may be full or blocked.'); return false; }
   }
 
   // ---------- prospect shape ----------
@@ -1730,14 +1757,14 @@
         ooProcessingRate: '', ooTransFee: '',
         posProvider: '', posGmv: '', aov: '',
         posRate: '', posTransFee: '', posSub: '',
-        // v8.8: marketplace context (Deliveroo/Uber Eats/JustEat) —
+        // v8.8: marketplace context (Deliveroo/Uber Eats/JustEat) -
         // not part of cost-replacement maths but saved with the deal.
         marketGmv: '', marketCommission: '', marketPrimary: ''
       },
-      // Flipdish proposal — per-product RATES and HARDWARE; subscription
+      // Flipdish proposal - per-product RATES and HARDWARE; subscription
       // is a single bundled figure (monthlySub) the rep copies from the
       // SFDC quote. Bundling rules (web+POS = £99 total, POS+kiosk = £119
-      // total etc.) live in SFDC, not here — Will: "the rep will simply
+      // total etc.) live in SFDC, not here - Will: "the rep will simply
       // know what the total hardware price is as that would be pre-built
       // in the quote tool on salesforce."
       flipdish: {
@@ -1770,7 +1797,7 @@
   }
 
   // Migrate older saved deals into the current schema (7).
-  //   v1–v3: drop catalogue / marketplace bits.
+  //   v1-v3: drop catalogue / marketplace bits.
   //   v4 → v5: dissolve bundle into per-product subs.
   //   v5 → v6: drop dead fields (cashierCount, posHardwareMonthly),
   //       collapse Kiosk per-unit + count into totals.
@@ -1793,7 +1820,7 @@
     migrated.includeKiosk = !!p.includeKiosk;
     var c = p.current || {};
     var f = p.flipdish || {};
-    // OO — keep provider + revenue + AOV + sub + rate; bring forward any
+    // OO - keep provider + revenue + AOV + sub + rate; bring forward any
     // existing ooTransFee. v3+ deals had no transaction fee field on the
     // customer side; that's reintroduced in v6 because some direct
     // ordering competitors (e.g. Foodhub) charge 3.4% + Xp/c.
@@ -1803,7 +1830,7 @@
     migrated.current.ooSub            = c.ooSub || '';
     migrated.current.ooProcessingRate = c.ooProcessingRate || '';
     migrated.current.ooTransFee       = c.ooTransFee || '';
-    // POS — straight passthrough; cashierCount + posHardwareMonthly
+    // POS - straight passthrough; cashierCount + posHardwareMonthly
     // are no longer migrated (dropped from the form in v6).
     migrated.current.posProvider = c.posProvider || '';
     migrated.current.posGmv      = c.posGmv || '';
@@ -1816,9 +1843,9 @@
       var gm = parseFloat(c.posGmv), tx = parseFloat(c.posTransactions);
       if (!isNaN(gm) && !isNaN(tx) && tx > 0) migrated.current.aov = (gm / tx).toFixed(2);
     }
-    // Phone fields are no longer migrated — Phone AI lives in its own
+    // Phone fields are no longer migrated - Phone AI lives in its own
     // standalone calc, and its monthly sub rolls up into bundle.monthlySub.
-    // Flipdish proposal — schema 5 is fully per-product. Recover what
+    // Flipdish proposal - schema 5 is fully per-product. Recover what
     // we can from older shapes; per-product subs default to LIST rates
     // (filled in by prefillProposalFromList after migrate, when the
     // page hydrates). Drop any old all-in monthlySub / hardwareOneOff.
@@ -1852,6 +1879,17 @@
   function val(id) { var el = $(id); return el ? el.value : ''; }
   function num(id) { var v = parseFloat($(id).value); return isNaN(v) ? 0 : v; }
 
+  // v8.16: page title reflects the prospect business name once typed.
+  // "Deal Building" → "Deal Building - Billy's Pizza".
+  function updatePageTitle() {
+    var titleEl = $('pageTitle');
+    if (!titleEl) return;
+    var name = (val('prospectName') || '').trim();
+    titleEl.textContent = name ? ('Deal Building - ' + name) : 'Deal Building';
+    // Browser tab title too - useful when reps have several deals open.
+    document.title = name ? ('Deal Building - ' + name + ' | Flipdish') : 'Deal Building | Flipdish';
+  }
+
   // ---------- Hydrate: prospect object -> form ----------
   function hydrate() {
     $('prospectName').value = prospect.name || '';
@@ -1864,7 +1902,7 @@
     $('includeKiosk').checked = !!prospect.includeKiosk;
 
     var c = prospect.current || {};
-    // OO — direct ordering: provider + revenue + AOV + sub + processing %
+    // OO - direct ordering: provider + revenue + AOV + sub + processing %
     // + per-transaction fee (Foodhub etc. charge 3.4% + Xp/c)
     $('curOOProvider').value       = c.ooProvider || '';
     $('curOOGmv').value            = c.ooGmv || '';
@@ -1896,6 +1934,7 @@
     setCountry(prospect.country || 'UK', /*skipSave*/true);
     applyScopeVisibility();
     updateSaveStamp();
+    updatePageTitle();
   }
 
   // ---------- Collect: form -> prospect object ----------
@@ -1911,7 +1950,7 @@
     prospect.includeKiosk = $('includeKiosk').checked;
 
     prospect.current = {
-      // OO — direct ordering provider. Includes a per-transaction fee
+      // OO - direct ordering provider. Includes a per-transaction fee
       // because some competitors (Foodhub, Mealzo) charge that on top
       // of a percentage rate.
       ooProvider:       val('curOOProvider').trim(),
@@ -1927,11 +1966,11 @@
       posRate:          val('curPosRate'),
       posTransFee:      val('curPosTransFee'),
       posSub:           val('curPosSub'),
-      // v8.8: Marketplace context — not used in cost-replacement maths,
+      // v8.8: Marketplace context - not used in cost-replacement maths,
       // but informs the value pitch.
       marketGmv:        val('curMarketGmv'),
       marketCommission: val('curMarketCommission'),
-      // marketPrimary removed in v8.9 — Will: "top platform doesn't matter"
+      // marketPrimary removed in v8.9 - Will: "top platform doesn't matter"
       marketPrimary:    ''
     };
     prospect.flipdish = {
@@ -1946,7 +1985,7 @@
       kioskHardware:    val('fdKioskHardware'),
       // Single bundled subscription from the SFDC quote
       monthlySub:       val('fdMonthlySub')
-      // (contractMonths is the CONTRACT_MONTHS constant — not stored)
+      // (contractMonths is the CONTRACT_MONTHS constant - not stored)
     };
     prospect.updatedAt = Date.now();
   }
@@ -1971,7 +2010,7 @@
     if ($('fdKioskCountField'))      $('fdKioskCountField').style.display      = kioskOn ? '' : 'none';
     if ($('fdKioskHardwareField'))   $('fdKioskHardwareField').style.display   = kioskOn ? '' : 'none';
 
-    // Bundled-sub field — same gate as before: any scope ticked AND at
+    // Bundled-sub field - same gate as before: any scope ticked AND at
     // least one proposal-side input filled. Will: "Total monthly
     // subscription should only appear once we've added in the rest
     // of the proposal."
@@ -1987,14 +2026,14 @@
     if ($('sectionFees'))     $('sectionFees').style.display     = sectionFeesVisible     ? '' : 'none';
     if ($('sectionHardware')) $('sectionHardware').style.display = sectionHardwareVisible ? '' : 'none';
 
-    // Kiosk has no Step 2 current card — most customers don't have kiosks
+    // Kiosk has no Step 2 current card - most customers don't have kiosks
     // today, so there's nothing to displace. Kiosk only appears in the
     // proposal (Step 3) since it's a NEW offering Flipdish is selling.
 
     // When a scope toggle is turned ON, pre-fill the matching Flipdish
     // proposal fields with list rates (if the rep hasn't already typed
     // anything). This way the rep starts from a defensible no-discount
-    // baseline and discounts down — instead of starting from blank.
+    // baseline and discounts down - instead of starting from blank.
     prefillProposalFromList();
 
     // Pill highlight
@@ -2007,7 +2046,7 @@
 
   // ---------- Pre-fill Flipdish proposal from list rates ----------
   // Called whenever scope or country changes. Only fills fields that are
-  // currently blank — never overwrites a value the rep has typed in.
+  // currently blank - never overwrites a value the rep has typed in.
   function prefillProposalFromList() {
     var rates = LIST_RATES[prospect.country] || LIST_RATES.UK;
     function fillIfBlank(id, value) {
@@ -2027,13 +2066,13 @@
     if ($('includeKiosk').checked && rates.kiosk) {
       fillIfBlank('fdKioskHardware', rates.kiosk.hardware);
     }
-    // Bundled subscription — sum the in-scope list subs as a sensible
+    // Bundled subscription - sum the in-scope list subs as a sensible
     // starting point. Rep replaces this with the actual SFDC bundled
     // figure (which incorporates Flipdish's bundle discounts).
     //
     // Special case: fdMonthlySub keeps re-filling whenever the in-scope
     // mix changes (e.g. rep ticks Kiosk after POS) UNTIL the rep types
-    // something manually. We track this with a data-auto flag — set when
+    // something manually. We track this with a data-auto flag - set when
     // pre-fill writes the field, cleared by the input listener.
     var listSubSum = 0;
     if ($('includeOO').checked    && rates.oo)    listSubSum += rates.oo.sub;
@@ -2059,7 +2098,7 @@
     document.querySelectorAll('.country-pill').forEach(function (btn) {
       btn.classList.toggle('active', btn.dataset.country === code);
     });
-    // POS isn't sold in US or ES — hide the toggle and force-disable any
+    // POS isn't sold in US or ES - hide the toggle and force-disable any
     // existing selection so the page doesn't show a stale POS card.
     applyMarketAvailability();
     // v8.12: refresh slider min/max + meta labels so the lever controls
@@ -2071,7 +2110,7 @@
     if (!skipSave) scheduleSave();
   }
 
-  // v8.12 — Lever sliders. Each slider's min = guardrail floor, max = list,
+  // v8.12 - Lever sliders. Each slider's min = guardrail floor, max = list,
   // step appropriate to the lever. Refreshed when the country changes
   // (different markets have different Stripe rates and hardware prices).
   function updateLeverSliderBounds() {
@@ -2080,28 +2119,28 @@
     var ccy = CCY[prospect.country];
     var fmt = function (n, d) { return ccy + (d ? n.toFixed(d) : Math.round(n).toLocaleString('en-US')); };
 
-    // OO processing — floor is Stripe + 1pp
+    // OO processing - floor is Stripe + 1pp
     if (rates.oo) {
       var ooFloor = ((rates.ooCardPct || 0) * 100 + 1.0);
       var ooList  = rates.oo.processing * 100;
       setSliderBounds('fdOOProcessingRate', ooFloor, ooList,
         'Floor ' + ooFloor.toFixed(2) + '%', 'List ' + ooList.toFixed(2) + '%');
     }
-    // POS processing — floor is Stripe + 0.3pp
+    // POS processing - floor is Stripe + 0.3pp
     if (rates.pos) {
       var posFloor = ((rates.posCardPct || 0) * 100 + 0.3);
       var posList  = rates.pos.processing * 100;
       setSliderBounds('fdPosRate', posFloor, posList,
         'Floor ' + posFloor.toFixed(2) + '%', 'List ' + posList.toFixed(2) + '%');
-      // Per-txn fee — 0 to list
+      // Per-txn fee - 0 to list
       setSliderBounds('fdPosTransFee', 0, rates.pos.txnFee,
         ccy + '0.00', 'List ' + ccy + rates.pos.txnFee.toFixed(2));
-      // POS hardware — 0 to list × locations
+      // POS hardware - 0 to list × locations
       var posHw = rates.pos.hardwareStarter * locations;
       setSliderBounds('fdPosHardware', 0, posHw,
         ccy + '0 (free)', 'List ' + fmt(posHw));
     }
-    // Kiosk hardware — 0 to list (per kiosk count later in v8.14, for now flat)
+    // Kiosk hardware - 0 to list (per kiosk count later in v8.14, for now flat)
     if (rates.kiosk) {
       setSliderBounds('fdKioskHardware', 0, rates.kiosk.hardware,
         ccy + '0 (free)', 'List ' + fmt(rates.kiosk.hardware));
@@ -2127,7 +2166,7 @@
   }
 
   // Show / hide product toggles based on market availability. Driven by the
-  // LIST_RATES table — if a product entry is null for the active country,
+  // LIST_RATES table - if a product entry is null for the active country,
   // its scope toggle is hidden and any existing selection is cleared so we
   // don't leave a stale current/proposal card visible.
   function applyMarketAvailability() {
@@ -2145,12 +2184,12 @@
 
   // ---------- Formatters ----------
   function fmtMoney(n) {
-    if (!isFinite(n)) return '—';
+    if (!isFinite(n)) return '-';
     var s = n < 0 ? '-' : '';
     return s + CCY[prospect.country] + Math.abs(n).toLocaleString('en-US', { maximumFractionDigits: 0 });
   }
   function fmtMoney2(n) {
-    if (!isFinite(n)) return '—';
+    if (!isFinite(n)) return '-';
     var s = n < 0 ? '-' : '';
     return s + CCY[prospect.country] + Math.abs(n).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
   }
@@ -2163,7 +2202,7 @@
     var result = {
       ooSavings: 0,    // monthly customer saving on OO
       posSavings: 0,   // monthly customer saving on POS
-      kioskMonthlyCost: 0,  // Kiosk is a new line item — no displacement
+      kioskMonthlyCost: 0,  // Kiosk is a new line item - no displacement
       fdMonthlySub: 0,
       hardwareOneOff: 0,
       contractMonths: 36,
@@ -2187,7 +2226,7 @@
     // Direct ordering provider comparison. The customer side now captures
     // a per-transaction fee because some competitors (Foodhub, Mealzo)
     // charge that on top of a percentage rate. Flipdish doesn't charge
-    // a per-transaction fee for OO — single processing % only.
+    // a per-transaction fee for OO - single processing % only.
     // Flipdish OO sub lives on the OO proposal card directly.
     if (p.includeOO) {
       var ooGmv = N(c.ooGmv);
@@ -2252,7 +2291,7 @@
     if (p.includeKiosk) totalHardware += N(f.kioskHardware);
     result.fdMonthlySub   = totalMonthlySub;
     result.hardwareOneOff = totalHardware;
-    result.contractMonths = CONTRACT_MONTHS;  // always 12 — Flipdish doesn't vary contract length
+    result.contractMonths = CONTRACT_MONTHS;  // always 12 - Flipdish doesn't vary contract length
 
     // -------- Net monthly (customer perspective) --------
     // OO/POS savings already account for the customer's current sub being
@@ -2265,11 +2304,11 @@
       + result.posSavings
       - totalMonthlySub
       // Customer's current OO sub was inside ooSavings (they stop paying
-      // Foodhub etc.) but the Flipdish sub now sits in totalMonthlySub —
+      // Foodhub etc.) but the Flipdish sub now sits in totalMonthlySub -
       // we DON'T double-subtract because ooSavings already netted OO sub
       // out on the "today" side.
       ;
-    // Hold on — re-thinking. The OO comparison computed:
+    // Hold on - re-thinking. The OO comparison computed:
     //   curOOTotal (incl current sub) - fdOOTotal (NO Flipdish OO sub) = ooSavings
     // The Flipdish OO sub is in totalMonthlySub. So netMonthly correctly
     // subtracts it once. POS likewise. ✓
@@ -2338,7 +2377,7 @@
     // ---- PAYBACK FIX (v8.1) ----
     // Payback is the time it takes Flipdish to RECOUP the hardware
     // DISCOUNT through monthly op margin. Not the time to recover the
-    // full hardware cost — the customer paid for the hardware, Flipdish
+    // full hardware cost - the customer paid for the hardware, Flipdish
     // keeps that money. Only the gap between list and what the customer
     // was actually charged is the "loss" to be paid back.
     //
@@ -2356,7 +2395,7 @@
     if (hardwareDiscount > 0 && eligibleOpMargin > 0) {
       result.paybackMonths = hardwareDiscount / eligibleOpMargin;
     } else {
-      // No discount given (or no margin to compute against) — payback is
+      // No discount given (or no margin to compute against) - payback is
       // zero by definition. Flipdish has nothing to recoup.
       result.paybackMonths = 0;
     }
@@ -2396,7 +2435,7 @@
       var pd = v.detail.pos;
       if (pd.gmv > 0) {
         if (v.posSavings > 0) {
-          lines.push('On the POS / in-store side — merchant rate from <strong>' + pd.curRate + '%</strong> to <strong>' + pd.newRate + '%</strong> on ' + fmtMoney(pd.gmv) + '/mo of in-store revenue, plus differences in sub' + (pd.curHardware > 0 ? ' and the ' + fmtMoney(pd.curHardware) + '/mo they currently pay for hardware' : '') + ' — nets <strong>' + fmtMoney(v.posSavings) + '/mo</strong> saved.');
+          lines.push('On the POS / in-store side - merchant rate from <strong>' + pd.curRate + '%</strong> to <strong>' + pd.newRate + '%</strong> on ' + fmtMoney(pd.gmv) + '/mo of in-store revenue, plus differences in sub' + (pd.curHardware > 0 ? ' and the ' + fmtMoney(pd.curHardware) + '/mo they currently pay for hardware' : '') + ' - nets <strong>' + fmtMoney(v.posSavings) + '/mo</strong> saved.');
         } else if (v.posSavings < 0) {
           lines.push('POS / in-store is coming out <strong>' + fmtMoney(-v.posSavings) + '/mo more expensive</strong> than what they pay today. Sense-check the proposed rates or current setup figures.');
         }
@@ -2435,7 +2474,7 @@
   //   driven by Section A's op margin), the hardware list/proposal/
   //   discount, headroom remaining, payback months and a status pill.
   // Section B's envelope SHRINKS or GROWS live as Section A's sliders
-  //   move — the link is critical: lower fees = thinner op margin =
+  //   move - the link is critical: lower fees = thinner op margin =
   //   smaller envelope. The note text under each pill makes that
   //   dependency explicit for the rep.
   function renderSectionVerdicts(p, v) {
@@ -2474,7 +2513,7 @@
     var feesDelta = $('vFeesDelta');
     if (feesDelta) {
       if (proposalSnr === 0 && listSnr === 0) {
-        feesDelta.textContent = '—'; feesDelta.className = 'vval';
+        feesDelta.textContent = '-'; feesDelta.className = 'vval';
       } else if (giveUp > 0.5) {
         feesDelta.textContent = '−' + fmt(giveUp) + '/mo (' + giveUpPct + '%)';
         feesDelta.className = 'vval down';
@@ -2543,11 +2582,11 @@
       } else if (envelope <= 0) {
         pillB.className = 'lever-verdict-pill bad';
         pillB.textContent = '£0 envelope';
-        noteB.textContent = 'No room to discount hardware — Section A has eaten the op margin. Tighten fees/subs in A or push back on price.';
+        noteB.textContent = 'No room to discount hardware - Section A has eaten the op margin. Tighten fees/subs in A or push back on price.';
       } else if (hwDisc === 0) {
         pillB.className = 'lever-verdict-pill ok';
         pillB.textContent = 'At list';
-        noteB.textContent = 'Envelope is set by Section A’s op margin. Drop fees further → envelope shrinks.';
+        noteB.textContent = 'Envelope is set by Section A\'s op margin. Drop fees further → envelope shrinks.';
       } else if (v.paybackMonths != null && v.paybackMonths > GUARDRAILS.paybackTargetMonths) {
         pillB.className = 'lever-verdict-pill bad';
         pillB.textContent = 'Over payback';
@@ -2555,7 +2594,7 @@
       } else {
         pillB.className = 'lever-verdict-pill ok';
         pillB.textContent = 'Within cap';
-        noteB.textContent = 'Envelope is set by Section A’s op margin. Drop fees further → envelope shrinks.';
+        noteB.textContent = 'Envelope is set by Section A\'s op margin. Drop fees further → envelope shrinks.';
       }
     }
   }
@@ -2567,9 +2606,11 @@
     // Without this, streams lag behind the user's latest keystroke by the
     // full 400ms debounce window.
     if (!isInitializing) collect();
+    // v8.16: page title reflects the prospect business name as it's typed.
+    updatePageTitle();
     // v8.16: gate the bundled-sub field + Section A wrapper on whether
     // any proposal rate/hardware has been entered. (Don't re-run full
-    // applyScopeVisibility here — it triggers prefill which writes the
+    // applyScopeVisibility here - it triggers prefill which writes the
     // form on stale state.)
     if (!isInitializing) {
       var anyScopeNow = $('includeOO').checked || $('includePOS').checked || $('includeKiosk').checked;
@@ -2591,11 +2632,11 @@
     // rep instant feedback as they drag sliders in either section.
     renderSectionVerdicts(prospect, v);
 
-    // Step 5 (Value Story hero / streams / narrative) removed in v8.3 —
+    // Step 5 (Value Story hero / streams / narrative) removed in v8.3 -
     // customer-facing version lives on customer.html. This page is now
     // purely a deal-builder workspace.
     //
-    // "How does this stack up?" panel (Step 4) — sits below the rep's
+    // "How does this stack up?" panel (Step 4) - sits below the rep's
     // proposal. Compares what they typed vs the customer's current spend,
     // scope-aware, with concrete "to match" + "cost to Flipdish"
     // prescriptions. Live Check folded in at the bottom.
@@ -2619,26 +2660,26 @@
   //
   // For a deal where Flipdish at list is more expensive than the
   // customer's current spend, this engine computes the BEST achievable
-  // proposal — pulling levers in cost-rank order (cheapest for Flipdish
+  // proposal - pulling levers in cost-rank order (cheapest for Flipdish
   // first) until either the gap is closed or all levers are at floor.
   //
   // Returns:
   //   { sub, ooRate, posRate, posTransFee, hardware }
-  //     — recommended quote numbers per lever (only the in-scope ones
+  //     - recommended quote numbers per lever (only the in-scope ones
   //       are populated; others are null).
   //   { customerWouldPay, gapInitial, gapClosed, gapRemaining, canClose }
-  //     — outcome math.
+  //     - outcome math.
   //   { costRecurring, costOneOff }
-  //     — cost to Flipdish.
+  //     - cost to Flipdish.
   //   { changes: [...] }
-  //     — list of human-readable lever changes (for the rec grid render).
+  //     - list of human-readable lever changes (for the rec grid render).
   //   { narrative }
-  //     — natural-language guidance, especially when can't fully close.
+  //     - natural-language guidance, especially when can't fully close.
   function computeRecommendedDeal(p, v, o) {
     var rates = LIST_RATES[p.country] || LIST_RATES.UK;
     var locations = Math.max(1, Math.round(parseFloat(p.locations)) || 1);
     var c = p.current || {};
-    // Local N helper — top-level functions don't see the one defined
+    // Local N helper - top-level functions don't see the one defined
     // inside computeValueStory / computeOfferPanel.
     var N = function (x) { var n = parseFloat(x); return isNaN(n) ? 0 : n; };
     var rec = {
@@ -2688,7 +2729,7 @@
     var ooFloorPct  = (rates.ooCardPct  || 0) * 100 + 1.0;   // Stripe + 1pp
     var posFloorPct = (rates.posCardPct || 0) * 100 + 0.3;   // Stripe + 0.3pp
 
-    // STEP 1: Hardware (cheapest — one-off, recovered in 3 months)
+    // STEP 1: Hardware (cheapest - one-off, recovered in 3 months)
     if (o.hwInScope && o.maxHwDiscount > 0 && remaining > 0) {
       var hwDiscountTaken = Math.min(o.maxHwDiscount, remaining * CONTRACT_MONTHS);
       rec.hardware = Math.max(0, listHw - hwDiscountTaken);
@@ -2742,7 +2783,7 @@
       }
     }
 
-    // STEP 4: Bundled sub (worst — pure recurring revenue loss)
+    // STEP 4: Bundled sub (worst - pure recurring revenue loss)
     if (remaining > 0 && o.maxSubDiscount > 0) {
       var subDrop = Math.min(o.maxSubDiscount, remaining);
       if (subDrop > 0) {
@@ -2804,7 +2845,7 @@
     }
     panel.style.display = '';
 
-    // v8.13: Build TWO grids — recurring (sub + rates + per-txn) and
+    // v8.13: Build TWO grids - recurring (sub + rates + per-txn) and
     // hardware (one-off). Empty zones are hidden so the rep doesn't
     // see an empty header for a lever class that has nothing to say.
     var gridRec = $('recDealGridRecurring');
@@ -2868,9 +2909,9 @@
     // Impact line
     var impact = $('recDealImpact');
     if (rec.canClose && rec.changes.length === 0) {
-      impact.innerHTML = '<strong>No discounts needed</strong> — Flipdish at list already beats their current spend by ' + fmtMoney(Math.abs(o.delta)) + '/mo.';
+      impact.innerHTML = '<strong>No discounts needed</strong> - Flipdish at list already beats their current spend by ' + fmtMoney(Math.abs(o.delta)) + '/mo.';
     } else if (rec.canClose) {
-      impact.innerHTML = '<strong>Closes the deal</strong> — customer pays <strong>' + fmtMoney(rec.customerWouldPay) + '/mo</strong> recurring (matching their ' + fmtMoney(o.customerTotal) + '/mo today).';
+      impact.innerHTML = '<strong>Closes the deal</strong> - customer pays <strong>' + fmtMoney(rec.customerWouldPay) + '/mo</strong> recurring (matching their ' + fmtMoney(o.customerTotal) + '/mo today).';
     } else {
       impact.innerHTML = '<strong>Best achievable: customer pays ' + fmtMoney(rec.customerWouldPay) + '/mo.</strong> Still <strong>' + fmtMoney(rec.gapRemaining) + '/mo more</strong> than their current spend (' + fmtMoney(o.customerTotal) + '/mo).';
     }
@@ -2923,17 +2964,17 @@
   // Compares the REP'S PROPOSAL (what they typed in Step 3) against the
   // customer's current monthly spend and produces three outputs:
   //
-  //   1. State  — 'headroom' (proposal already cheaper), 'match'
+  //   1. State  - 'headroom' (proposal already cheaper), 'match'
   //               (gap exists but a single lever can close it), or
   //               'tight' (gap can't be closed by any single lever).
   //
-  //   2. Levers — only the ones in active scope. For OO-only deals,
+  //   2. Levers - only the ones in active scope. For OO-only deals,
   //               just sub + OO processing %. For POS-only, sub + POS
   //               rate + per-txn + hardware. Each lever shows the
   //               proposed value AND a concrete "to match, drop this
   //               to £X" target where single-lever match is feasible.
   //
-  //   3. Suggested play — natural-language opening offer.
+  //   3. Suggested play - natural-language opening offer.
   //
   // All targets are bound by guardrails: SNR floor (£350/mo per site),
   // POS rate floor (Stripe + 0.3pp), OO rate floor (Stripe + 1pp),
@@ -3020,18 +3061,18 @@
     //
     // For a £G/mo gap, EVERY lever that closes it costs Flipdish ~£G × 12
     // in nominal revenue. But strategic cost differs:
-    //   · Sub      — pure recurring revenue loss. High renewal-precedent risk.
+    //   · Sub      - pure recurring revenue loss. High renewal-precedent risk.
     //                Rank: WORST.
-    //   · Rate / per-txn — recurring revenue loss with rate precedent.
+    //   · Rate / per-txn - recurring revenue loss with rate precedent.
     //                      Rank: MEDIUM.
-    //   · Hardware — one-off, recovered in ≤3 months from op margin.
+    //   · Hardware - one-off, recovered in ≤3 months from op margin.
     //                No rate-precedent risk. Customer perceives big £ off.
     //                Rank: BEST.
     // Each lever carries a `costRank` (lower = cheaper for Flipdish) and
     // a `costNote` rendered at the bottom of its card.
     var contractCost = function (amount) { return amount * CONTRACT_MONTHS; };
 
-    // BUNDLED SUB — always present if any product is in scope
+    // BUNDLED SUB - always present if any product is in scope
     var subTarget = null;
     if (gap > 0 && gap <= maxSubDiscount) {
       subTarget = Math.max(0, fdSub - gap);
@@ -3042,21 +3083,21 @@
       subDetail = 'To match: <strong>drop the sub to ' + fmtMoney(subTarget) + '/mo</strong> (' + fmtMoney(fdSub - subTarget) + ' off your proposal). Floor is ' + fmtMoney(GUARDRAILS.snrFloorMonthly) + '/mo per site.';
       subCostNote = '<strong>Cost to Flipdish: ' + fmtMoney(contractCost(gap)) + ' over 12 months</strong> · pure recurring revenue loss · sets renewal precedent.';
     } else if (gap > 0) {
-      subDetail = 'Sub alone can\'t close the ' + fmtMoney(gap) + '/mo gap — only ' + fmtMoney(maxSubDiscount) + '/mo of headroom before the SNR floor.';
+      subDetail = 'Sub alone can\'t close the ' + fmtMoney(gap) + '/mo gap - only ' + fmtMoney(maxSubDiscount) + '/mo of headroom before the SNR floor.';
     } else if (maxSubDiscount > 0) {
-      subDetail = 'Up to ' + fmtMoney(maxSubDiscount) + '/mo of room before SNR floor (' + fmtMoney(GUARDRAILS.snrFloorMonthly) + '/mo per site). Most expensive lever — use last.';
+      subDetail = 'Up to ' + fmtMoney(maxSubDiscount) + '/mo of room before SNR floor (' + fmtMoney(GUARDRAILS.snrFloorMonthly) + '/mo per site). Most expensive lever - use last.';
     } else {
-      subDetail = 'No room — recurring revenue already at the SNR floor.';
+      subDetail = 'No room - recurring revenue already at the SNR floor.';
     }
     levers.push({
       key: 'sub', label: 'Bundled subscription',
       valueLabel: fmtMoney(fdSub) + '/mo',
       detail: subDetail + (subCostNote ? '<br><span class="cost-note">' + subCostNote + '</span>' : ''),
       target: subTarget,
-      costRank: 3   // WORST — pure recurring loss + renewal precedent
+      costRank: 3   // WORST - pure recurring loss + renewal precedent
     });
 
-    // OO PROCESSING % — only if OO in scope
+    // OO PROCESSING % - only if OO in scope
     if (p.includeOO && rates.oo && hasCurrentOO) {
       var fdOOPct = N(f.ooProcessingRate);
       var ooHeadroomPP = Math.max(0, fdOOPct - ooFloorPct);
@@ -3072,7 +3113,7 @@
         ooDetail = 'To match: <strong>drop OO processing to ' + ooTarget.toFixed(2) + '%</strong> (' + (fdOOPct - ooTarget).toFixed(2) + 'pp off). Floor ' + ooFloorPct.toFixed(2) + '% (Stripe + 1pp).';
         ooCostNote = '<strong>Cost to Flipdish: ' + fmtMoney(contractCost(gap)) + ' over 12 months</strong> · recurring rate loss · sets rate precedent for renewal.';
       } else if (gap > 0) {
-        ooDetail = 'OO rate alone can\'t close the gap — at the ' + ooFloorPct.toFixed(2) + '% floor that\'s ' + fmtMoney(ooMaxMonthly) + '/mo of give max.';
+        ooDetail = 'OO rate alone can\'t close the gap - at the ' + ooFloorPct.toFixed(2) + '% floor that\'s ' + fmtMoney(ooMaxMonthly) + '/mo of give max.';
       } else {
         ooDetail = 'List ' + ooListPct.toFixed(1) + '% → floor ' + ooFloorPct.toFixed(2) + '%. Up to ' + ooHeadroomPP.toFixed(2) + 'pp of room ≈ ' + fmtMoney(ooMaxMonthly) + '/mo recurring give.';
       }
@@ -3081,11 +3122,11 @@
         valueLabel: fdOOPct.toFixed(2) + '%',
         detail: ooDetail + (ooCostNote ? '<br><span class="cost-note">' + ooCostNote + '</span>' : ''),
         target: ooTarget,
-        costRank: 2   // MEDIUM — recurring + rate precedent
+        costRank: 2   // MEDIUM - recurring + rate precedent
       });
     }
 
-    // POS PROCESSING % — only if POS in scope
+    // POS PROCESSING % - only if POS in scope
     if (p.includePOS && rates.pos && hasCurrentPOS) {
       var fdPOSPct = N(f.posRate);
       var posHeadroomPP = Math.max(0, fdPOSPct - posFloorPct);
@@ -3101,7 +3142,7 @@
         posDetail = 'To match: <strong>drop POS processing to ' + posTarget.toFixed(2) + '%</strong> (' + (fdPOSPct - posTarget).toFixed(2) + 'pp off). Floor ' + posFloorPct.toFixed(2) + '% (Stripe + 0.3pp).';
         posCostNote = '<strong>Cost to Flipdish: ' + fmtMoney(contractCost(gap)) + ' over 12 months</strong> · recurring rate loss · sets rate precedent for renewal.';
       } else if (gap > 0) {
-        posDetail = 'POS rate alone can\'t close the gap — at the ' + posFloorPct.toFixed(2) + '% floor that\'s ' + fmtMoney(posMaxMonthly) + '/mo of give max.';
+        posDetail = 'POS rate alone can\'t close the gap - at the ' + posFloorPct.toFixed(2) + '% floor that\'s ' + fmtMoney(posMaxMonthly) + '/mo of give max.';
       } else {
         posDetail = 'List ' + posListPct.toFixed(2) + '% → floor ' + posFloorPct.toFixed(2) + '%. Up to ' + posHeadroomPP.toFixed(2) + 'pp of room ≈ ' + fmtMoney(posMaxMonthly) + '/mo recurring give.';
       }
@@ -3113,7 +3154,7 @@
         costRank: 2   // MEDIUM
       });
 
-      // POS PER-TRANSACTION FEE — small lever, no single-target match math
+      // POS PER-TRANSACTION FEE - small lever, no single-target match math
       var fdPosTxn = N(f.posTransFee);
       levers.push({
         key: 'posTxn', label: 'POS per-transaction fee',
@@ -3124,7 +3165,7 @@
       });
     }
 
-    // HARDWARE — only if POS or Kiosk in scope (Web/OO has no hardware)
+    // HARDWARE - only if POS or Kiosk in scope (Web/OO has no hardware)
     var hwInScope = (p.includePOS && rates.pos) || (p.includeKiosk && rates.kiosk);
     if (hwInScope) {
       var hwTarget = null;
@@ -3142,7 +3183,7 @@
         hwDetail = 'To match across the 12-month contract: <strong>drop hardware to ' + fmtMoney(hwTarget) + '</strong> (' + fmtMoney(hardwareList - hwTarget) + ' off list). Inside the 3-month payback envelope.';
         hwCostNote = '<strong>Cost to Flipdish: ' + fmtMoney(hwRequired) + ' one-off, recovered in ~3 months</strong> from op margin · no rate precedent · cheapest lever.';
       } else if (gap > 0) {
-        hwDetail = 'Hardware alone can\'t close the gap — max ' + fmtMoney(maxHwDiscount) + ' off (≈ ' + fmtMoney(hwAmortisedMonthly) + '/mo amortised over 12 months).';
+        hwDetail = 'Hardware alone can\'t close the gap - max ' + fmtMoney(maxHwDiscount) + ' off (≈ ' + fmtMoney(hwAmortisedMonthly) + '/mo amortised over 12 months).';
       } else {
         hwDetail = 'List ' + fmtMoney(hardwareList) + '. Up to ' + fmtMoney(maxHwDiscount) + ' off (' + hwPctOff + '%) one-off, recovered in ≤3 months. Worth ~' + fmtMoney(hwAmortisedMonthly) + '/mo of customer-perceived value across the contract.';
       }
@@ -3151,13 +3192,13 @@
         valueLabel: fmtMoney(proposedHardware),
         detail: hwDetail + (hwCostNote ? '<br><span class="cost-note">' + hwCostNote + '</span>' : ''),
         target: hwTarget,
-        costRank: 1   // BEST — one-off, recovered, no rate precedent
+        costRank: 1   // BEST - one-off, recovered, no rate precedent
       });
     }
 
     // ---- State diagnosis ----
     // headroom : Flipdish proposal is at-or-cheaper than customer current
-    //            (delta ≥ 0). NO tolerance band — £1 more expensive = not
+    //            (delta ≥ 0). NO tolerance band - £1 more expensive = not
     //            headroom. Will: "how could we be cheaper when we're £24
     //            pm more expensive" (v8.2 bug).
     // match    : gap exists AND at least one single lever can close it
@@ -3191,7 +3232,7 @@
     };
   }
 
-  // Lever DOM ID map — links each scope-aware lever key to its card +
+  // Lever DOM ID map - links each scope-aware lever key to its card +
   // value + detail elements. Cards are hidden by default; this fn
   // un-hides only the ones that came back from computeOfferPanel.
   var LEVER_DOM = {
@@ -3213,7 +3254,7 @@
 
     panel.classList.remove('idle','headroom','match','tight');
 
-    // Always reset all lever cards to hidden first — they'll be un-hidden
+    // Always reset all lever cards to hidden first - they'll be un-hidden
     // selectively below if they came back in scope.
     Object.keys(LEVER_DOM).forEach(function (k) {
       var card = $(LEVER_DOM[k].card);
@@ -3227,7 +3268,7 @@
       if (o.awaitingProposal) {
         pill.textContent = 'Awaiting proposal';
         title.textContent = 'Type your Flipdish proposal in Step 3';
-        summary.innerHTML = 'The current spend (Step 2) is in. Now type your Flipdish quote into Step 3 above — at list, or whatever discount you\'re considering — and this panel will show you the comparison and what you can adjust to match.';
+        summary.innerHTML = 'The current spend (Step 2) is in. Now type your Flipdish quote into Step 3 above - at list, or whatever discount you\'re considering - and this panel will show you the comparison and what you can adjust to match.';
       } else if (o.awaitingCurrent) {
         pill.textContent = 'Awaiting inputs';
         title.textContent = 'Need their current commercial reality';
@@ -3235,7 +3276,7 @@
       } else {
         pill.textContent = 'Awaiting inputs';
         title.textContent = 'Fill in Steps 2 and 3 to see how the deal stacks up';
-        summary.innerHTML = 'Pick a product (Online Ordering / POS / Kiosk) above, type what they pay today, and type your Flipdish proposal — this panel will compare them and show you what to adjust to match.';
+        summary.innerHTML = 'Pick a product (Online Ordering / POS / Kiosk) above, type what they pay today, and type your Flipdish proposal - this panel will compare them and show you what to adjust to match.';
       }
       nums.style.display = 'none';
       leversWrap.style.display = 'none';
@@ -3251,7 +3292,7 @@
     // paragraph used to. Will: "feels like a wasted line."
     summary.style.display = 'none';
 
-    // Headline numbers — comparison vs the rep's typed proposal
+    // Headline numbers - comparison vs the rep's typed proposal
     $('offerCurrentVal').textContent  = fmtMoney(o.customerTotal) + '/mo';
     $('offerProposedVal').textContent = fmtMoney(o.proposedRecurring) + '/mo';
     var deltaVal = $('offerDeltaVal');
@@ -3259,7 +3300,7 @@
     deltaVal.classList.remove('positive','negative');
     if (o.kioskOnly) {
       deltaLbl.textContent = 'Comparison';
-      deltaVal.textContent = 'Kiosk-only — no displacement';
+      deltaVal.textContent = 'Kiosk-only - no displacement';
     } else if (o.delta > 0) {
       deltaLbl.textContent = 'You\'re cheaper by';
       deltaVal.textContent = fmtMoney(o.delta) + '/mo';
@@ -3278,26 +3319,26 @@
       if (o.delta > 0) {
         pill.textContent = 'You\'re cheaper';
         title.textContent = 'Your proposal already beats their current spend';
-        summary.innerHTML = 'Your Flipdish proposal of <strong>' + fmtMoney(o.proposedRecurring) + '/mo</strong> recurring is <strong>' + fmtMoney(o.delta) + '/mo cheaper</strong> than what they pay today (' + fmtMoney(o.customerTotal) + '/mo). You can lead with this. The levers below show how much further you could push if needed — but you don\'t need to.';
+        summary.innerHTML = 'Your Flipdish proposal of <strong>' + fmtMoney(o.proposedRecurring) + '/mo</strong> recurring is <strong>' + fmtMoney(o.delta) + '/mo cheaper</strong> than what they pay today (' + fmtMoney(o.customerTotal) + '/mo). You can lead with this. The levers below show how much further you could push if needed - but you don\'t need to.';
       } else {
         // delta === 0: exact match
         pill.textContent = 'Exact match';
         title.textContent = 'Your proposal exactly matches their current spend';
-        summary.innerHTML = 'Your Flipdish proposal of <strong>' + fmtMoney(o.proposedRecurring) + '/mo</strong> recurring is identical to what they pay today (' + fmtMoney(o.customerTotal) + '/mo). The levers below show how much you could push further if you wanted — but the deal already lines up.';
+        summary.innerHTML = 'Your Flipdish proposal of <strong>' + fmtMoney(o.proposedRecurring) + '/mo</strong> recurring is identical to what they pay today (' + fmtMoney(o.customerTotal) + '/mo). The levers below show how much you could push further if you wanted - but the deal already lines up.';
       }
     } else if (o.state === 'tight') {
       pill.textContent = 'Won\'t close';
       title.textContent = 'No single lever closes the gap';
-      summary.innerHTML = 'Your proposal of <strong>' + fmtMoney(o.proposedRecurring) + '/mo</strong> is <strong>' + fmtMoney(o.gap) + '/mo more expensive</strong> than what they pay today. None of the levers below — at their floor — can close that gap on their own. Either combine multiple levers, reduce scope (starter kit only, fewer kiosks), or push back on price (Flipdish offers value beyond cost replacement).';
+      summary.innerHTML = 'Your proposal of <strong>' + fmtMoney(o.proposedRecurring) + '/mo</strong> is <strong>' + fmtMoney(o.gap) + '/mo more expensive</strong> than what they pay today. None of the levers below - at their floor - can close that gap on their own. Either combine multiple levers, reduce scope (starter kit only, fewer kiosks), or push back on price (Flipdish offers value beyond cost replacement).';
     } else if (o.kioskOnly) {
       pill.textContent = 'Kiosk-only';
-      title.textContent = 'Kiosk-only deal — no current cost to displace';
-      summary.innerHTML = 'Kiosk is incremental — there\'s nothing to displace because they don\'t have kiosks today. Sell on incremental revenue (basket lift, queue reduction). Hardware discount is your main lever.';
+      title.textContent = 'Kiosk-only deal - no current cost to displace';
+      summary.innerHTML = 'Kiosk is incremental - there\'s nothing to displace because they don\'t have kiosks today. Sell on incremental revenue (basket lift, queue reduction). Hardware discount is your main lever.';
     } else {
-      // match — closeable
+      // match - closeable
       pill.textContent = 'Closeable';
       title.textContent = 'A single lever can close the gap';
-      summary.innerHTML = 'Your proposal of <strong>' + fmtMoney(o.proposedRecurring) + '/mo</strong> is <strong>' + fmtMoney(o.gap) + '/mo more expensive</strong> than what they pay today (' + fmtMoney(o.customerTotal) + '/mo). The lever cards below show concrete targets — pick one and adjust your Step 3 quote to match.';
+      summary.innerHTML = 'Your proposal of <strong>' + fmtMoney(o.proposedRecurring) + '/mo</strong> is <strong>' + fmtMoney(o.gap) + '/mo more expensive</strong> than what they pay today (' + fmtMoney(o.customerTotal) + '/mo). The lever cards below show concrete targets - pick one and adjust your Step 3 quote to match.';
     }
 
     // Render the scope-aware lever cards
@@ -3311,25 +3352,25 @@
       var detEl = $(dom.detail); if (detEl) detEl.innerHTML = lever.detail;
     });
 
-    // Suggested play — rank closeable levers by costRank ascending
+    // Suggested play - rank closeable levers by costRank ascending
     // (1 = cheapest for Flipdish: hardware. 3 = worst: sub.)
     if (o.state === 'headroom') {
-      suggested.innerHTML = '<strong>Suggested play:</strong> Hold at your current proposal. You\'re already cheaper than their incumbent — sell on platform value, not on price. If they push for a sweetener, hardware is the cheapest lever for Flipdish.';
+      suggested.innerHTML = '<strong>Suggested play:</strong> Hold at your current proposal. You\'re already cheaper than their incumbent - sell on platform value, not on price. If they push for a sweetener, hardware is the cheapest lever for Flipdish.';
     } else if (o.kioskOnly) {
       suggested.innerHTML = '<strong>Suggested play:</strong> Sell on incremental revenue. Use the hardware-discount lever above as a deal-closer.';
     } else if (o.state === 'tight') {
-      // No single lever closes — recommend the cheapest PARTIAL close.
+      // No single lever closes - recommend the cheapest PARTIAL close.
       // Pick the lever with the most headroom / least bad cost rank that's
       // still in scope, and tell the rep how much it gets them.
       var hwLever = (o.levers || []).find(function (l) { return l.key === 'hardware'; });
       var hwLine = '';
       if (hwLever && o.maxHwDiscount > 0 && o.hardwareList > 0) {
         var hwAmortised = o.maxHwDiscount / CONTRACT_MONTHS;
-        hwLine = ' <strong>Bespoke option:</strong> max hardware discount of ' + fmtMoney(o.maxHwDiscount) + ' (' + fmtMoney(hwAmortised) + '/mo amortised) is the cheapest way to give the customer a meaningful sweetener — one-off, recovered in 3 months, no rate precedent.';
+        hwLine = ' <strong>Bespoke option:</strong> max hardware discount of ' + fmtMoney(o.maxHwDiscount) + ' (' + fmtMoney(hwAmortised) + '/mo amortised) is the cheapest way to give the customer a meaningful sweetener - one-off, recovered in 3 months, no rate precedent.';
       }
       suggested.innerHTML = '<strong>Suggested play:</strong> No single lever closes the ' + fmtMoney(o.gap) + '/mo gap inside the guardrails. Reduce scope (starter kit only, fewer tills/kiosks), push back on price as a platform investment, or qualify out at this scale.' + hwLine;
     } else {
-      // closeable — rank viable levers by costRank ascending
+      // closeable - rank viable levers by costRank ascending
       var viable = (o.levers || []).filter(function (l) { return l.target != null; });
       viable.sort(function (a, b) { return (a.costRank || 99) - (b.costRank || 99); });
       var preferred = viable[0];
@@ -3340,11 +3381,11 @@
           ? fmtMoney(preferred.target)
           : (preferred.key === 'sub' ? fmtMoney(preferred.target) + '/mo' : preferred.target.toFixed(2) + '%');
         var rationale = preferred.key === 'hardware'
-          ? 'Cheapest for Flipdish — one-off, recovered in 3 months from op margin, no rate precedent.'
+          ? 'Cheapest for Flipdish - one-off, recovered in 3 months from op margin, no rate precedent.'
           : (preferred.key === 'sub'
-             ? 'Most expensive for Flipdish — pure recurring revenue loss, sets renewal precedent. Use only if hardware/rate options are exhausted.'
-             : 'Recurring rate impact, sets a rate precedent for renewal — but cheaper than dropping the sub.');
-        suggested.innerHTML = '<strong>Suggested play:</strong> Cheapest single-lever close is the <strong>' + label + '</strong> — adjust to <strong>' + targetTxt + '</strong> in Step 3 and the deal matches their current spend. ' + rationale;
+             ? 'Most expensive for Flipdish - pure recurring revenue loss, sets renewal precedent. Use only if hardware/rate options are exhausted.'
+             : 'Recurring rate impact, sets a rate precedent for renewal - but cheaper than dropping the sub.');
+        suggested.innerHTML = '<strong>Suggested play:</strong> Cheapest single-lever close is the <strong>' + label + '</strong> - adjust to <strong>' + targetTxt + '</strong> in Step 3 and the deal matches their current spend. ' + rationale;
       } else {
         suggested.innerHTML = '<strong>Suggested play:</strong> See the levers above for the gap-closing options.';
       }
@@ -3355,7 +3396,7 @@
   // (renderRecommendation + applyRecommendation removed in v7 along
   //  with the panel itself.)
 
-  // Render the Live Commercial status strip — single plain-English
+  // Render the Live Commercial status strip - single plain-English
   // verdict + headroom + optional "Show the math" expand. Replaces
   // the old four-tile finance dashboard because reps don't speak
   // SNR / op margin / payback envelope.
@@ -3375,17 +3416,17 @@
       panel.classList.add('idle');
       pill.textContent = 'Awaiting inputs';
       msg.innerHTML    = 'Pick at least one lever above (Online Ordering, POS, or Kiosk) and fill in the customer\'s current commercial reality to see whether the deal\'s approvable.';
-      detSnr.textContent = '—';
-      detOp.textContent  = '—';
-      detPb.textContent  = '—';
-      detHw.textContent  = '—';
+      detSnr.textContent = '-';
+      detOp.textContent  = '-';
+      detPb.textContent  = '-';
+      detHw.textContent  = '-';
       return;
     }
 
     var snr = v.snrPerSite || 0;
     var op  = v.opMarginMonthly || 0;
     var paybackEnv = v.paybackEnvelope || 0;
-    var pbMonths = v.paybackMonths;        // discount / opMargin — 0 when no discount
+    var pbMonths = v.paybackMonths;        // discount / opMargin - 0 when no discount
     var hwDiscount = v.hardwareDiscount || 0;
     var hwList     = v.hardwareListTotal || 0;
     var floor = GUARDRAILS.snrFloorMonthly;
@@ -3405,13 +3446,13 @@
     detOp.textContent  = fmtMoney(op) + '/mo';
     detPb.textContent  = (hwDiscount === 0)
       ? '0 months (no hardware discount)'
-      : (pbMonths == null ? '—' : pbMonths.toFixed(1) + ' months');
+      : (pbMonths == null ? '-' : pbMonths.toFixed(1) + ' months');
     detHw.textContent  = fmtMoney(Math.max(0, paybackEnv));
 
     if (paybackBust) {
       panel.classList.add('bust');
       pill.textContent = 'Hardware discount too aggressive';
-      msg.innerHTML = 'You\'ve discounted hardware by <strong>' + fmtMoney(hwDiscount) + '</strong> off list (£' + Math.round(hwList) + '). Earning that back from this deal\'s op margin would take <strong>' + pbMonths.toFixed(1) + ' months</strong> — past the 3-month target. <strong>Pull the discount back</strong> to ≤ ' + fmtMoney(paybackEnv) + ' off list, or push for more recurring revenue (sub or processing rate).';
+      msg.innerHTML = 'You\'ve discounted hardware by <strong>' + fmtMoney(hwDiscount) + '</strong> off list (£' + Math.round(hwList) + '). Earning that back from this deal\'s op margin would take <strong>' + pbMonths.toFixed(1) + ' months</strong> - past the 3-month target. <strong>Pull the discount back</strong> to ≤ ' + fmtMoney(paybackEnv) + ' off list, or push for more recurring revenue (sub or processing rate).';
     } else if (below) {
       panel.classList.add('bust');
       pill.textContent = 'Below margin floor';
@@ -3419,14 +3460,14 @@
     } else if (snr < floor * 1.2) {
       panel.classList.add('warn');
       pill.textContent = 'Tight';
-      msg.innerHTML = 'You\'re earning <strong>' + fmtMoney(snr) + '/mo per site</strong> after costs — workable but close to the floor. Push discounts further only if you really need to.';
+      msg.innerHTML = 'You\'re earning <strong>' + fmtMoney(snr) + '/mo per site</strong> after costs - workable but close to the floor. Push discounts further only if you really need to.';
     } else {
       pill.textContent = 'Healthy';
       var headroomStr;
       if (hwDiscount > 0) {
         headroomStr = ' You\'ve discounted hardware by <strong>' + fmtMoney(hwDiscount) + '</strong> (paying back in <strong>' + pbMonths.toFixed(1) + ' months</strong>); <strong>' + fmtMoney(headroom) + '</strong> more discount available before breaching the 3-month target.';
       } else if (headroom > 0) {
-        headroomStr = ' Hardware is at list (no discount given) — you have up to <strong>' + fmtMoney(headroom) + '</strong> of discount room before payback breaches 3 months.';
+        headroomStr = ' Hardware is at list (no discount given) - you have up to <strong>' + fmtMoney(headroom) + '</strong> of discount room before payback breaches 3 months.';
       } else {
         headroomStr = '';
       }
@@ -3434,7 +3475,7 @@
     }
   }
 
-  // v8.2.2 — full scope-awareness for Step 5 savings cards. When a
+  // v8.2.2 - full scope-awareness for Step 5 savings cards. When a
   // product is OFF in Step 1, hide the entire card (not just dim the
   // value). Dimming led to OO-only deals showing a ghost POS card with
   // an em-dash that confused reps. Will: "I toggled for just Online
@@ -3552,7 +3593,7 @@
       if (!el) return;
       el.addEventListener('input', function () {
         // If the rep typed into fdMonthlySub, treat it as manually owned
-        // — pre-fill won't overwrite it any more, even if scope changes.
+        // - pre-fill won't overwrite it any more, even if scope changes.
         if (id === 'fdMonthlySub') el.dataset.auto = '';
         // v8.12: keep the paired slider in sync if this is a lever input
         var pairedSlider = document.querySelector('.lever-slider[data-target="' + id + '"]');

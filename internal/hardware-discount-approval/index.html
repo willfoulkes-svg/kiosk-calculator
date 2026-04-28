@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Hardware Discount Approval — Flipdish Internal</title>
+<title>Hardware Discount Approval - Flipdish Internal</title>
 <meta name="robots" content="noindex, nofollow">
 
 <!-- Password gate -->
@@ -512,7 +512,7 @@
   </div>
 
   <!-- ===================================================== -->
-  <!-- STEP 1 — CUSTOMER PROFILE (mode-dependent)             -->
+  <!-- STEP 1 - CUSTOMER PROFILE (mode-dependent)             -->
   <!-- ===================================================== -->
 
   <!-- POS ONLY -->
@@ -561,7 +561,7 @@
         <div class="input-cell">
           <label for="pos-orders">Estimated orders / month <span style="text-transform:none;font-weight:400;color:var(--muted);">(auto)</span></label>
           <div class="input-wrap">
-            <input id="pos-orders" class="derived" type="text" value="—" readonly>
+            <input id="pos-orders" class="derived" type="text" value="-" readonly>
           </div>
         </div>
       </div>
@@ -614,7 +614,7 @@
         <div class="input-cell">
           <label for="kiosk-orders">Estimated orders / month <span style="text-transform:none;font-weight:400;color:var(--muted);">(auto)</span></label>
           <div class="input-wrap">
-            <input id="kiosk-orders" class="derived" type="text" value="—" readonly>
+            <input id="kiosk-orders" class="derived" type="text" value="-" readonly>
           </div>
         </div>
       </div>
@@ -653,19 +653,19 @@
         <div class="input-cell">
           <label for="c-posGmv">POS GMV / mo <span style="text-transform:none;font-weight:400;color:var(--muted);">(auto)</span></label>
           <div class="input-wrap">
-            <input id="c-posGmv" class="derived" type="text" value="—" readonly>
+            <input id="c-posGmv" class="derived" type="text" value="-" readonly>
           </div>
         </div>
         <div class="input-cell">
           <label for="c-kioskGmv">Kiosk GMV / mo <span style="text-transform:none;font-weight:400;color:var(--muted);">(auto)</span></label>
           <div class="input-wrap">
-            <input id="c-kioskGmv" class="derived" type="text" value="—" readonly>
+            <input id="c-kioskGmv" class="derived" type="text" value="-" readonly>
           </div>
         </div>
         <div class="input-cell">
           <label for="c-totalOrders">Total orders / mo <span style="text-transform:none;font-weight:400;color:var(--muted);">(auto)</span></label>
           <div class="input-wrap">
-            <input id="c-totalOrders" class="derived" type="text" value="—" readonly>
+            <input id="c-totalOrders" class="derived" type="text" value="-" readonly>
           </div>
         </div>
       </div>
@@ -673,7 +673,7 @@
 
     <div class="step">
       <span class="num">2</span>
-      <span class="text">Set the rates <span class="sub">POS and Kiosk earn at different rates — both contribute to net revenue</span></span>
+      <span class="text">Set the rates <span class="sub">POS and Kiosk earn at different rates - both contribute to net revenue</span></span>
     </div>
     <div class="calc-card shared-inputs">
       <div class="channel-block">
@@ -729,7 +729,7 @@
   </div>
 
   <!-- ===================================================== -->
-  <!-- STEP 2/3 — HARDWARE (mode-dependent)                   -->
+  <!-- STEP 2/3 - HARDWARE (mode-dependent)                   -->
   <!-- ===================================================== -->
 
   <!-- POS hardware -->
@@ -793,7 +793,7 @@
           </div>
         </div>
         <div class="input-cell">
-          <label for="c-subsidy"><span class="subsidyLabel">CCEP</span> approved amount <span style="text-transform:none;font-weight:400;color:var(--muted);">(applies to POS only — leave 0 if not approved)</span></label>
+          <label for="c-subsidy"><span class="subsidyLabel">CCEP</span> approved amount <span style="text-transform:none;font-weight:400;color:var(--muted);">(applies to POS only - leave 0 if not approved)</span></label>
           <div class="input-wrap">
             <span class="prefix" data-cur>£</span>
             <input id="c-subsidy" class="has-prefix" type="number" value="0" step="50" min="0">
@@ -804,7 +804,7 @@
   </div>
 
   <!-- ===================================================== -->
-  <!-- THE ANSWERS — Twin hero (shared across modes)          -->
+  <!-- THE ANSWERS - Twin hero (shared across modes)          -->
   <!-- ===================================================== -->
   <div class="step">
     <span class="num" id="answersStepNum">3</span>
@@ -815,15 +815,15 @@
     <!-- LEFT: Minimum Sales Price (always lit) -->
     <div class="hero hero-stack win" id="minPriceHero">
       <div class="label">Minimum sales price</div>
-      <div class="big" id="heroMinPrice">—</div>
+      <div class="big" id="heroMinPrice">-</div>
       <div class="sub">Don't sell below this. Below this price the discount takes longer than 3 months to pay back at operating margin.</div>
-      <div class="hero-supporting" id="heroSupportLine">Leaves room for up to <strong>—</strong> of discount off the list.</div>
+      <div class="hero-supporting" id="heroSupportLine">Leaves room for up to <strong>-</strong> of discount off the list.</div>
     </div>
 
     <!-- RIGHT: Payback period (traffic light, with proposed sales price input nested) -->
     <div class="hero hero-stack warn" id="paybackHero">
       <div class="label">Payback period</div>
-      <div class="big" id="paybackHeroValue">—</div>
+      <div class="big" id="paybackHeroValue">-</div>
       <div class="sub" id="paybackHeroSub">Type a price below to check how it fits.</div>
       <div class="hero-input">
         <label for="salesPrice">Got a price in mind? <span class="muted">Type it to check.</span></label>
@@ -836,10 +836,10 @@
   </div>
 
   <!-- Verdict banner -->
-  <div class="verdict" id="verdict">—</div>
+  <div class="verdict" id="verdict">-</div>
 
   <!-- ===================================================== -->
-  <!-- COLLAPSED MATH — full ladder for sense-checking        -->
+  <!-- COLLAPSED MATH - full ladder for sense-checking        -->
   <!-- ===================================================== -->
   <details class="math-details">
     <summary>Show me the math</summary>
@@ -847,37 +847,37 @@
 
       <h3>How the maximum discount is calculated</h3>
       <div class="breakdown-rows">
-        <div class="row subtotal"><span class="name">Net Fees / mo <span class="row-help">(rates after card cost)</span></span><span class="val" id="netFees">—</span></div>
-        <div class="row"><span class="name">+ Subscription revenue</span><span class="val" id="revSub">—</span></div>
-        <div class="row total"><span class="name">= Software Net Revenue / mo</span><span class="val" id="totalSnr">—</span></div>
+        <div class="row subtotal"><span class="name">Net Fees / mo <span class="row-help">(rates after card cost)</span></span><span class="val" id="netFees">-</span></div>
+        <div class="row"><span class="name">+ Subscription revenue</span><span class="val" id="revSub">-</span></div>
+        <div class="row total"><span class="name">= Software Net Revenue / mo</span><span class="val" id="totalSnr">-</span></div>
         <div class="row"><span class="name">× 0.75 <span class="row-help">(Finance's 25% cost-to-serve haircut)</span></span><span class="val">0.75</span></div>
-        <div class="row total"><span class="name">= Operating margin / mo</span><span class="val" id="opMargin">—</span></div>
-        <div class="row"><span class="name">× 3 months <span class="row-help">(max payback — rounded down to whole £ for safety)</span></span><span class="val">3</span></div>
-        <div class="row total"><span class="name">= Maximum discount allowed</span><span class="val" id="maxDiscountRow">—</span></div>
+        <div class="row total"><span class="name">= Operating margin / mo</span><span class="val" id="opMargin">-</span></div>
+        <div class="row"><span class="name">× 3 months <span class="row-help">(max payback - rounded down to whole £ for safety)</span></span><span class="val">3</span></div>
+        <div class="row total"><span class="name">= Maximum discount allowed</span><span class="val" id="maxDiscountRow">-</span></div>
       </div>
 
       <h3>How the minimum sales price is calculated</h3>
       <div class="breakdown-rows">
-        <div class="row"><span class="name">Hardware list price</span><span class="val" id="hwListTotal">—</span></div>
-        <div class="row subtract mode-pos-or-combined"><span class="name">− <span class="subsidyName">CCEP</span> approved</span><span class="val" id="subsidyTotal">—</span></div>
-        <div class="row subtract"><span class="name">− Maximum discount allowed</span><span class="val" id="maxDiscountRow2">—</span></div>
-        <div class="row total"><span class="name">= Minimum sales price <span class="row-help">(do not go below this)</span></span><span class="val" id="minPriceRow">—</span></div>
-        <div class="row total"><span class="name">= Max discount off list <span class="row-help">(what the client sees — includes subsidy)</span></span><span class="val" id="maxPctOffList">—</span></div>
+        <div class="row"><span class="name">Hardware list price</span><span class="val" id="hwListTotal">-</span></div>
+        <div class="row subtract mode-pos-or-combined"><span class="name">− <span class="subsidyName">CCEP</span> approved</span><span class="val" id="subsidyTotal">-</span></div>
+        <div class="row subtract"><span class="name">− Maximum discount allowed</span><span class="val" id="maxDiscountRow2">-</span></div>
+        <div class="row total"><span class="name">= Minimum sales price <span class="row-help">(do not go below this)</span></span><span class="val" id="minPriceRow">-</span></div>
+        <div class="row total"><span class="name">= Max discount off list <span class="row-help">(what the client sees - includes subsidy)</span></span><span class="val" id="maxPctOffList">-</span></div>
       </div>
 
       <h3>How the payback period is calculated <span style="font-family:'Roboto',sans-serif;font-weight:400;font-size:12px;color:var(--muted);">(uses your proposed price)</span></h3>
       <div class="breakdown-rows">
-        <div class="row"><span class="name">Hardware list price</span><span class="val" id="hwListTotal2">—</span></div>
-        <div class="row subtract mode-pos-or-combined"><span class="name">− <span class="subsidyName">CCEP</span> approved</span><span class="val" id="subsidyTotal2">—</span></div>
-        <div class="row subtract"><span class="name">− Proposed sales price</span><span class="val" id="salesPriceShown">—</span></div>
-        <div class="row total"><span class="name">= Discount being given</span><span class="val" id="discountGiven">—</span></div>
-        <div class="row"><span class="name">÷ Operating margin / mo</span><span class="val" id="opMarginShown">—</span></div>
-        <div class="row total"><span class="name">= Payback period <span class="row-help">(months — at operating margin)</span></span><span class="val" id="paybackMonths">—</span></div>
-        <div class="row total"><span class="name">= Total discount off list <span class="row-help">(what the client sees — "I gave you X% off")</span></span><span class="val" id="totalPctOffList">—</span></div>
+        <div class="row"><span class="name">Hardware list price</span><span class="val" id="hwListTotal2">-</span></div>
+        <div class="row subtract mode-pos-or-combined"><span class="name">− <span class="subsidyName">CCEP</span> approved</span><span class="val" id="subsidyTotal2">-</span></div>
+        <div class="row subtract"><span class="name">− Proposed sales price</span><span class="val" id="salesPriceShown">-</span></div>
+        <div class="row total"><span class="name">= Discount being given</span><span class="val" id="discountGiven">-</span></div>
+        <div class="row"><span class="name">÷ Operating margin / mo</span><span class="val" id="opMarginShown">-</span></div>
+        <div class="row total"><span class="name">= Payback period <span class="row-help">(months - at operating margin)</span></span><span class="val" id="paybackMonths">-</span></div>
+        <div class="row total"><span class="name">= Total discount off list <span class="row-help">(what the client sees - "I gave you X% off")</span></span><span class="val" id="totalPctOffList">-</span></div>
       </div>
 
       <div class="note">
-        <strong>Note on the formula:</strong> Maximum discount and payback both use <strong>Operating Margin</strong> (Software Net Revenue × 0.75) — the 25% deduction is Finance's standard haircut for cost-to-serve. <strong id="ccepNote">CCEP (UK) / CCH (IE)</strong> applies to POS hardware only — a Kiosk-only deal doesn't qualify for the Coca-Cola subsidy. Confirm with Finance if the deal is borderline.
+        <strong>Note on the formula:</strong> Maximum discount and payback both use <strong>Operating Margin</strong> (Software Net Revenue × 0.75) - the 25% deduction is Finance's standard haircut for cost-to-serve. <strong id="ccepNote">CCEP (UK) / CCH (IE)</strong> applies to POS hardware only - a Kiosk-only deal doesn't qualify for the Coca-Cola subsidy. Confirm with Finance if the deal is borderline.
       </div>
     </div>
   </details>
@@ -888,11 +888,11 @@
     <ol>
       <li><strong>Pick the deal type.</strong> POS only, Kiosk only, or POS + Kiosk combined. The inputs, countries and rules adjust to match.</li>
       <li><strong>Pick the country.</strong> Card processing costs differ between countries. Kiosk-only deals are available in UK, IE, US and ES; POS and Combined deals are UK and IE only.</li>
-      <li><strong>Step 1 — customer.</strong> For POS or Kiosk, type monthly GMV, AOV, processing and transaction fees, and subscription. For Combined, type total on-premise GMV, Kiosk share, AOV, and per-channel rates. These drive Software Net Revenue per month.</li>
-      <li><strong>Hardware.</strong> Type the hardware list price. On POS and Combined deals, type any approved CCEP (UK) or CCH (IE) subsidy amount — otherwise leave it at 0. <strong>Kiosk-only deals don't qualify for CCEP/CCH.</strong></li>
+      <li><strong>Step 1 - customer.</strong> For POS or Kiosk, type monthly GMV, AOV, processing and transaction fees, and subscription. For Combined, type total on-premise GMV, Kiosk share, AOV, and per-channel rates. These drive Software Net Revenue per month.</li>
+      <li><strong>Hardware.</strong> Type the hardware list price. On POS and Combined deals, type any approved CCEP (UK) or CCH (IE) subsidy amount - otherwise leave it at 0. <strong>Kiosk-only deals don't qualify for CCEP/CCH.</strong></li>
       <li><strong>Read the floor.</strong> The big number on the left is the lowest sales price the rep can charge. Don't sell below it.</li>
-      <li><strong>(Optional) Check a price.</strong> If the rep has a number in mind, type it into "Got a price in mind?" on the right. The payback period lights up green / amber / red — green is comfortable, amber is at the limit, red is over.</li>
-      <li><strong>What to quote the client.</strong> The verdict line now tells you the percentage off list (e.g. "that's 55% off list"). This is the number the client experiences — it combines any CCEP/CCH subsidy <em>and</em> your rep discount, because the client only sees list price → sales price.</li>
+      <li><strong>(Optional) Check a price.</strong> If the rep has a number in mind, type it into "Got a price in mind?" on the right. The payback period lights up green / amber / red - green is comfortable, amber is at the limit, red is over.</li>
+      <li><strong>What to quote the client.</strong> The verdict line now tells you the percentage off list (e.g. "that's 55% off list"). This is the number the client experiences - it combines any CCEP/CCH subsidy <em>and</em> your rep discount, because the client only sees list price → sales price.</li>
       <li><strong>Why 0.75 in the math?</strong> Finance applies a 25% cost-to-serve haircut, so the calculator approves discounts off real margin, not gross revenue. Click "Show me the math" if you want to see the full ladder.</li>
     </ol>
   </div>
@@ -937,7 +937,7 @@
   };
 
   // Default values by mode + country, applied on mode switch or country switch
-  // (Only hardware / subscription defaults need resetting — customer profile
+  // (Only hardware / subscription defaults need resetting - customer profile
   //  inputs like GMV/AOV are preserved across switches.)
   const DEFAULTS = {
     pos: {
@@ -980,7 +980,7 @@
   }
 
   function fmtMoney(n, decimals) {
-    if (!isFinite(n)) return '—';
+    if (!isFinite(n)) return '-';
     const c = COUNTRIES[activeCountry].currency;
     const sign = n < 0 ? '-' : '';
     const abs = Math.abs(n);
@@ -1013,7 +1013,7 @@
   }
 
   // ====================================================================
-  // CALCULATOR — one function, branches on activeMode
+  // CALCULATOR - one function, branches on activeMode
   // ====================================================================
   function calc() {
     const co = COUNTRIES[activeCountry];
@@ -1097,7 +1097,7 @@
       paybackMonths = discountGiven / opMargin;
     } // else null = op margin ≤ 0
 
-    // Total discount % off list — this is the number the rep quotes to the client.
+    // Total discount % off list - this is the number the rep quotes to the client.
     // It combines the subsidy + the rep's own discount, because the client only sees list → sales price.
     //   maxTotalOffListPct  = floor view: (list − minSalesPrice) / list × 100
     //   totalOffListPct     = actual view: (list − salesPrice)    / list × 100   (only when rep typed a price)
@@ -1107,7 +1107,7 @@
     const fmtPct = p => (p >= 10 ? p.toFixed(0) : p.toFixed(1)) + '%';
 
     // ====================================================================
-    // RENDER — math ladders
+    // RENDER - math ladders
     // ====================================================================
     setText($('netFees'),        fmtMoney(netFees, 2) + '/mo', true);
     setText($('revSub'),         fmtMoney(revSub, 2),          true);
@@ -1126,14 +1126,14 @@
     setText($('discountGiven'),   fmtMoney(discountGiven, 0),  true);
     setText($('opMarginShown'),   fmtMoney(opMargin, 2) + '/mo', true);
 
-    // % off list — what the client sees on quote
-    setText($('maxPctOffList'),   (hwList > 0 && maxTotalOffListPct > 0) ? fmtPct(maxTotalOffListPct) : '—', true);
-    setText($('totalPctOffList'), (totalOffListPct !== null && totalOffListPct > 0) ? fmtPct(totalOffListPct) : '—', true);
+    // % off list - what the client sees on quote
+    setText($('maxPctOffList'),   (hwList > 0 && maxTotalOffListPct > 0) ? fmtPct(maxTotalOffListPct) : '-', true);
+    setText($('totalPctOffList'), (totalOffListPct !== null && totalOffListPct > 0) ? fmtPct(totalOffListPct) : '-', true);
 
     // HEADLINE HEROES
     setText($('heroMinPrice'), fmtMoney(minSalesPrice, 0), true);
     // Support line: "Leaves room for up to £X of discount off the list (after CCEP)."
-    // The "(after CCEP/CCH)" suffix applies on POS and Combined modes only —
+    // The "(after CCEP/CCH)" suffix applies on POS and Combined modes only -
     // Kiosk-only deals don't qualify for the Coca-Cola subsidy.
     const subsidyName = co.subsidyName || 'CCEP';
     const supportSuffix = (activeMode === 'kiosk')
@@ -1142,7 +1142,7 @@
     const heroSupport = $('heroSupportLine');
     if (heroSupport) {
       const maxPctSuffix = (hwList > 0 && maxTotalOffListPct > 0)
-        ? ' — <strong>up to ' + fmtPct(maxTotalOffListPct) + ' off list</strong> from the client\'s point of view'
+        ? ' - <strong>up to ' + fmtPct(maxTotalOffListPct) + ' off list</strong> from the client\'s point of view'
         : '';
       heroSupport.innerHTML = 'Leaves room for up to <strong>' +
         fmtMoney(maxDiscount, 0) + '</strong> of discount off the list' + supportSuffix + maxPctSuffix + '.';
@@ -1158,19 +1158,19 @@
       const combinedNote = (activeMode === 'combined')
         ? 'it should normally cover only the POS portion of hardware, not the full combined list'
         : 'it should normally cover part of the hardware, not all of it';
-      verdictText = `<strong>${subsidyName} subsidy (${fmtMoney(subsidy, 0)}) is at or above the hardware list price (${fmtMoney(hwList, 0)}).</strong> Double-check the subsidy figure — ${combinedNote}. If correct, no rep discount is needed.`;
+      verdictText = `<strong>${subsidyName} subsidy (${fmtMoney(subsidy, 0)}) is at or above the hardware list price (${fmtMoney(hwList, 0)}).</strong> Double-check the subsidy figure - ${combinedNote}. If correct, no rep discount is needed.`;
       verdictClass = 'amber';
       heroClass = 'warn';
       minHeroClass = 'warn';
     } else if (opMargin <= 0) {
       paybackText = '∞';
-      paybackSubText = 'Operating margin is zero or negative — a discount can never pay back.';
-      verdictText = '<strong>Do not approve any discount.</strong> This customer\'s operating margin is zero or negative — Flipdish loses money on the subscription before any hardware discount. Rework the rates, sub or volume before considering hardware terms.';
+      paybackSubText = 'Operating margin is zero or negative - a discount can never pay back.';
+      verdictText = '<strong>Do not approve any discount.</strong> This customer\'s operating margin is zero or negative - Flipdish loses money on the subscription before any hardware discount. Rework the rates, sub or volume before considering hardware terms.';
       verdictClass = 'red';
       heroClass = 'lose';
       minHeroClass = 'lose';
     } else if (salesPrice === 0) {
-      paybackText = '—';
+      paybackText = '-';
       paybackSubText = 'Type a proposed price below to check how it fits.';
       verdictText = `<strong>Lowest you can charge: ${fmtMoney(minSalesPrice, 0)}.</strong> That uses the full <strong>${fmtMoney(maxDiscount, 0)}</strong> of discount and pays back in roughly ${PAYBACK_TARGET_MONTHS} months. Charge more to bank headroom, or type a proposed price into the box on the right to check it.`;
       verdictClass = 'amber';
@@ -1181,7 +1181,7 @@
       const clientSeesPct = (totalOffListPct !== null && totalOffListPct > 0)
         ? ` Client still sees <strong>${fmtPct(totalOffListPct)} off list</strong> after subsidy.`
         : '';
-      paybackSubText = 'No rep discount being given — nothing to pay back.';
+      paybackSubText = 'No rep discount being given - nothing to pay back.';
       const afterSub = (activeMode === 'kiosk') ? '' : ' (after ' + subsidyName + ')';
       verdictText = `<strong>Approve.</strong> The proposed sales price covers the list${afterSub}. No rep discount is being given.${clientSeesPct} There's room to discount up to <strong>${fmtMoney(maxDiscount, 0)}</strong> (down to <strong>${fmtMoney(minSalesPrice, 0)}</strong>, up to <strong>${fmtPct(maxTotalOffListPct)} off list</strong>) if the deal needs sweetening.`;
       verdictClass = 'green';
@@ -1197,16 +1197,16 @@
         : '';
       if (paybackMonths < PAYBACK_TARGET_MONTHS - 0.05) {
         const headroom = maxDiscount - discountGiven;
-        verdictText = `<strong>Approve.</strong> Discount of <strong>${fmtMoney(discountGiven, 0)}</strong>${pctLine} pays back in <strong>${paybackMonths.toFixed(1)} months</strong> — comfortably under the ${PAYBACK_TARGET_MONTHS}-month limit. Headroom of <strong>${fmtMoney(headroom, 0)}</strong> available if needed.`;
+        verdictText = `<strong>Approve.</strong> Discount of <strong>${fmtMoney(discountGiven, 0)}</strong>${pctLine} pays back in <strong>${paybackMonths.toFixed(1)} months</strong> - comfortably under the ${PAYBACK_TARGET_MONTHS}-month limit. Headroom of <strong>${fmtMoney(headroom, 0)}</strong> available if needed.`;
         verdictClass = 'green';
         heroClass = 'win';
       } else if (paybackMonths <= PAYBACK_TARGET_MONTHS + 0.05) {
-        verdictText = `<strong>OK to approve, at the limit.</strong> Discount of <strong>${fmtMoney(discountGiven, 0)}</strong>${pctLine} pays back in <strong>${paybackMonths.toFixed(1)} months</strong> — right at the ${PAYBACK_TARGET_MONTHS}-month cap. Within bounds, but no headroom for further discount.`;
+        verdictText = `<strong>OK to approve, at the limit.</strong> Discount of <strong>${fmtMoney(discountGiven, 0)}</strong>${pctLine} pays back in <strong>${paybackMonths.toFixed(1)} months</strong> - right at the ${PAYBACK_TARGET_MONTHS}-month cap. Within bounds, but no headroom for further discount.`;
         verdictClass = 'amber';
         heroClass = 'warn';
       } else {
         const overBy = discountGiven - maxDiscount;
-        verdictText = `<strong>Do not approve as proposed.</strong> Discount of <strong>${fmtMoney(discountGiven, 0)}</strong>${pctLine} would take <strong>${paybackMonths.toFixed(1)} months</strong> to pay back — over the ${PAYBACK_TARGET_MONTHS}-month limit. Reduce the discount by <strong>${fmtMoney(overBy, 0)}</strong> (raise sales price to <strong>${fmtMoney(minSalesPrice, 0)}</strong> or higher) to stay within bounds. If the deal needs to go through as is, escalate for sign-off.`;
+        verdictText = `<strong>Do not approve as proposed.</strong> Discount of <strong>${fmtMoney(discountGiven, 0)}</strong>${pctLine} would take <strong>${paybackMonths.toFixed(1)} months</strong> to pay back - over the ${PAYBACK_TARGET_MONTHS}-month limit. Reduce the discount by <strong>${fmtMoney(overBy, 0)}</strong> (raise sales price to <strong>${fmtMoney(minSalesPrice, 0)}</strong> or higher) to stay within bounds. If the deal needs to go through as is, escalate for sign-off.`;
         verdictClass = 'red';
         heroClass = 'lose';
       }

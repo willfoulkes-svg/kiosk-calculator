@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Flipdish Phone AI — Value Calculator</title>
+<title>Flipdish Phone AI - Value Calculator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Domine:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -368,7 +368,7 @@
   </header>
 
   <h1 id="pageTitle">Take the phone off your team's hands</h1>
-  <p class="lede">Phone AI picks up every call, every time. Missed orders that used to walk away now stick — and your team gets back the hours they used to spend on the phone. Edit any yellow input to model a specific case.</p>
+  <p class="lede">Phone AI picks up every call, every time. Missed orders that used to walk away now stick - and your team gets back the hours they used to spend on the phone. Edit any yellow input to model a specific case.</p>
 
   <!-- COUNTRY SELECTOR -->
   <div class="country-bar">
@@ -417,12 +417,12 @@
   <div class="hero">
     <div>
       <div class="label">Annual value</div>
-      <div class="big" id="heroBig">—</div>
+      <div class="big" id="heroBig">-</div>
       <div class="sub" id="heroSub">Missed orders captured + staff time returned</div>
     </div>
     <div class="secondary">
       <div class="label-sec">Monthly</div>
-      <div class="big-sec" id="heroMonthly">—</div>
+      <div class="big-sec" id="heroMonthly">-</div>
     </div>
   </div>
 
@@ -433,8 +433,8 @@
       </div>
       <h3>Missed orders captured</h3>
       <p class="stream-sub">Calls that go unanswered today become orders when Phone AI never misses a call.</p>
-      <div class="stream-value" id="streamMissed">—</div>
-      <div class="formula" id="streamMissedFormula">—</div>
+      <div class="stream-value" id="streamMissed">-</div>
+      <div class="formula" id="streamMissedFormula">-</div>
     </div>
 
     <div class="stream">
@@ -443,8 +443,8 @@
       </div>
       <h3>Staff time returned</h3>
       <p class="stream-sub">Every minute on the phone is a minute away from the floor. Phone AI hands those minutes back.</p>
-      <div class="stream-value" id="streamLabour">—</div>
-      <div class="formula" id="streamLabourFormula">—</div>
+      <div class="stream-value" id="streamLabour">-</div>
+      <div class="formula" id="streamLabourFormula">-</div>
     </div>
   </div>
 
@@ -467,10 +467,10 @@
   <div class="tips">
     <h2>How to use this in a commercial conversation</h2>
     <ol>
-      <li><strong>Get the missed-call rate.</strong> Most operators underestimate this. 5% is conservative — many phone-heavy restaurants lose 10–20% of calls during the Friday/Saturday dinner rush. A simple "how many calls does your POS show vs how many got answered?" almost always uncovers a bigger number.</li>
-      <li><strong>Pin down the call length honestly.</strong> 3–5 minutes is typical for a phone order with menu questions and payment. The labour line scales linearly with this number, so don't overstate it — a credible 4 minutes beats an aggressive 8.</li>
+      <li><strong>Get the missed-call rate.</strong> Most operators underestimate this. 5% is conservative - many phone-heavy restaurants lose 10-20% of calls during the Friday/Saturday dinner rush. A simple "how many calls does your POS show vs how many got answered?" almost always uncovers a bigger number.</li>
+      <li><strong>Pin down the call length honestly.</strong> 3-5 minutes is typical for a phone order with menu questions and payment. The labour line scales linearly with this number, so don't overstate it - a credible 4 minutes beats an aggressive 8.</li>
       <li><strong>Enter the Phone AI monthly cost.</strong> The <em>Net monthly value</em> on the right shows what the restaurant actually pockets each month after subtracting the subscription <em>and</em> Flipdish's 5% commission on every order Phone AI handles.</li>
-      <li><strong>5% commission is already baked in.</strong> You don't need to add it anywhere — the net figure already deducts 5% of (monthly phone orders × AOV). Mention this explicitly to the client so there are no surprises on invoice 1.</li>
+      <li><strong>5% commission is already baked in.</strong> You don't need to add it anywhere - the net figure already deducts 5% of (monthly phone orders × AOV). Mention this explicitly to the client so there are no surprises on invoice 1.</li>
     </ol>
   </div>
 
@@ -492,13 +492,13 @@
   let isInitializing = true;
 
   const fmtMoney = n => {
-    if (!isFinite(n)) return '—';
+    if (!isFinite(n)) return '-';
     const sign = n < 0 ? '-' : '';
     const abs = Math.abs(n);
     return sign + currency + abs.toLocaleString(undefined, { maximumFractionDigits: 0 });
   };
   const fmtMoney2 = n => {
-    if (!isFinite(n)) return '—';
+    if (!isFinite(n)) return '-';
     const sign = n < 0 ? '-' : '';
     const abs = Math.abs(n);
     return sign + currency + abs.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 });
@@ -528,7 +528,7 @@
     const hourlyWage   = num('hourlyWage');
     const phoneAiCost  = num('phoneAiCost');
 
-    // Clamp the missed-% — guards against silly inputs like 120%
+    // Clamp the missed-% - guards against silly inputs like 120%
     const clampedMissed = Math.min(Math.max(pctMissed, 0), 100);
 
     const monthlyOrders = ordersPerDay * DAYS_PER_MONTH;
@@ -539,7 +539,7 @@
     // Stream 2: staff time returned
     const labour = monthlyOrders * (callLength / 60) * hourlyWage;
 
-    // Commission cost — 5% of every phone order now runs through Flipdish Phone AI
+    // Commission cost - 5% of every phone order now runs through Flipdish Phone AI
     const commissionMonthly = monthlyOrders * aov * COMMISSION_RATE;
 
     const grossMonthly = missed + labour;
@@ -551,7 +551,7 @@
     setText($('streamMissed'), fmtMoney2(missed), 'flash');
     setText($('streamLabour'), fmtMoney2(labour), 'flash');
 
-    // Live formulas — show actual numbers, not abstract variables
+    // Live formulas - show actual numbers, not abstract variables
     const orderWord = monthlyOrders === 1 ? 'order' : 'orders';
     $('streamMissedFormula').textContent =
       `${monthlyOrders.toLocaleString()} ${orderWord}/mo × ${clampedMissed}% missed × ${fmtMoney2(aov)} AOV`;
@@ -564,7 +564,7 @@
     $('heroSub').textContent =
       `Missed orders captured + staff time returned · ${labels[activeCountry]} · before 5% commission`;
 
-    // ROI readout — always show net; include 5% commission alongside the subscription
+    // ROI readout - always show net; include 5% commission alongside the subscription
     const netReadout = $('netReadout');
     const negative   = netMonthly < 0;
     const totalCost  = phoneAiCost + commissionMonthly;

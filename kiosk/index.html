@@ -304,7 +304,7 @@
   </header>
 
   <h1 id="pageTitle">How much could a Flipdish Kiosk save you?</h1>
-  <p class="lede" id="pageLede">Enter your restaurant's numbers on the left. The annual saving updates live. Nothing is saved — this is a live illustration.</p>
+  <p class="lede" id="pageLede">Enter your restaurant's numbers on the left. The annual saving updates live. Nothing is saved - this is a live illustration.</p>
 
   <!-- COUNTRY SELECTOR -->
   <div class="country-bar">
@@ -356,7 +356,7 @@
       <div class="input-row">
         <label>
           <span>% of on-prem volume going through kiosk</span>
-          <span class="hint">typical 60–80%</span>
+          <span class="hint">typical 60-80%</span>
         </label>
         <div class="range-wrap">
           <input id="volCaptured" type="range" min="0" max="100" value="70" step="5">
@@ -367,7 +367,7 @@
       <div class="input-row labour-only">
         <label>
           <span>% of labour replaced by kiosk</span>
-          <span class="hint">typical 30–50%</span>
+          <span class="hint">typical 30-50%</span>
         </label>
         <div class="range-wrap">
           <input id="labourReplaced" type="range" min="0" max="100" value="40" step="5">
@@ -376,7 +376,7 @@
       </div>
 
       <details style="margin-top: 6px;">
-        <summary>Advanced — fees, subscriptions and hardware</summary>
+        <summary>Advanced - fees, subscriptions and hardware</summary>
 
         <div class="input-row" style="margin-top: 10px;">
           <label>Current POS processing rate % <span class="hint">what you pay today</span></label>
@@ -409,7 +409,7 @@
         <div class="input-row">
           <label>
             <span>AOV uplift from upsell</span>
-            <span class="hint">typical 5–10%, up to 30%</span>
+            <span class="hint">typical 5-10%, up to 30%</span>
           </label>
           <div class="range-wrap">
             <input id="aovUplift" type="range" min="0" max="30" value="12" step="1">
@@ -419,7 +419,7 @@
         <div class="input-row">
           <label>
             <span>Order volume uplift</span>
-            <span class="hint">typical 3–8%</span>
+            <span class="hint">typical 3-8%</span>
           </label>
           <div class="range-wrap">
             <input id="volUplift" type="range" min="0" max="20" value="2" step="1">
@@ -439,7 +439,7 @@
 
       <div class="detail-grid">
         <div class="detail"><div class="k" id="k1">Monthly saving</div><div class="v" id="v1">£0</div></div>
-        <div class="detail"><div class="k" id="k2">Hardware payback</div><div class="v" id="v2">—</div></div>
+        <div class="detail"><div class="k" id="k2">Hardware payback</div><div class="v" id="v2">-</div></div>
         <div class="detail"><div class="k" id="k3">Cost today per month</div><div class="v" id="v3">£0</div></div>
         <div class="detail"><div class="k" id="k4">Cost with Flipdish per month</div><div class="v" id="v4">£0</div></div>
       </div>
@@ -481,7 +481,7 @@
   const $ = (id) => document.getElementById(id);
   const num = (id) => parseFloat($(id).value) || 0;
   const fmt = (val, ccy) => {
-    if (!isFinite(val)) return "—";
+    if (!isFinite(val)) return "-";
     const rounded = Math.round(val);
     const sign = rounded < 0 ? "-" : "";
     return sign + ccy + Math.abs(rounded).toLocaleString('en-GB');
@@ -497,10 +497,10 @@
       document.body.classList.toggle('revenue-view', view === "revenue");
       if (view === "labour") {
         $('pageTitle').textContent = "How much could a Flipdish Kiosk save you?";
-        $('pageLede').textContent = "Enter your restaurant's numbers on the left. The annual saving updates live. Nothing is saved — this is a live illustration.";
+        $('pageLede').textContent = "Enter your restaurant's numbers on the left. The annual saving updates live. Nothing is saved - this is a live illustration.";
       } else {
         $('pageTitle').textContent = "How much extra revenue could a Flipdish Kiosk bring in?";
-        $('pageLede').textContent = "Enter your restaurant's numbers on the left. The extra annual revenue updates live. Nothing is saved — this is a live illustration.";
+        $('pageLede').textContent = "Enter your restaurant's numbers on the left. The extra annual revenue updates live. Nothing is saved - this is a live illustration.";
       }
       calc();
     });
@@ -513,7 +513,7 @@
     el.addEventListener('input', () => { $(id + 'Val').textContent = el.value; });
   });
 
-  // Country selector — sets active country & resets defaults
+  // Country selector - sets active country & resets defaults
   function setCountry(code) {
     activeCountry = code;
     document.querySelectorAll('.country-btn').forEach(btn => {
@@ -602,7 +602,7 @@
       $('v1').textContent = fmt(monthlySave, ccy);
       $('v2').textContent = (isFinite(paybackMonths) && paybackMonths > 0)
         ? (paybackMonths < 1 ? "< 1 month" : Math.ceil(paybackMonths) + " months")
-        : "—";
+        : "-";
       $('v3').textContent = fmt(currentMonthly, ccy);
       $('v4').textContent = fmt(newMonthly, ccy);
 
@@ -621,7 +621,7 @@
 
       $('heroLabel').textContent = "Additional annual revenue";
       $('heroValue').textContent = fmt(revAnnualUplift, ccy);
-      $('heroSub').textContent = "Net of Flipdish processing fees on the uplift — this is extra money the restaurant actually keeps";
+      $('heroSub').textContent = "Net of Flipdish processing fees on the uplift - this is extra money the restaurant actually keeps";
 
       const newAov = aov * (1 + (aovU / 100));
 
@@ -635,7 +635,7 @@
       $('v1').textContent = fmt(revMonthlyUplift, ccy);
       $('v2').textContent = (isFinite(paybackMonthsRev) && paybackMonthsRev > 0)
         ? (paybackMonthsRev < 1 ? "< 1 month" : Math.ceil(paybackMonthsRev) + " months")
-        : "—";
+        : "-";
       $('v3').textContent = ccy + newAov.toFixed(2);
       $('v4').textContent = Math.round(extraMonthlyTxns).toLocaleString('en-GB');
 
@@ -658,7 +658,7 @@
     const heroLabel = $('heroLabel').textContent;
     const heroVal = $('heroValue').textContent;
     const lines = [
-      "Flipdish Kiosk — Value illustration",
+      "Flipdish Kiosk - Value illustration",
       "====================================",
       heroLabel + ": " + heroVal,
       $('k1').textContent + ": " + $('v1').textContent,
@@ -672,7 +672,7 @@
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(lines).then(
-        () => alert("Summary copied — paste it into your follow-up email."),
+        () => alert("Summary copied - paste it into your follow-up email."),
         () => fallbackCopy(lines)
       );
     } else {
@@ -683,7 +683,7 @@
   function fallbackCopy(text) {
     const ta = document.createElement('textarea');
     ta.value = text; document.body.appendChild(ta); ta.select();
-    try { document.execCommand('copy'); alert("Summary copied."); } catch(e) { alert("Copy not supported — select and copy manually.\n\n" + text); }
+    try { document.execCommand('copy'); alert("Summary copied."); } catch(e) { alert("Copy not supported - select and copy manually.\n\n" + text); }
     document.body.removeChild(ta);
   }
 

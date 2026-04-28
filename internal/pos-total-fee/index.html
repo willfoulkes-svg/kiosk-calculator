@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>POS Total Fee Calculator — Flipdish Internal</title>
+<title>POS Total Fee Calculator - Flipdish Internal</title>
 <meta name="robots" content="noindex, nofollow">
 
 <!-- Password gate -->
@@ -475,8 +475,8 @@
 
   <span class="fam-pill">POS</span>
 
-  <h1>POS — Total Fee</h1>
-  <p class="lede">What does Flipdish <em>actually</em> earn from a POS deal each month? The processing fee and transaction fee you type in are what the merchant pays — Flipdish only keeps what's left after our card processing cost. This calculator shows you two numbers: <strong>Net Fees</strong> (what the rates alone earn) and <strong>Software Net Revenue</strong> (Net Fees plus the monthly subscription).</p>
+  <h1>POS - Total Fee</h1>
+  <p class="lede">What does Flipdish <em>actually</em> earn from a POS deal each month? The processing fee and transaction fee you type in are what the merchant pays - Flipdish only keeps what's left after our card processing cost. This calculator shows you two numbers: <strong>Net Fees</strong> (what the rates alone earn) and <strong>Software Net Revenue</strong> (Net Fees plus the monthly subscription).</p>
 
   <!-- COUNTRY SELECTOR -->
   <div class="country-bar">
@@ -488,7 +488,7 @@
   </div>
 
   <!-- ===================================================== -->
-  <!-- INPUTS — POS CUSTOMER PROFILE                         -->
+  <!-- INPUTS - POS CUSTOMER PROFILE                         -->
   <!-- ===================================================== -->
   <div class="step">
     <span class="num shared">★</span>
@@ -535,14 +535,14 @@
       <div class="input-cell">
         <label for="orders">Estimated orders / month <span style="text-transform:none;font-weight:400;color:var(--muted);">(auto)</span></label>
         <div class="input-wrap">
-          <input id="orders" class="derived" type="text" value="—" readonly>
+          <input id="orders" class="derived" type="text" value="-" readonly>
         </div>
       </div>
     </div>
   </div>
 
   <!-- ===================================================== -->
-  <!-- CALC — TOTAL FEE                                      -->
+  <!-- CALC - TOTAL FEE                                      -->
   <!-- ===================================================== -->
   <div class="step">
     <span class="num">1</span>
@@ -553,36 +553,36 @@
     <div class="hero hero-split">
       <div>
         <div class="label">Net Fees / mo</div>
-        <div class="big" id="heroNetFees">—</div>
+        <div class="big" id="heroNetFees">-</div>
         <div class="sub">Just the rates: gross fees − card processing cost. <strong>No sub.</strong></div>
       </div>
       <div>
         <div class="label">Software Net Revenue / mo</div>
-        <div class="big" id="heroMonthly">—</div>
+        <div class="big" id="heroMonthly">-</div>
         <div class="sub">Net Fees + monthly subscription</div>
       </div>
       <div class="secondary">
         <div class="label-sec">SNR Annual</div>
-        <div class="big-sec" id="heroAnnual">—</div>
+        <div class="big-sec" id="heroAnnual">-</div>
       </div>
     </div>
 
     <div class="breakdown-rows">
-      <div class="row"><span class="name">Processing fee revenue (gross)</span><span class="val" id="revComm">—</span></div>
-      <div class="row"><span class="name">Transaction fee revenue (gross)</span><span class="val" id="revMerchant">—</span></div>
-      <div class="row subtract"><span class="name">− Card processing cost (% of GMV + per-order fee)</span><span class="val" id="cardCost">—</span></div>
-      <div class="row subtotal"><span class="name">= Net Fees / mo <span class="row-help">(rates only)</span></span><span class="val" id="netFees">—</span></div>
-      <div class="row"><span class="name">+ Subscription revenue</span><span class="val" id="revSub">—</span></div>
-      <div class="row total"><span class="name">= Software Net Revenue / mo <span class="row-help">(Net Fees + sub)</span></span><span class="val" id="total">—</span></div>
+      <div class="row"><span class="name">Processing fee revenue (gross)</span><span class="val" id="revComm">-</span></div>
+      <div class="row"><span class="name">Transaction fee revenue (gross)</span><span class="val" id="revMerchant">-</span></div>
+      <div class="row subtract"><span class="name">− Card processing cost (% of GMV + per-order fee)</span><span class="val" id="cardCost">-</span></div>
+      <div class="row subtotal"><span class="name">= Net Fees / mo <span class="row-help">(rates only)</span></span><span class="val" id="netFees">-</span></div>
+      <div class="row"><span class="name">+ Subscription revenue</span><span class="val" id="revSub">-</span></div>
+      <div class="row total"><span class="name">= Software Net Revenue / mo <span class="row-help">(Net Fees + sub)</span></span><span class="val" id="total">-</span></div>
     </div>
 
-    <div class="matrix-title">What-if: POS pricing grid — Net Fees at every (processing fee, transaction fee) combo</div>
+    <div class="matrix-title">What-if: POS pricing grid - Net Fees at every (processing fee, transaction fee) combo</div>
     <p class="matrix-help">
       Rows = POS processing fee (what merchant pays). Columns = POS transaction fee per order (what merchant pays).
-      Cell = monthly <strong>Net Fees</strong> at that combo — i.e. <strong>processing-fee revenue + transaction-fee revenue minus card processing cost</strong>.
+      Cell = monthly <strong>Net Fees</strong> at that combo - i.e. <strong>processing-fee revenue + transaction-fee revenue minus card processing cost</strong>.
       The subscription is <strong>excluded on purpose</strong> so you can see whether the rates alone earn money.
       <strong style="color:#1B5C36;">Green</strong> = the rates make money for Flipdish.
-      <strong style="color:#7A1E10;">Red</strong> = the rates lose money — only the subscription would be keeping you above water.
+      <strong style="color:#7A1E10;">Red</strong> = the rates lose money - only the subscription would be keeping you above water.
       Cell matching your inputs is highlighted in blue.
     </p>
     <div class="matrix-wrap">
@@ -595,10 +595,10 @@
     <h2>How to use this</h2>
     <ol>
       <li><strong>The big idea:</strong> the processing fee and transaction fee you type in are what the <em>merchant</em> pays. Flipdish only keeps the difference between that and our card processing cost. That difference is your <strong>Net Fees</strong>. The subscription is layered on top to give you <strong>Software Net Revenue</strong>.</li>
-      <li><strong>Country first.</strong> Card processing costs differ per country — UK is 0.70% + £0.006 per order, Ireland is 0.52% + €0.008 per order.</li>
+      <li><strong>Country first.</strong> Card processing costs differ per country - UK is 0.70% + £0.006 per order, Ireland is 0.52% + €0.008 per order.</li>
       <li><strong>Fill in the customer profile.</strong> Monthly POS GMV, AOV, processing fee %, transaction fee, monthly subscription. Estimated orders per month is calculated for you (GMV ÷ AOV).</li>
       <li><strong>Two hero numbers.</strong> <em>Net Fees</em> = what the rates alone earn, after card processing cost is taken out. <em>Software Net Revenue</em> = Net Fees plus the monthly subscription. The breakdown below shows every line that feeds them.</li>
-      <li><strong>The matrix</strong> shows <strong>Net Fees</strong> at every (processing fee, transaction fee) combo — sub deliberately excluded so you can see if the rates alone earn money. Red cells mean those rates lose money on every transaction; only the subscription would be propping the deal up. Use this to spot when discounts on the rates push the deal underwater.</li>
+      <li><strong>The matrix</strong> shows <strong>Net Fees</strong> at every (processing fee, transaction fee) combo - sub deliberately excluded so you can see if the rates alone earn money. Red cells mean those rates lose money on every transaction; only the subscription would be propping the deal up. Use this to spot when discounts on the rates push the deal underwater.</li>
     </ol>
   </div>
 
@@ -618,7 +618,7 @@
   // update RATES_LAST_UPDATED to today's date.
   //
   // cardPct = percentage card processing cost on each POS transaction
-  //           (written as a decimal — 0.0070 means 0.70%)
+  //           (written as a decimal - 0.0070 means 0.70%)
   // cardFix = fixed per-order card processing cost, in local currency
   //           e.g. 0.006 = 0.6p (UK pence), 0.008 = 0.8 cents (€)
   // typicalCommission = typical POS processing fee hint shown in the
@@ -633,7 +633,7 @@
           cardPct: 0.0052, cardFix: 0.008, typicalCommission: 1.2 }
   };
   // ====================================================================
-  // End of rates block — no need to edit anything below this line.
+  // End of rates block - no need to edit anything below this line.
   // ====================================================================
 
   let activeCountry = 'UK';
@@ -646,7 +646,7 @@
   const num = id => parseFloat($(id).value) || 0;
 
   function fmtMoney(n, decimals) {
-    if (!isFinite(n)) return '—';
+    if (!isFinite(n)) return '-';
     const c = COUNTRIES[activeCountry].currency;
     const sign = n < 0 ? '-' : '';
     const abs = Math.abs(n);
@@ -675,7 +675,7 @@
   }
 
   // ====================================================================
-  // CALCULATOR — POS TOTAL FEE
+  // CALCULATOR - POS TOTAL FEE
   // ====================================================================
   // Monthly Software Net Revenue
   //   = (GMV × processing fee%) + (orders × transaction fee) + subscription
@@ -713,7 +713,7 @@
   }
 
   // ====================================================================
-  // MATRIX — net fees at every (commission %, merchant fee) combo
+  // MATRIX - net fees at every (commission %, merchant fee) combo
   // Rows: 0.40% .. 1.50% in 0.05% steps
   // Cols: 0.00 .. 0.20 in £/€0.02 steps
   // ====================================================================
