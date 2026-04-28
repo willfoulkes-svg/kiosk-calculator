@@ -216,17 +216,7 @@
   @media (max-width: 760px) {
     .grid2, .grid3 { grid-template-columns: 1fr; }
   }
-  /* v8.9: Deal Details — 2x2 grid (name + locations / contact + owner)
-     Prospect name takes the wider column on row 1; locations is narrow. */
-  .deal-details-grid {
-    display: grid;
-    grid-template-columns: 2.4fr 1fr;
-    gap: 12px 16px;
-  }
-  .deal-details-grid .deal-details-name { grid-column: 1; }
-  @media (max-width: 760px) {
-    .deal-details-grid { grid-template-columns: 1fr; }
-  }
+  /* v8.10: Deal Details uses .grid2 (proven 2-col helper) — no custom CSS needed */
 
   /* v8.8: side-by-side current — In-store left, Direct ordering right */
   .current-grid {
@@ -874,11 +864,12 @@
     <span class="text">Deal details <span class="sub">Who you're selling to and who's selling</span></span>
   </div>
   <div class="card">
-    <!-- v8.9: 2x2 grid — prospect name + locations on row 1, contact +
-         owner on row 2. Replaces the previous full-width name with a
-         lot of vertical blank. -->
-    <div class="deal-details-grid">
-      <div class="field deal-details-name">
+    <!-- v8.10: 2x2 grid using the proven .grid2 helper. Prospect name +
+         locations on row 1; primary contact + deal owner on row 2.
+         All four fields share the same 1fr/1fr column so they line up
+         cleanly. -->
+    <div class="grid2">
+      <div class="field">
         <label>Prospect business name</label>
         <input id="prospectName" type="text" placeholder="e.g. Billy's Pizza" autocomplete="off">
       </div>
@@ -1132,11 +1123,11 @@
        always 12. -->
 
 
-  <!-- v8.9: Step 4 (heading + offer panel) wrapped in #stackUpSection so
-       the whole thing can be hidden until the linear flow is complete.
-       Will: showing "Awaiting inputs" is a waste of space; just don't
-       show the section. -->
-  <section id="stackUpSection" style="display:none;">
+  <!-- v8.10: Step 4 heading STAYS visible (matches the Step 3 pattern).
+       Only the offer-panel body is hidden until inputs are ready —
+       same as Step 3 where the heading shows but the per-product
+       proposal cards only appear once a product is ticked. -->
+  <section id="stackUpSection">
 
   <!-- ===================== STEP 4 — HOW DOES THIS STACK UP? ===================== -->
   <!-- v8.2 redesign: this panel now sits BELOW the Flipdish proposal so
@@ -2040,11 +2031,12 @@
     // scope-aware, with concrete "to match" + "cost to Flipdish"
     // prescriptions. Live Check folded in at the bottom.
     var o = computeOfferPanel(prospect, v);
-    // v8.9: hide the entire Step 4 section until the rep has past the
-    // idle state — i.e. picked scope, entered current spend, and started
-    // the proposal. Showing "Awaiting inputs" the whole time was waste.
-    var stackUp = $('stackUpSection');
-    if (stackUp) stackUp.style.display = (o.state === 'idle') ? 'none' : '';
+    // v8.10: keep the Step 4 heading visible (matches Step 3 pattern).
+    // Hide ONLY the offer-panel body when idle. The heading + sub-line
+    // remain visible like the Flipdish proposal step header so the rep
+    // sees what's coming next without dead-space "Awaiting inputs".
+    var op = $('offerPanel');
+    if (op) op.style.display = (o.state === 'idle') ? 'none' : '';
     renderOfferPanel(o);
     var rec = computeRecommendedDeal(prospect, v, o);
     renderRecommendedDeal(rec, prospect, o);
