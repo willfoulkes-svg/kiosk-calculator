@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Deal Room — Flipdish Internal</title>
+<meta name="robots" content="noindex, nofollow">
+<script src="../auth.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Domine:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --flipdish-blue: #0074D9;
+    --flipdish-blue-dark: #064885;
+    --flipdish-blue-light: #E6F1FB;
+    --flipdish-blue-line: #BEDAF2;
+    --flipdish-dark: #1A1A1A;
+    --muted: #6B7280;
+    --bg: #F6F9FC;
+    --card: #FFFFFF;
+    --border: #E5E7EB;
+    --input-bg: #FFFBE6;
+    --input-border: #F0D26A;
+    --green-strong: #2E8B57;
+    --green-soft: #E6F4EC;
+    --amber-strong: #B8860B;
+    --amber-soft: #FFF6D6;
+    --red-strong: #C0392B;
+    --red-soft: #FBE9E7;
+    --internal: #064885;
+    --fam: #D97706;
+    --fam-soft: #FDECD3;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg); color: var(--flipdish-dark);
+    line-height: 1.4; -webkit-font-smoothing: antialiased; font-weight: 400;
+  }
+  h1, h2, h3 { font-family: 'Domine', Georgia, serif; }
+
+  /* Top bar (kept consistent with other calcs) */
+  .topbar { background: #fff; border-bottom: 1px solid var(--border); padding: 14px 28px;
+    display: flex; align-items: center; justify-content: space-between; }
+  .topbar .brand { display: flex; align-items: center; gap: 12px; }
+  .topbar .brand svg { height: 28px; width: auto; display: block; }
+  .topbar-right { display: flex; align-items: center; gap: 14px; font-size: 13px; }
+  .internal-tag { background: rgba(6,72,133,.10); color: var(--internal);
+    padding: 4px 10px; border-radius: 999px; font-size: 12px;
+    font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase; }
+
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 18px 20px 60px; }
+
+  .back { display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 500; color: var(--muted);
+    text-decoration: none; margin-bottom: 8px; }
+  .back:hover { color: var(--flipdish-blue); }
+  .back svg { width: 14px; height: 14px; }
+  .fam-pill { display: inline-flex; align-items: center; gap: 7px;
+    background: var(--fam-soft); color: var(--fam);
+    padding: 4px 11px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+    margin: 2px 0 12px; text-transform: uppercase; }
+  .fam-pill::before { content: ''; width: 8px; height: 8px;
+    border-radius: 999px; background: var(--fam); }
+
+  /* Header strip */
+  .head {
+    display: grid; grid-template-columns: 1fr auto auto auto; gap: 14px;
+    align-items: center;
+    padding: 12px 0 14px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .head .name {
+    font-family: 'Domine', Georgia, serif;
+    font-size: 24px; font-weight: 700; color: var(--flipdish-blue-dark);
+    background: transparent; border: 0; padding: 4px 0;
+    outline: none; letter-spacing: -0.01em; min-width: 0;
+  }
+  .head .name::placeholder { color: #B8C2CC; }
+  .head .country {
+    display: flex; gap: 4px;
+    background: #F4F6F8; border-radius: 999px; padding: 3px;
+  }
+  .head .country button {
+    background: transparent; border: 0;
+    padding: 5px 11px; border-radius: 999px;
+    font: inherit; font-size: 12px; font-weight: 600;
+    cursor: pointer; color: var(--muted);
+  }
+  .head .country button.active {
+    background: var(--flipdish-blue-dark); color: #fff;
+  }
+  .head .locs { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); }
+  .head .locs input {
+    width: 50px; padding: 5px 8px;
+    background: var(--input-bg); border: 1px solid var(--input-border);
+    border-radius: 6px; font: inherit; font-size: 13px; text-align: center;
+  }
+  .head .save {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--green-strong);
+  }
+  .head .save .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green-strong);
+  }
+  .head .save.saving .dot { background: var(--amber-strong); animation: pulse 0.7s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  /* Scope toggles */
+  .scope {
+    display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;
+  }
+  .scope label {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px;
+    background: #fff; border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 13.5px; font-weight: 500; cursor: pointer;
+    transition: all .12s ease;
+  }
+  .scope label.on {
+    border-color: var(--flipdish-blue);
+    background: var(--flipdish-blue-light);
+    color: var(--flipdish-blue-dark);
+  }
+  .scope label input { accent-color: var(--flipdish-blue); margin: 0; }
+
+  /* Three-column workspace */
+  .ws {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.1fr;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  @media (max-width: 1080px) { .ws { grid-template-columns: 1fr; } }
+
+  .col {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 18px;
+  }
+  .col h2 {
+    margin: 0 0 12px;
+    font-size: 14px; font-weight: 600;
+    color: var(--flipdish-blue-dark);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .col .empty {
+    color: var(--muted); font-size: 13px; font-style: italic;
+    padding: 8px 0;
+  }
+
+  /* Field rows: tight, two-up where possible */
+  .field { margin-bottom: 10px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label {
+    display: block;
+    font-size: 11.5px; color: var(--muted);
+    font-weight: 600; letter-spacing: 0.02em;
+    margin-bottom: 4px;
+  }
+  .field .hint { font-weight: 400; color: var(--muted); margin-left: 4px; font-size: 11px; }
+  .field input {
+    width: 100%; padding: 7px 10px;
+    background: var(--input-bg); border: 1px solid var(--input-border);
+    border-radius: 6px; font: inherit; font-size: 14px;
+    transition: border-color .12s ease;
+  }
+  .field input:focus { outline: none; border-color: var(--flipdish-blue); }
+  .field-group {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  }
+  .product-block {
+    padding: 10px 0; border-top: 1px dashed var(--border);
+  }
+  .product-block:first-of-type { border-top: 0; padding-top: 0; }
+  .product-block h3 {
+    margin: 0 0 8px; font-family: 'Roboto', sans-serif;
+    font-size: 12px; font-weight: 700; color: var(--flipdish-blue-dark);
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .total-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding-top: 10px; margin-top: 12px;
+    border-top: 1px solid var(--border);
+    font-size: 13px; font-weight: 600; color: var(--flipdish-blue-dark);
+  }
+  .total-row .val { font-family: 'Domine', Georgia, serif; font-size: 16px; }
+
+  /* Add detail expander */
+  details.detail-expand summary {
+    cursor: pointer; font-size: 12px; color: var(--flipdish-blue);
+    font-weight: 500; margin-top: 10px; padding: 4px 0;
+    list-style: none;
+  }
+  details.detail-expand summary::-webkit-details-marker { display: none; }
+  details.detail-expand summary::before { content: '+ '; }
+  details.detail-expand[open] summary::before { content: '− '; }
+  details.detail-expand .detail-fields {
+    margin-top: 10px;
+    padding: 10px;
+    background: #FAFCFE; border-radius: 8px;
+    border: 1px dashed var(--border);
+  }
+
+  /* Verdict column */
+  .verdict { display: flex; flex-direction: column; gap: 10px; }
+  .pill-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: #F4F6F8; border-left: 4px solid var(--muted);
+  }
+  .pill-row.green { background: var(--green-soft); border-left-color: var(--green-strong); }
+  .pill-row.amber { background: var(--amber-soft); border-left-color: var(--amber-strong); }
+  .pill-row.red   { background: var(--red-soft);   border-left-color: var(--red-strong); }
+  .pill {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: #fff; background: var(--muted);
+    padding: 4px 10px; border-radius: 999px;
+    flex-shrink: 0;
+  }
+  .pill-row.green .pill { background: var(--green-strong); }
+  .pill-row.amber .pill { background: var(--amber-strong); }
+  .pill-row.red   .pill { background: var(--red-strong); }
+  .pill-row .body { flex: 1; min-width: 0; }
+  .pill-row .body .head-line {
+    font-size: 14px; font-weight: 600; color: var(--flipdish-dark);
+    line-height: 1.3;
+  }
+  .pill-row .body .reason {
+    font-size: 12.5px; color: var(--muted); margin-top: 3px; line-height: 1.4;
+  }
+  .pill-row .body .reason strong { color: var(--flipdish-blue-dark); font-weight: 600; }
+
+  .levers-block {
+    background: #FAFCFE; border: 1px dashed var(--border);
+    border-radius: 10px; padding: 10px 14px;
+  }
+  .levers-block h3 {
+    margin: 0 0 6px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .lever-line {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    font-size: 13px; line-height: 1.45;
+    padding: 4px 0;
+    color: var(--flipdish-dark);
+  }
+  .lever-line:not(:last-child) { border-bottom: 1px dashed #E5E7EB; }
+  .lever-line .label { color: var(--muted); }
+  .lever-line .target { font-family: 'Domine', Georgia, serif; font-weight: 600; color: var(--flipdish-blue-dark); }
+  .lever-line .target.dim { color: var(--muted); font-weight: 400; font-family: inherit; }
+
+  /* Action bar */
+  .actions {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    padding-top: 16px; border-top: 1px solid var(--border);
+    margin-top: 4px;
+  }
+  .actions .right { margin-left: auto; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 9px 14px;
+    background: #fff; border: 1px solid var(--border);
+    border-radius: 8px; cursor: pointer;
+    font: inherit; font-size: 13.5px; font-weight: 500;
+    color: var(--flipdish-dark);
+    transition: all .12s ease;
+  }
+  .btn:hover { border-color: var(--flipdish-blue); color: var(--flipdish-blue); }
+  .btn-primary { background: var(--flipdish-blue-dark); border-color: var(--flipdish-blue-dark); color: white; }
+  .btn-primary:hover { background: var(--flipdish-blue); border-color: var(--flipdish-blue); color: white; }
+  .btn-danger:hover { border-color: var(--red-strong); color: var(--red-strong); }
+
+  footer { margin-top: 22px; font-size: 12px; color: var(--muted); text-align: center;
+    padding-top: 16px; border-top: 1px solid var(--border); }
+
+  @media (max-width: 760px) {
+    .head { grid-template-columns: 1fr 1fr; }
+    .field-group { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 288" aria-label="Flipdish">
+      <g fill="#020203">
+        <path d="M581.63,126.64c5.01,0.42,9.77,1.06,14.48,3.15c4,1.82,6.77,4.78,9.03,8.45c2.03,3.42,0.92,7.69-2.76,10.19 c-3.19,2.28-6.78,2.15-10.27-0.6c-1.4-1.01-2.78-2.49-4.18-3.5c-3.48-2.99-9.7-3.21-13.61-0.72c-2.45,1.59-3.75,4.41-3.12,7.06 c0.64,2.18,2.02,3.66,4.15,4.45c1.89,0.78,4.03,1.1,5.92,1.65c4.27,1.11,8.53,2.22,12.55,3.56c4.96,1.85,8.93,4.62,11.88,9.03 c5.23,7.6,4.62,18.1-0.92,25.8c-4.27,5.59-9.88,8.74-16.85,9.69c-8.42,1.37-16.53,0.61-24.29-3.25c-4.46-2.31-8.18-5.55-10.89-9.95 c-1.8-3.17-1.43-6.75,1.05-9.29c3.73-3.93,8.52-4,12.68-0.03c0.69,0.74,1.38,1.48,2.07,2.23c3.45,3.95,7.94,5.54,12.97,5.24 c1.92-0.17,3.61-0.59,5.32-1.72c3.92-2.73,4.12-8.23,0.15-11c-1.87-1.26-4-1.82-6.14-2.37c-4.26-1.35-8.77-2.23-13.02-3.81 c-4.97-1.61-9.17-4.63-11.88-9.03c-5-7.35-4.39-17.86,1.62-25.3c3.65-4.64,8.22-7.56,13.62-9.08 C574.59,126.52,578.13,126.52,581.63,126.64z"/>
+        <path d="M365.85,243.99c5.74,0,10.28-4.53,10.28-10.25l0-22.39v-16.36c5.93,6.03,13.69,9.69,22.19,9.69 c18.61,0,33.7-17.51,33.7-39.11c0-21.6-15.09-39.11-33.7-39.11c-8.51,0-16.28,3.67-22.21,9.72c-0.28-5.46-4.7-9.72-10.26-9.72 c-5.74,0-10.28,4.53-10.28,10.25v15.95l0,58.68l0,22.39C355.56,239.46,360.11,243.99,365.85,243.99z M394.65,144.32 c10.33,0,18.7,9.51,18.7,21.25c0,11.74-8.37,21.25-18.7,21.25c-10.33,0-18.7-9.51-18.7-21.25 C375.95,153.84,384.32,144.32,394.65,144.32z"/>
+        <path d="M502.01,90.92c-5.74,0-10.28,4.53-10.28,10.25v18.52v16.36c-5.93-6.03-13.69-9.69-22.19-9.69 c-18.61,0-33.7,17.51-33.7,39.11s15.09,39.11,33.7,39.11c8.51,0,16.28-3.67,22.21-9.72c0.28,5.46,4.7,9.72,10.26,9.72 c5.74,0,10.28-4.53,10.28-10.25v-15.95V119.7v-18.52C512.29,95.45,507.75,90.92,502.01,90.92z M473.21,186.72 c-10.33,0-18.7-9.51-18.7-21.25c0-11.74,8.37-21.25,18.7-21.25c10.33,0,18.7,9.51,18.7,21.25 C491.91,177.21,483.54,186.72,473.21,186.72z"/>
+        <path d="M205.01,128.94h-3.21l-0.23-3.4c-0.27-2.73-0.96-5.26-1.65-8.02c-3.37-12.77-10.11-23.36-19.75-32.04 c-9.39-8.43-20.23-13.49-32.27-15.66c0.72-1.69,1.2-3.37,1.2-5.3c0-6.99-5.54-12.53-12.52-12.53c-6.74,0-12.52,5.54-12.52,12.53 c0,1.93,0.48,3.61,1.2,5.06c-3.13,0.48-6.5,1.45-9.63,2.41c-7.95,2.89-15.17,6.99-21.43,12.53H42.92 c-5.06,0.24-9.15,4.34-9.15,9.39s4.09,9.15,9.15,9.15h37.08c-0.72,1.2-1.2,2.41-1.93,3.61H55.69c-5.06,0-9.15,4.1-9.15,9.15 c0,5.06,4.09,9.15,9.15,9.15h17.1c-0.24,1.19-0.42,2.6-0.48,3.95h-4.99c-4.62,0-8.39,3.78-8.39,8.39v0.84 c0,4.62,3.78,8.39,8.39,8.39h50.72l-0.23,10.46l-30.34,12.04c-2.41,0.96-4.33,2.89-5.06,5.54c-0.72,2.41-0.48,5.3,0.72,7.47 l7.95,13.73c1.69,2.89,4.82,4.58,7.71,4.58c1.44,0,3.13-0.48,4.58-1.2c4.33-2.65,5.78-8.19,3.13-12.53l-2.65-4.58l26.25-10.84 c3.37-1.45,5.54-4.58,5.54-8.19l0.48-16.48h3.44l10.53,21.3l-13.97,22.88c-1.69,2.89-1.93,6.26-0.24,9.15 c1.69,2.89,4.58,4.58,7.95,4.58h16.62c5.06,0,9.15-4.1,9.15-9.15c0-5.06-4.09-9.15-9.15-9.15h-0.48l8.19-13.25 c1.69-2.65,1.93-6.02,0.48-8.91l-8.6-17.44h45c4.62,0,8.39-3.78,8.39-8.39v-0.84C213.4,132.72,209.63,128.94,205.01,128.94z M177.77,126.29c-0.13,0.01-0.25,0.01-0.38,0.01c-2.57,0-4.73-2.01-4.93-4.58c-1.33-17.67-13.42-23.89-20.51-26.03 c-2.61-0.79-4.1-3.55-3.31-6.16c0.78-2.60,3.55-4.09,6.16-3.31c16.2,4.88,26.23,17.55,27.52,34.76 C182.54,123.71,180.49,126.09,177.77,126.29z"/>
+        <path d="M326.41,115.27c-4.65-4.65-4.65-12.29,0.17-17.1c4.65-4.65,12.45-4.82,17.27,0c4.82,4.82,4.82,12.45,0,17.27 C339.03,120.25,331.23,120.08,326.41,115.27z"/>
+        <path d="M345.42,194.06c0,5.73-4.69,10.42-10.42,10.42l0,0c-5.73,0-10.42-4.69-10.42-10.42v-57.18 c0-5.73,4.69-10.42,10.42-10.42h0c5.73,0,10.42,4.69,10.42,10.42V194.06z"/>
+        <path d="M524.27,115.27c-4.65-4.65-4.65-12.29,0.17-17.1c4.65-4.65,12.45-4.82,17.27,0s4.82,12.45,0,17.27 C536.89,120.25,529.09,120.08,524.27,115.27z"/>
+        <path d="M543.28,194.06c0,5.73-4.69,10.42-10.42,10.42l0,0c-5.73,0-10.42-4.69-10.42-10.42v-57.18 c0-5.73,4.69-10.42,10.42-10.42h0c5.73,0,10.42,4.69,10.42,10.42V194.06z"/>
+        <path d="M314.39,194.13c0,5.73-4.69,10.42-10.42,10.42l0,0c-5.73,0-10.42-4.69-10.42-10.42V99.58 c0-5.73,4.69-10.42,10.42-10.42h0c5.73,0,10.42,4.69,10.42,10.42V194.13z"/>
+        <path d="M265.37,112.27c1.28-1.96,3.17-3.51,5.85-4.11c1.42-0.3,2.92-0.38,4.17-0.46c2.02-0.13,4.01,0.19,5.77-0.06 c6.27-0.75,9.03-7.28,5.77-12.55c-1.76-2.76-4.26-4.27-7.28-5.02c-4.26-1.25-8.53-1.25-13.04-0.75 c-13.04,1.76-22.33,11.29-23.33,24.59c-0.18,2.95-0.23,5.76-0.25,8.63l-0.01,0.01v3.16v3.24h-9.95c-4.85,0-8.81,3.97-8.81,8.81 c0,4.85,3.97,8.81,8.81,8.81h9.95l0.14,47.71c0,5.73,4.69,10.42,10.42,10.42c5.73,0,10.42-4.69,10.42-10.42l0.01-47.57v-0.14h10.54 c4.85,0,8.81-3.97,8.81-8.81c0-4.85-3.97-8.81-8.81-8.81h-10.54v-12.95C264.02,114.68,264.65,113.37,265.37,112.27z"/>
+        <path d="M684.97,145.6c-2.26-8.28-6.53-14.8-14.57-18.31c-5.78-2.76-12.06-3.26-18.34-2.26 c-5.94,0.99-11.15,3.21-15.39,7.59V98.75c0-5.73-4.69-10.42-10.42-10.42c-5.73,0-10.42,4.69-10.42,10.42v95.84 c0,5.73,4.69,10.42,10.42,10.42c5.73,0,10.42-4.69,10.42-10.42v-39.1c0.84-3.86,2.57-7.06,5.84-9.38 c3.27-2.51,7.04-2.76,11.06-2.26c5.03,0.75,8.54,3.26,10.30,7.77c1.01,2.51,1.26,5.02,1.26,7.52c0,13.04,0,22.29,0,35.33 c0,5.77,4.52,10.53,10.55,10.53c5.78,0,10.55-4.76,10.55-10.53c0-14.30,0-24.80,0-39.34C686.23,151.87,685.72,148.61,684.97,145.6z"/>
+      </g>
+    </svg>
+    <span class="internal-tag">Internal</span>
+  </div>
+  <div class="topbar-right">
+    <a href="../" style="color: var(--muted); text-decoration: none;">&larr; Internal hub</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <a href="./" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    All deals
+  </a>
+  <span class="fam-pill">Cross-product · Deal Room</span>
+
+  <!-- Header strip -->
+  <div class="head">
+    <input id="prospectName" class="name" placeholder="Prospect name…" />
+    <div class="country" id="countryPills">
+      <button data-c="UK" class="active">🇬🇧 UK</button>
+      <button data-c="IE">🇮🇪 IE</button>
+      <button data-c="US">🇺🇸 US</button>
+      <button data-c="ES">🇪🇸 ES</button>
+    </div>
+    <div class="locs">Locations <input id="locations" type="number" min="1" value="1"/></div>
+    <span class="save" id="saveStatus"><span class="dot"></span><span id="saveText">Saved</span></span>
+  </div>
+
+  <!-- Scope -->
+  <div class="scope">
+    <label data-scope="includeOO"><input type="checkbox" id="includeOO"/> Online Ordering</label>
+    <label data-scope="includePOS"><input type="checkbox" id="includePOS"/> POS</label>
+    <label data-scope="includeKiosk"><input type="checkbox" id="includeKiosk"/> Kiosk</label>
+  </div>
+
+  <!-- Workspace: 3 columns -->
+  <div class="ws">
+
+    <!-- Column 1: Their bill today -->
+    <div class="col" id="col-current">
+      <h2>Their bill today</h2>
+      <div id="currentEmpty" class="empty">Tick a product above to compare against what they pay today.</div>
+
+      <div class="product-block" data-prod="oo" id="curBlock-oo" style="display:none;">
+        <h3>Online ordering</h3>
+        <div class="field-group">
+          <div class="field">
+            <label>Monthly bill</label>
+            <input id="curOOBill" type="number" min="0" step="1" placeholder="e.g. 133"/>
+          </div>
+          <div class="field">
+            <label>Monthly revenue</label>
+            <input id="curOOGmv" type="number" min="0" step="1" placeholder="e.g. 2000"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-block" data-prod="pos" id="curBlock-pos" style="display:none;">
+        <h3>POS / In-store</h3>
+        <div class="field-group">
+          <div class="field">
+            <label>Monthly bill</label>
+            <input id="curPosBill" type="number" min="0" step="1" placeholder="e.g. 294"/>
+          </div>
+          <div class="field">
+            <label>Monthly revenue</label>
+            <input id="curPosGmv" type="number" min="0" step="1" placeholder="e.g. 15000"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="total-row" id="currentTotalRow" style="display:none;">
+        <span>Customer pays today</span>
+        <span class="val" id="currentTotalVal">£0/mo</span>
+      </div>
+
+      <details class="detail-expand" id="currentDetail" style="display:none;">
+        <summary>Add detail (provider, AOV — for richer talk track)</summary>
+        <div class="detail-fields">
+          <div class="product-block" data-detail="oo" id="curDetail-oo" style="display:none;">
+            <h3>OO detail</h3>
+            <div class="field-group">
+              <div class="field"><label>Provider</label><input id="curOOProvider" type="text" placeholder="e.g. Foodhub"/></div>
+              <div class="field"><label>Avg order value (AOV)</label><input id="curOOAov" type="number" min="0" step="1" placeholder="e.g. 25"/></div>
+            </div>
+          </div>
+          <div class="product-block" data-detail="pos" id="curDetail-pos" style="display:none;">
+            <h3>POS detail</h3>
+            <div class="field-group">
+              <div class="field"><label>Provider</label><input id="curPosProvider" type="text" placeholder="e.g. Lightspeed"/></div>
+              <div class="field"><label>Avg order value (AOV)</label><input id="curPosAov" type="number" min="0" step="1" placeholder="e.g. 15"/></div>
+            </div>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- Column 2: Your Flipdish proposal -->
+    <div class="col" id="col-proposal">
+      <h2>Your Flipdish proposal</h2>
+      <div id="proposalEmpty" class="empty">Tick a product above. Pre-fills with list rates — adjust to fit the SFDC quote.</div>
+
+      <div class="product-block" data-prod="oo" id="propBlock-oo" style="display:none;">
+        <h3>Online ordering</h3>
+        <div class="field">
+          <label>OO processing % <span class="hint">(list 5%)</span></label>
+          <input id="fdOORate" type="number" min="0" step="0.1" placeholder="5.0"/>
+        </div>
+      </div>
+
+      <div class="product-block" data-prod="pos" id="propBlock-pos" style="display:none;">
+        <h3>POS / In-store</h3>
+        <div class="field-group">
+          <div class="field">
+            <label>POS processing %</label>
+            <input id="fdPosRate" type="number" min="0" step="0.05" placeholder="1.20"/>
+          </div>
+          <div class="field">
+            <label>POS hardware (one-off)</label>
+            <input id="fdPosHardware" type="number" min="0" step="50" placeholder="799"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-block" data-prod="kiosk" id="propBlock-kiosk" style="display:none;">
+        <h3>Kiosk</h3>
+        <div class="field">
+          <label>Kiosk hardware (one-off)</label>
+          <input id="fdKioskHardware" type="number" min="0" step="50" placeholder="1500"/>
+        </div>
+      </div>
+
+      <div class="product-block" data-prod="sub" id="propBlock-sub" style="display:none;">
+        <h3>Subscription (bundled, from SFDC quote)</h3>
+        <div class="field">
+          <label>Total monthly subscription <span class="hint">(£/mo across all in-scope products)</span></label>
+          <input id="fdMonthlySub" type="number" min="0" step="1" placeholder="e.g. 199"/>
+        </div>
+      </div>
+
+      <div class="total-row" id="proposalTotalRow" style="display:none;">
+        <span>Flipdish recurring + one-off</span>
+        <span class="val" id="proposalTotalVal">£0/mo</span>
+      </div>
+    </div>
+
+    <!-- Column 3: Verdict -->
+    <div class="col verdict" id="col-verdict">
+      <h2>Verdict</h2>
+
+      <div class="pill-row" id="vsRow">
+        <span class="pill" id="vsPill">Idle</span>
+        <div class="body">
+          <div class="head-line" id="vsHead">Tick a product to begin</div>
+          <div class="reason" id="vsReason">—</div>
+        </div>
+      </div>
+
+      <div class="pill-row" id="healthRow">
+        <span class="pill" id="healthPill">Idle</span>
+        <div class="body">
+          <div class="head-line" id="healthHead">Awaiting proposal</div>
+          <div class="reason" id="healthReason">—</div>
+        </div>
+      </div>
+
+      <div class="levers-block" id="leversBlock" style="display:none;">
+        <h3>To match — single-lever options</h3>
+        <div id="leverLines"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Action bar -->
+  <div class="actions">
+    <button class="btn btn-primary" id="openCustomerBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Open customer page
+    </button>
+    <button class="btn" id="printBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Print
+    </button>
+    <button class="btn" id="copyLinkBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+      Copy link
+    </button>
+    <button class="btn btn-danger right" id="deleteBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+      Delete deal
+    </button>
+  </div>
+
+  <footer>
+    Internal · Flipdish Deal Room · v9
+  </footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ---------- Constants ----------
+  var LIST_RATES = {
+    UK: { oo: { sub: 99, processing: 0.05 },
+          pos: { sub: 99, processing: 0.012, txnFee: 0.10, hardwareStarter: 799 },
+          kiosk: { sub: 79, hardware: 1500 },
+          posCardPct: 0.0070, posCardFix: 0.006,
+          ooCardPct:  0.0064, ooCardFix:  0.016 },
+    IE: { oo: { sub: 99, processing: 0.05 },
+          pos: { sub: 99, processing: 0.012, txnFee: 0.10, hardwareStarter: 899 },
+          kiosk: { sub: 79, hardware: 1500 },
+          posCardPct: 0.0052, posCardFix: 0.008,
+          ooCardPct:  0.0048, ooCardFix:  0.018 },
+    US: { oo: { sub: 249, processing: 0.05 },
+          pos: null,
+          kiosk: { sub: 79, hardware: 2500 },
+          ooCardPct: 0.0255, ooCardFix: 0.018 },
+    ES: { oo: { sub: 99, processing: 0.05 },
+          pos: null,
+          kiosk: { sub: 79, hardware: 1500 },
+          ooCardPct: 0.0051, ooCardFix: 0.018 }
+  };
+  var GUARDRAILS = {
+    opMarginFactor:      0.75,
+    paybackTargetMonths: 3,
+    snrFloorMonthly:     350,
+    ooSnrCrossSubsidy:   0.25
+  };
+  var CONTRACT_MONTHS = 12;
+  var CCY = { UK: '£', IE: '€', US: '$', ES: '€' };
+
+  // ---------- State ----------
+  var prospect = null;
+  var saveTimer = null;
+  var isLoading = false;
+  var initOnce = false;
+
+  function id() { return 'p-' + Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4); }
+
+  function blank() {
+    return {
+      schema: 9,
+      id: '',
+      name: '',
+      country: 'UK',
+      locations: 1,
+      ownerName: '',
+      contactName: '',
+      includeOO: false, includePOS: false, includeKiosk: false,
+      current: {
+        ooBill: '', ooGmv: '', ooProvider: '', ooAov: '',
+        posBill: '', posGmv: '', posProvider: '', posAov: ''
+      },
+      flipdish: {
+        ooRate: '', posRate: '',
+        posHardware: '', kioskHardware: '',
+        monthlySub: ''
+      },
+      createdAt: Date.now(), updatedAt: Date.now()
+    };
+  }
+
+  // Migrate older schemas (1–8) into v9 shape
+  function migrate(p) {
+    if (!p) return blank();
+    if (p.schema >= 9) return p;
+    var m = blank();
+    m.id = p.id || id();
+    m.name = p.name || '';
+    m.country = p.country || 'UK';
+    m.locations = p.locations || 1;
+    m.ownerName = p.ownerName || '';
+    m.contactName = p.contactName || '';
+    m.includeOO = !!p.includeOO;
+    m.includePOS = !!p.includePOS;
+    m.includeKiosk = !!p.includeKiosk;
+
+    var c = p.current || {};
+    var f = p.flipdish || {};
+    var N = function (v) { var x = parseFloat(v); return isNaN(x) ? 0 : x; };
+
+    // Try to derive a "bill" total from older per-line OO fields
+    if (c.ooGmv) m.current.ooGmv = c.ooGmv;
+    if (c.ooBill) m.current.ooBill = c.ooBill;
+    else if (N(c.ooGmv) > 0) {
+      var ooAov = N(c.ooAov) || N(c.aov) || 25;
+      var ooTxn = ooAov > 0 ? N(c.ooGmv) / ooAov : 0;
+      var derivedOO = N(c.ooGmv) * (N(c.ooProcessingRate) / 100)
+                    + ooTxn * N(c.ooTransFee)
+                    + N(c.ooSub);
+      if (derivedOO > 0) m.current.ooBill = String(Math.round(derivedOO));
+    }
+    if (c.ooProvider) m.current.ooProvider = c.ooProvider;
+    if (c.ooAov) m.current.ooAov = c.ooAov;
+
+    if (c.posGmv) m.current.posGmv = c.posGmv;
+    if (c.posBill) m.current.posBill = c.posBill;
+    else if (N(c.posGmv) > 0) {
+      var posAov = N(c.aov) || N(c.posAov) || 15;
+      var posTxn = posAov > 0 ? N(c.posGmv) / posAov : 0;
+      var derivedPOS = N(c.posGmv) * (N(c.posRate) / 100)
+                     + posTxn * N(c.posTransFee)
+                     + N(c.posSub);
+      if (derivedPOS > 0) m.current.posBill = String(Math.round(derivedPOS));
+    }
+    if (c.posProvider) m.current.posProvider = c.posProvider;
+    if (c.aov || c.posAov) m.current.posAov = c.posAov || c.aov;
+
+    m.flipdish.ooRate         = f.ooProcessingRate || f.ooRate || '';
+    m.flipdish.posRate        = f.posRate || '';
+    m.flipdish.posHardware    = f.posHardware || '';
+    m.flipdish.kioskHardware  = f.kioskHardware || '';
+    m.flipdish.monthlySub     = f.monthlySub || '';
+
+    m.createdAt = p.createdAt || Date.now();
+    m.updatedAt = Date.now();
+    return m;
+  }
+
+  // ---------- Storage ----------
+  var STORE_KEY = 'flipdishProspects';
+  function loadAll() {
+    try { var raw = localStorage.getItem(STORE_KEY); return raw ? JSON.parse(raw) : []; }
+    catch (e) { return []; }
+  }
+  function saveAll(list) {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(list)); return true; }
+    catch (e) { return false; }
+  }
+
+  // ---------- Helpers ----------
+  function $(s) { return document.getElementById(s); }
+  function N(v) { var x = parseFloat(v); return isNaN(x) ? 0 : x; }
+  function fmtMoney(n) {
+    if (!isFinite(n)) return '—';
+    var s = n < 0 ? '-' : '';
+    return s + CCY[prospect.country] + Math.abs(Math.round(n)).toLocaleString('en-US');
+  }
+  function fmtMoney2(n) {
+    if (!isFinite(n)) return '—';
+    return CCY[prospect.country] + Number(n).toFixed(2);
+  }
+  function getQueryId() {
+    var m = location.search.match(/[?&]id=([^&]+)/); return m ? decodeURIComponent(m[1]) : null;
+  }
+
+  // ---------- Form <-> state ----------
+  function formToState() {
+    if (!prospect) return;
+    prospect.name = $('prospectName').value.trim();
+    prospect.locations = Math.max(1, parseInt($('locations').value, 10) || 1);
+    prospect.includeOO = $('includeOO').checked;
+    prospect.includePOS = $('includePOS').checked;
+    prospect.includeKiosk = $('includeKiosk').checked;
+    prospect.current.ooBill = $('curOOBill').value;
+    prospect.current.ooGmv  = $('curOOGmv').value;
+    prospect.current.ooProvider = $('curOOProvider').value;
+    prospect.current.ooAov  = $('curOOAov').value;
+    prospect.current.posBill = $('curPosBill').value;
+    prospect.current.posGmv  = $('curPosGmv').value;
+    prospect.current.posProvider = $('curPosProvider').value;
+    prospect.current.posAov  = $('curPosAov').value;
+    prospect.flipdish.ooRate          = $('fdOORate').value;
+    prospect.flipdish.posRate         = $('fdPosRate').value;
+    prospect.flipdish.posHardware     = $('fdPosHardware').value;
+    prospect.flipdish.kioskHardware   = $('fdKioskHardware').value;
+    prospect.flipdish.monthlySub      = $('fdMonthlySub').value;
+
+    // ---- Back-compat shim for customer.html and index.html ----
+    // Those pages were built against schemas 1–8 and read per-line
+    // breakdown fields (c.ooSub, c.ooProcessingRate, c.ooTransFee,
+    // f.ooProcessingRate). v9 simplifies the customer-side input to just
+    // a bill total + revenue, so we denormalise: write the bill total
+    // into c.*Sub and zero the rate/per-txn fields. The legacy formula
+    //   curOO = ooGmv × rate + ooTxn × txnFee + sub
+    // then evaluates to     0 +       0      + bill = bill, which is
+    // correct. Flipdish-side: copy f.ooRate into f.ooProcessingRate so
+    // both names point at the same number.
+    prospect.current.ooSub             = prospect.current.ooBill || '';
+    prospect.current.ooProcessingRate  = '0';
+    prospect.current.ooTransFee        = '0';
+    prospect.current.posSub            = prospect.current.posBill || '';
+    prospect.current.posRate           = '0';
+    prospect.current.posTransFee       = '0';
+    prospect.current.aov               = prospect.current.posAov || '';   // index.html falls back to c.aov
+    prospect.flipdish.ooProcessingRate = prospect.flipdish.ooRate || '';
+
+    prospect.updatedAt = Date.now();
+  }
+
+  function stateToForm() {
+    isLoading = true;
+    $('prospectName').value = prospect.name || '';
+    $('locations').value = prospect.locations || 1;
+    $('includeOO').checked = !!prospect.includeOO;
+    $('includePOS').checked = !!prospect.includePOS;
+    $('includeKiosk').checked = !!prospect.includeKiosk;
+    var c = prospect.current || {};
+    $('curOOBill').value = c.ooBill || '';
+    $('curOOGmv').value = c.ooGmv || '';
+    $('curOOProvider').value = c.ooProvider || '';
+    $('curOOAov').value = c.ooAov || '';
+    $('curPosBill').value = c.posBill || '';
+    $('curPosGmv').value = c.posGmv || '';
+    $('curPosProvider').value = c.posProvider || '';
+    $('curPosAov').value = c.posAov || '';
+    var f = prospect.flipdish || {};
+    $('fdOORate').value = f.ooRate || '';
+    $('fdPosRate').value = f.posRate || '';
+    $('fdPosHardware').value = f.posHardware || '';
+    $('fdKioskHardware').value = f.kioskHardware || '';
+    $('fdMonthlySub').value = f.monthlySub || '';
+    setCountry(prospect.country || 'UK', /*skipSave*/ true);
+    applyScopeVisibility();
+    isLoading = false;
+  }
+
+  // ---------- Scope visibility ----------
+  function applyScopeVisibility() {
+    var oo = $('includeOO').checked;
+    var pos = $('includePOS').checked;
+    var kiosk = $('includeKiosk').checked;
+    var anyScope = oo || pos || kiosk;
+    var anyCurrent = oo || pos;  // kiosk has no current to displace
+
+    // Pill highlight
+    document.querySelectorAll('.scope label').forEach(function (l) {
+      var inputId = l.dataset.scope;
+      if ($(inputId)) l.classList.toggle('on', $(inputId).checked);
+    });
+
+    // Current column blocks
+    $('curBlock-oo').style.display = oo ? '' : 'none';
+    $('curBlock-pos').style.display = pos ? '' : 'none';
+    $('currentEmpty').style.display = anyCurrent ? 'none' : '';
+    $('currentTotalRow').style.display = anyCurrent ? '' : 'none';
+    $('currentDetail').style.display = anyCurrent ? '' : 'none';
+    $('curDetail-oo').style.display = oo ? '' : 'none';
+    $('curDetail-pos').style.display = pos ? '' : 'none';
+
+    // Proposal column blocks
+    $('propBlock-oo').style.display = oo ? '' : 'none';
+    $('propBlock-pos').style.display = pos ? '' : 'none';
+    $('propBlock-kiosk').style.display = kiosk ? '' : 'none';
+    $('propBlock-sub').style.display = anyScope ? '' : 'none';
+    $('proposalEmpty').style.display = anyScope ? 'none' : '';
+    $('proposalTotalRow').style.display = anyScope ? '' : 'none';
+
+    // Country-availability: POS not sold in US/ES — auto-untick
+    var rates = LIST_RATES[prospect.country] || LIST_RATES.UK;
+    var posScope = document.querySelector('.scope label[data-scope="includePOS"]');
+    if (posScope) posScope.style.display = rates.pos ? '' : 'none';
+    if (!rates.pos && $('includePOS').checked) {
+      $('includePOS').checked = false;
+      applyScopeVisibility();
+      return;
+    }
+  }
+
+  // ---------- Pre-fill proposal at list (only blank fields) ----------
+  function prefillProposal() {
+    var rates = LIST_RATES[prospect.country] || LIST_RATES.UK;
+    var locations = Math.max(1, prospect.locations || 1);
+    function fillIfBlank(el, v) {
+      if (!el) return;
+      if (el.value === '' || el.value == null) el.value = String(v);
+    }
+    if ($('includeOO').checked && rates.oo)       fillIfBlank($('fdOORate'), rates.oo.processing * 100);
+    if ($('includePOS').checked && rates.pos) {
+      fillIfBlank($('fdPosRate'), rates.pos.processing * 100);
+      fillIfBlank($('fdPosHardware'), rates.pos.hardwareStarter * locations);
+    }
+    if ($('includeKiosk').checked && rates.kiosk) fillIfBlank($('fdKioskHardware'), rates.kiosk.hardware);
+
+    // Bundled sub auto-fills with sum of in-scope list subs unless rep edits
+    var listSub = 0;
+    if ($('includeOO').checked    && rates.oo)    listSub += rates.oo.sub;
+    if ($('includePOS').checked   && rates.pos)   listSub += rates.pos.sub * locations;
+    if ($('includeKiosk').checked && rates.kiosk) listSub += rates.kiosk.sub;
+    var subEl = $('fdMonthlySub');
+    if (listSub > 0 && subEl) {
+      var blank = subEl.value === '' || subEl.value == null;
+      var auto = subEl.dataset.auto === '1';
+      if (blank || auto) { subEl.value = String(listSub); subEl.dataset.auto = '1'; }
+    }
+  }
+
+  function setCountry(code, skipSave) {
+    if (!CCY[code]) code = 'UK';
+    prospect.country = code;
+    document.querySelectorAll('#countryPills button').forEach(function (b) {
+      b.classList.toggle('active', b.dataset.c === code);
+    });
+    applyScopeVisibility();
+    if (!isLoading) prefillProposal();
+    recompute();
+    if (!skipSave) scheduleSave();
+  }
+
+  // ---------- Compute ----------
+  // Customer current monthly = sum of "monthly bill" inputs.
+  // Flipdish proposed monthly recurring = OO_GMV × OO_rate
+  //                                     + POS_GMV × POS_rate (per-txn baked at list × txns from AOV)
+  //                                     + bundled sub.
+  // Flipdish proposed hardware (one-off) = posHardware + kioskHardware.
+  // SNR (recurring revenue net of card cost):
+  //   OO_SNR = OO_GMV × OO_rate − OO_GMV × ooCardPct − OO_txns × ooCardFix + sub_share_OO
+  //   POS_SNR = POS_GMV × POS_rate + POS_txns × posListTxn − POS_GMV × posCardPct − POS_txns × posCardFix + sub_share_POS
+  //   Kiosk_SNR = sub_share_kiosk
+  // Sub_share_x = bundled_sub × list_x_sub / sum(list subs in scope)
+  // SNR per site = total / locations.
+  // Op margin = SNR × 0.75 (per site or total — used consistently)
+  // Eligible op margin (for hardware payback) =
+  //   (POS_SNR + Kiosk_SNR + 0.25 × OO_SNR) × 0.75
+  // Hardware envelope = 3 × eligible op margin.
+  // Hardware discount = max(0, list_hardware − proposed_hardware).
+  // Payback = discount / eligible_op_margin (0 when discount is 0).
+  function compute() {
+    var rates = LIST_RATES[prospect.country] || LIST_RATES.UK;
+    var locations = Math.max(1, prospect.locations || 1);
+    var oo = prospect.includeOO && !!rates.oo;
+    var pos = prospect.includePOS && !!rates.pos;
+    var kiosk = prospect.includeKiosk && !!rates.kiosk;
+    var anyScope = oo || pos || kiosk;
+    var c = prospect.current || {};
+    var f = prospect.flipdish || {};
+
+    var r = {
+      anyScope: anyScope,
+      oo: oo, pos: pos, kiosk: kiosk,
+      customerTotal: 0,
+      proposedRecurring: 0, proposedHardware: 0,
+      hardwareList: 0, hardwareDiscount: 0,
+      snrPerSite: 0, opMarginMonthly: 0,
+      eligibleOpMargin: 0, paybackEnvelope: 0, paybackMonths: 0,
+      detail: {}
+    };
+    if (!anyScope) return r;
+
+    // Customer total
+    var ooBill = oo ? N(c.ooBill) : 0;
+    var posBill = pos ? N(c.posBill) : 0;
+    r.customerTotal = ooBill + posBill;
+
+    // Flipdish recurring
+    var fdSub = N(f.monthlySub);
+    var ooGmv = oo ? N(c.ooGmv) : 0;
+    var posGmv = pos ? N(c.posGmv) : 0;
+    var ooAov = N(c.ooAov) || 25;
+    var posAov = N(c.posAov) || 15;
+    var ooTxn = ooAov > 0 ? ooGmv / ooAov : 0;
+    var posTxn = posAov > 0 ? posGmv / posAov : 0;
+
+    var fdOORatePct = oo ? N(f.ooRate) : 0;
+    var fdPosRatePct = pos ? N(f.posRate) : 0;
+    var posListTxnFee = (pos && rates.pos) ? rates.pos.txnFee : 0;
+
+    var fdOOMonthly = ooGmv * (fdOORatePct / 100);
+    var fdPOSMonthly = posGmv * (fdPosRatePct / 100) + posTxn * posListTxnFee;
+
+    r.proposedRecurring = fdOOMonthly + fdPOSMonthly + fdSub;
+
+    // Hardware
+    var posHardware = pos ? N(f.posHardware) : 0;
+    var kioskHardware = kiosk ? N(f.kioskHardware) : 0;
+    r.proposedHardware = posHardware + kioskHardware;
+    var listHw = 0;
+    if (pos && rates.pos) listHw += rates.pos.hardwareStarter * locations;
+    if (kiosk && rates.kiosk) listHw += rates.kiosk.hardware;
+    r.hardwareList = listHw;
+    r.hardwareDiscount = Math.max(0, listHw - r.proposedHardware);
+
+    // SNR — split bundled sub by list-rate ratios
+    var listOOSub = oo ? rates.oo.sub : 0;
+    var listPOSSub = pos ? rates.pos.sub * locations : 0;
+    var listKioskSub = kiosk ? rates.kiosk.sub : 0;
+    var listSubTotal = listOOSub + listPOSSub + listKioskSub;
+    var subShareOO = 0, subSharePOS = 0, subShareKiosk = 0;
+    if (listSubTotal > 0) {
+      subShareOO = fdSub * (listOOSub / listSubTotal);
+      subSharePOS = fdSub * (listPOSSub / listSubTotal);
+      subShareKiosk = fdSub * (listKioskSub / listSubTotal);
+    }
+    var ooSnr = oo
+      ? fdOOMonthly - (ooGmv * (rates.ooCardPct || 0) + ooTxn * (rates.ooCardFix || 0)) + subShareOO
+      : 0;
+    var posSnr = pos
+      ? fdPOSMonthly - (posGmv * (rates.posCardPct || 0) + posTxn * (rates.posCardFix || 0)) + subSharePOS
+      : 0;
+    var kioskSnr = kiosk ? subShareKiosk : 0;
+    var snrTotal = ooSnr + posSnr + kioskSnr;
+    r.snrPerSite = snrTotal / locations;
+    r.opMarginMonthly = snrTotal * GUARDRAILS.opMarginFactor;
+
+    var eligibleSnr = posSnr + kioskSnr + ooSnr * GUARDRAILS.ooSnrCrossSubsidy;
+    r.eligibleOpMargin = eligibleSnr * GUARDRAILS.opMarginFactor;
+    r.paybackEnvelope = Math.max(0, r.eligibleOpMargin * GUARDRAILS.paybackTargetMonths);
+    r.paybackMonths = (r.hardwareDiscount > 0 && r.eligibleOpMargin > 0)
+      ? r.hardwareDiscount / r.eligibleOpMargin
+      : 0;
+
+    r.detail = {
+      ooSnr: ooSnr, posSnr: posSnr, kioskSnr: kioskSnr,
+      ooGmv: ooGmv, posGmv: posGmv, ooTxn: ooTxn, posTxn: posTxn,
+      fdSub: fdSub, fdOORatePct: fdOORatePct, fdPosRatePct: fdPosRatePct,
+      ooBill: ooBill, posBill: posBill,
+      listOOSub: listOOSub, listPOSSub: listPOSSub, listKioskSub: listKioskSub
+    };
+    return r;
+  }
+
+  // Single-lever match targets — what concrete value the rep would
+  // need to set each lever to so that the deal recurring matches the
+  // customer's current bill total. Returns null where the lever can't
+  // close the gap inside its guardrail floor.
+  function leverTargets(r) {
+    var rates = LIST_RATES[prospect.country] || LIST_RATES.UK;
+    var locations = Math.max(1, prospect.locations || 1);
+    var d = r.detail;
+    var gap = r.proposedRecurring - r.customerTotal; // +ve = Flipdish more expensive
+    var arr = [];
+    if (gap <= 0) return arr;  // no need to match — already cheaper or equal
+
+    // SUB lever: drop sub by `gap`, but stay above SNR floor
+    var snrFloorTotal = GUARDRAILS.snrFloorMonthly * locations;
+    var snrHeadroomTotal = Math.max(0, (r.snrPerSite - GUARDRAILS.snrFloorMonthly) * locations);
+    var subTarget = (gap <= snrHeadroomTotal) ? Math.max(0, d.fdSub - gap) : null;
+    arr.push({ key: 'sub', label: 'Bundled sub', value: fmtMoney(d.fdSub) + '/mo',
+               target: subTarget, fmt: function (t) { return fmtMoney(t) + '/mo'; },
+               note: subTarget == null ? 'Below SNR floor' : null });
+
+    // OO RATE lever
+    if (r.oo && d.ooGmv > 0) {
+      var ooFloorPct = (rates.ooCardPct || 0) * 100 + 1.0;
+      var ooReductionPP = (gap / d.ooGmv) * 100;
+      var newOORate = d.fdOORatePct - ooReductionPP;
+      var ooTarget = (newOORate >= ooFloorPct) ? newOORate : null;
+      arr.push({ key: 'ooRate', label: 'OO processing %', value: d.fdOORatePct.toFixed(2) + '%',
+                 target: ooTarget, fmt: function (t) { return t.toFixed(2) + '%'; },
+                 note: ooTarget == null ? ('Floor ' + ooFloorPct.toFixed(2) + '%') : null });
+    }
+
+    // POS RATE lever
+    if (r.pos && d.posGmv > 0) {
+      var posFloorPct = (rates.posCardPct || 0) * 100 + 0.3;
+      var posReductionPP = (gap / d.posGmv) * 100;
+      var newPosRate = d.fdPosRatePct - posReductionPP;
+      var posTarget = (newPosRate >= posFloorPct) ? newPosRate : null;
+      arr.push({ key: 'posRate', label: 'POS processing %', value: d.fdPosRatePct.toFixed(2) + '%',
+                 target: posTarget, fmt: function (t) { return t.toFixed(2) + '%'; },
+                 note: posTarget == null ? ('Floor ' + posFloorPct.toFixed(2) + '%') : null });
+    }
+
+    // HARDWARE lever (one-off; gap × 12 = total customer value over contract)
+    if (r.hardwareList > 0) {
+      var hwRequired = gap * CONTRACT_MONTHS;
+      var hwEligible = (hwRequired <= r.paybackEnvelope) && (hwRequired <= r.hardwareList);
+      var hwTarget = hwEligible ? Math.max(0, r.hardwareList - hwRequired) : null;
+      arr.push({ key: 'hardware', label: 'Hardware', value: fmtMoney(r.proposedHardware),
+                 target: hwTarget, fmt: function (t) { return fmtMoney(t) + ' (' + fmtMoney(r.hardwareList - t) + ' off)'; },
+                 note: hwTarget == null ? 'Beyond payback envelope' : null });
+    }
+
+    return arr;
+  }
+
+  // ---------- Render ----------
+  function render() {
+    var r = compute();
+
+    // Totals at bottom of input columns
+    if (r.anyScope) {
+      $('currentTotalVal').textContent = fmtMoney(r.customerTotal) + '/mo';
+      $('proposalTotalVal').textContent = fmtMoney(r.proposedRecurring) + '/mo'
+        + (r.proposedHardware > 0 ? '  + ' + fmtMoney(r.proposedHardware) + ' one-off' : '');
+    }
+
+    // VS row (cheaper / matching / more expensive)
+    var vsRow = $('vsRow'), vsPill = $('vsPill'), vsHead = $('vsHead'), vsReason = $('vsReason');
+    vsRow.classList.remove('green','amber','red');
+
+    if (!r.anyScope) {
+      vsPill.textContent = 'Idle';
+      vsHead.textContent = 'Tick a product to begin';
+      vsReason.textContent = '—';
+    } else if (r.customerTotal === 0) {
+      vsPill.textContent = 'Awaiting';
+      vsHead.textContent = 'Enter their monthly bill';
+      vsReason.textContent = 'Type what they pay today (per product) on the left.';
+    } else if (r.proposedRecurring === 0) {
+      vsPill.textContent = 'Awaiting';
+      vsHead.textContent = 'Type your Flipdish proposal';
+      vsReason.textContent = 'Levers in the middle column. Pre-filled with list rates as a starting point.';
+    } else {
+      var delta = r.customerTotal - r.proposedRecurring; // +ve = Flipdish cheaper
+      if (delta > 0) {
+        vsRow.classList.add('green');
+        vsPill.textContent = 'Cheaper';
+        vsHead.innerHTML = 'You\'re <strong>' + fmtMoney(delta) + '/mo cheaper</strong> than what they pay today';
+        vsReason.innerHTML = 'Customer £' + Math.round(r.customerTotal) + '/mo · Flipdish £' + Math.round(r.proposedRecurring) + '/mo. Lead with this.';
+      } else if (delta === 0) {
+        vsRow.classList.add('green');
+        vsPill.textContent = 'Match';
+        vsHead.innerHTML = 'You match their current spend exactly';
+        vsReason.innerHTML = 'Customer £' + Math.round(r.customerTotal) + '/mo · Flipdish £' + Math.round(r.proposedRecurring) + '/mo.';
+      } else {
+        // Flipdish more expensive — closeable or won't close
+        var targets = leverTargets(r);
+        var anyClose = targets.some(function (t) { return t.target != null; });
+        if (anyClose) {
+          vsRow.classList.add('amber');
+          vsPill.textContent = 'Closeable';
+          vsHead.innerHTML = 'You\'re <strong>' + fmtMoney(-delta) + '/mo more expensive</strong> — see levers';
+          vsReason.innerHTML = 'Customer £' + Math.round(r.customerTotal) + '/mo · Flipdish £' + Math.round(r.proposedRecurring) + '/mo. Single-lever options below.';
+        } else {
+          vsRow.classList.add('red');
+          vsPill.textContent = "Won't close";
+          vsHead.innerHTML = 'Gap of <strong>' + fmtMoney(-delta) + '/mo</strong> — no single lever can close it';
+          vsReason.innerHTML = 'Either combine multiple levers, reduce hardware scope, or push back on price.';
+        }
+      }
+    }
+
+    // Health row
+    var hRow = $('healthRow'), hPill = $('healthPill'), hHead = $('healthHead'), hReason = $('healthReason');
+    hRow.classList.remove('green','amber','red');
+    if (!r.anyScope || r.proposedRecurring === 0) {
+      hPill.textContent = 'Idle';
+      hHead.textContent = 'Awaiting proposal';
+      hReason.textContent = '—';
+    } else {
+      var floor = GUARDRAILS.snrFloorMonthly;
+      var below = r.snrPerSite < floor;
+      var paybackBust = r.hardwareDiscount > 0 && r.paybackMonths > GUARDRAILS.paybackTargetMonths;
+      var pbStr = r.hardwareDiscount > 0 ? r.paybackMonths.toFixed(1) + ' months' : '0 (no discount)';
+      var snrStr = fmtMoney(r.snrPerSite) + '/mo per site';
+
+      if (paybackBust) {
+        hRow.classList.add('red');
+        hPill.textContent = 'Bust';
+        hHead.innerHTML = 'Hardware discount too aggressive';
+        hReason.innerHTML = '<strong>' + fmtMoney(r.hardwareDiscount) + '</strong> off list, payback ' + r.paybackMonths.toFixed(1) + ' months (target ≤ 3). Pull the discount back to ≤ ' + fmtMoney(r.paybackEnvelope) + ' off list.';
+      } else if (below) {
+        hRow.classList.add('red');
+        hPill.textContent = 'Bust';
+        hHead.innerHTML = 'Below margin floor';
+        hReason.innerHTML = 'Recurring revenue per site is <strong>' + fmtMoney(r.snrPerSite) + '/mo</strong>, below the <strong>' + fmtMoney(floor) + '</strong> floor. Raise the bundled sub or processing rate.';
+      } else if (r.snrPerSite < floor * 1.2) {
+        hRow.classList.add('amber');
+        hPill.textContent = 'Tight';
+        hHead.innerHTML = 'Workable but close to the floor';
+        hReason.innerHTML = 'SNR ' + snrStr + ' (target > ' + fmtMoney(floor * 1.2) + '/mo). Hardware payback ' + pbStr + '.';
+      } else {
+        hRow.classList.add('green');
+        hPill.textContent = 'Healthy';
+        hHead.innerHTML = 'Deal is healthy for Flipdish';
+        hReason.innerHTML = 'SNR ' + snrStr + '. Hardware payback ' + pbStr + '.';
+      }
+    }
+
+    // Levers — only show when there's a gap to close
+    var leversBlock = $('leversBlock');
+    var leversWrap = $('leverLines');
+    if (r.anyScope && r.proposedRecurring > r.customerTotal && r.customerTotal > 0) {
+      var targets = leverTargets(r);
+      leversWrap.innerHTML = '';
+      targets.forEach(function (t) {
+        var line = document.createElement('div');
+        line.className = 'lever-line';
+        var labelEl = document.createElement('span');
+        labelEl.className = 'label';
+        labelEl.textContent = t.label;
+        var targetEl = document.createElement('span');
+        if (t.target != null) {
+          targetEl.className = 'target';
+          targetEl.textContent = '→ ' + t.fmt(t.target);
+        } else {
+          targetEl.className = 'target dim';
+          targetEl.textContent = t.note ? '— ' + t.note : '— no room';
+        }
+        line.appendChild(labelEl);
+        line.appendChild(targetEl);
+        leversWrap.appendChild(line);
+      });
+      leversBlock.style.display = '';
+    } else {
+      leversBlock.style.display = 'none';
+    }
+  }
+
+  function recompute() {
+    // Sync form -> state immediately, then render. Without this, render
+    // reads stale state (form input fires faster than the debounced save).
+    if (!isLoading) formToState();
+    render();
+  }
+
+  // ---------- Save (debounced) ----------
+  function scheduleSave() {
+    clearTimeout(saveTimer);
+    var s = $('saveStatus');
+    s.classList.add('saving'); $('saveText').textContent = 'Saving…';
+    saveTimer = setTimeout(function () {
+      formToState();
+      var list = loadAll().filter(function (p) { return p.id !== prospect.id; });
+      list.push(prospect);
+      if (saveAll(list)) {
+        s.classList.remove('saving');
+        $('saveText').textContent = 'Saved';
+      }
+    }, 400);
+  }
+
+  // ---------- Wire ----------
+  function wire() {
+    document.querySelectorAll('#countryPills button').forEach(function (b) {
+      b.addEventListener('click', function () { setCountry(b.dataset.c); });
+    });
+    ['includeOO','includePOS','includeKiosk'].forEach(function (k) {
+      $(k).addEventListener('change', function () {
+        applyScopeVisibility();
+        prefillProposal();
+        scheduleSave();
+        recompute();
+      });
+    });
+    var allInputs = [
+      'prospectName','locations',
+      'curOOBill','curOOGmv','curOOProvider','curOOAov',
+      'curPosBill','curPosGmv','curPosProvider','curPosAov',
+      'fdOORate','fdPosRate','fdPosHardware','fdKioskHardware','fdMonthlySub'
+    ];
+    allInputs.forEach(function (k) {
+      var el = $(k);
+      if (!el) return;
+      el.addEventListener('input', function () {
+        if (k === 'fdMonthlySub') el.dataset.auto = '';
+        scheduleSave();
+        recompute();
+      });
+    });
+
+    $('openCustomerBtn').addEventListener('click', function () {
+      formToState();
+      var list = loadAll().filter(function (p) { return p.id !== prospect.id; });
+      list.push(prospect);
+      saveAll(list);
+      window.open('customer.html?id=' + encodeURIComponent(prospect.id), '_blank');
+    });
+    $('printBtn').addEventListener('click', function () { window.print(); });
+    $('copyLinkBtn').addEventListener('click', function () {
+      var url = location.origin + location.pathname + '?id=' + encodeURIComponent(prospect.id);
+      navigator.clipboard.writeText(url).then(function () {
+        var b = $('copyLinkBtn');
+        var orig = b.innerHTML;
+        b.innerHTML = 'Copied!';
+        setTimeout(function () { b.innerHTML = orig; }, 1500);
+      });
+    });
+    $('deleteBtn').addEventListener('click', function () {
+      if (!confirm('Delete this deal? This can\'t be undone.')) return;
+      var list = loadAll().filter(function (p) { return p.id !== prospect.id; });
+      saveAll(list);
+      window.location.href = './';
+    });
+  }
+
+  // ---------- Bootstrap ----------
+  function init() {
+    if (initOnce) return;
+    initOnce = true;
+    var qid = getQueryId();
+    var list = loadAll();
+    if (qid) {
+      var found = list.find(function (p) { return p.id === qid; });
+      prospect = migrate(found || blank());
+      if (!found) prospect.id = qid;
+    } else {
+      prospect = blank();
+      prospect.id = id();
+      var newUrl = location.pathname + '?id=' + encodeURIComponent(prospect.id);
+      window.history.replaceState({}, '', newUrl);
+    }
+    wire();
+    stateToForm();
+    prefillProposal();
+    recompute();
+    // First save (so the entry exists in the list)
+    var existing = loadAll().filter(function (p) { return p.id !== prospect.id; });
+    existing.push(prospect);
+    saveAll(existing);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else { init(); }
+})();
+</script>
+</body>
+</html>
