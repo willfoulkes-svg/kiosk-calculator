@@ -380,6 +380,91 @@
     font-size: 12px;
   }
   .lever-detail .cost-note strong { color: var(--flipdish-blue-dark); }
+
+  /* ---------- Recommended deal block (v8.4) ---------- */
+  .rec-deal {
+    background: var(--flipdish-blue-dark);
+    color: #fff;
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-top: 16px;
+  }
+  .rec-deal-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; margin-bottom: 12px; flex-wrap: wrap;
+  }
+  .rec-deal-title {
+    margin: 0;
+    font-family: 'Domine', Georgia, serif;
+    font-size: 17px; font-weight: 700; color: #fff;
+  }
+  .rec-apply-btn {
+    background: #fff; color: var(--flipdish-blue-dark);
+    border: 0; border-radius: 8px;
+    padding: 8px 14px;
+    font: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    transition: all .12s ease;
+  }
+  .rec-apply-btn:hover { background: #FFF9EC; }
+  .rec-apply-btn:disabled {
+    opacity: 0.5; cursor: not-allowed;
+  }
+  .rec-deal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .rec-line {
+    background: rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .rec-line .rec-key {
+    display: block;
+    font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em;
+    color: rgba(255,255,255,0.65);
+    font-weight: 600;
+  }
+  .rec-line .rec-val {
+    font-family: 'Domine', Georgia, serif;
+    font-size: 16px; font-weight: 600; color: #fff;
+    margin-top: 2px;
+  }
+  .rec-line .rec-change {
+    color: #BFE3D2; font-size: 12px; margin-top: 2px; display: block;
+  }
+  .rec-line .rec-change.muted { color: rgba(255,255,255,0.5); }
+  .rec-deal-impact {
+    background: rgba(255,255,255,0.10);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: #fff;
+    margin-bottom: 10px;
+  }
+  .rec-deal-impact strong { color: #FFE5A1; font-weight: 600; }
+  .rec-deal-narrative {
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(255,255,255,0.85);
+  }
+  .rec-deal-narrative strong { color: #fff; font-weight: 600; }
+  .rec-toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--green-strong); color: #fff;
+    padding: 10px 18px; border-radius: 999px;
+    font-size: 13px; font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+    opacity: 0; pointer-events: none;
+    transition: opacity .2s ease;
+    z-index: 1000;
+  }
+  .rec-toast.show { opacity: 1; }
   .offer-suggested {
     background: rgba(255,255,255,0.7);
     border-radius: 10px;
@@ -886,7 +971,19 @@
       </div>
     </div>
 
-    <!-- Concrete "to match" prescription -->
+    <!-- Recommended deal — concrete proposal numbers + Apply button (v8.4) -->
+    <div class="rec-deal" id="recDeal" style="display:none;">
+      <div class="rec-deal-head">
+        <h3 class="rec-deal-title">Recommended deal</h3>
+        <button type="button" class="rec-apply-btn" id="recApplyBtn">Apply to proposal →</button>
+      </div>
+      <div class="rec-deal-grid" id="recDealGrid"></div>
+      <div class="rec-deal-impact" id="recDealImpact"></div>
+      <div class="rec-deal-narrative" id="recDealNarrative"></div>
+    </div>
+
+    <!-- Legacy suggested-play (kept hidden as fallback for cases the rec
+         engine doesn't cover — e.g. scope picked but no current entered) -->
     <div class="offer-suggested" id="offerSuggested" style="display:none;"></div>
 
     <!-- Folded-in Live Commercial Check — deal health from Flipdish's side. -->
@@ -934,6 +1031,8 @@
   </div>
 
 </div>
+
+<div class="rec-toast" id="recToast">Applied to proposal</div>
 
 <footer>Flipdish Internal · Deal Room · v2.0 (commercial-inputs model)</footer>
 
@@ -1664,8 +1763,301 @@
     // proposal. Compares what they typed vs the customer's current spend,
     // scope-aware, with concrete "to match" + "cost to Flipdish"
     // prescriptions. Live Check folded in at the bottom.
-    renderOfferPanel(computeOfferPanel(prospect, v));
+    var o = computeOfferPanel(prospect, v);
+    renderOfferPanel(o);
+    var rec = computeRecommendedDeal(prospect, v, o);
+    renderRecommendedDeal(rec, prospect, o);
     renderLiveCheck(v);
+  }
+
+  // ---------- Recommended Deal engine (v8.4) ----------
+  // Will: "I want a 'recommended deal section' like show me what we
+  //  should actually do to close this deal. right now it's just either
+  //  negative or positive."
+  //
+  // For a deal where Flipdish at list is more expensive than the
+  // customer's current spend, this engine computes the BEST achievable
+  // proposal — pulling levers in cost-rank order (cheapest for Flipdish
+  // first) until either the gap is closed or all levers are at floor.
+  //
+  // Returns:
+  //   { sub, ooRate, posRate, posTransFee, hardware }
+  //     — recommended quote numbers per lever (only the in-scope ones
+  //       are populated; others are null).
+  //   { customerWouldPay, gapInitial, gapClosed, gapRemaining, canClose }
+  //     — outcome math.
+  //   { costRecurring, costOneOff }
+  //     — cost to Flipdish.
+  //   { changes: [...] }
+  //     — list of human-readable lever changes (for the rec grid render).
+  //   { narrative }
+  //     — natural-language guidance, especially when can't fully close.
+  function computeRecommendedDeal(p, v, o) {
+    var rates = LIST_RATES[p.country] || LIST_RATES.UK;
+    var locations = Math.max(1, Math.round(parseFloat(p.locations)) || 1);
+    var c = p.current || {};
+    // Local N helper — top-level functions don't see the one defined
+    // inside computeValueStory / computeOfferPanel.
+    var N = function (x) { var n = parseFloat(x); return isNaN(n) ? 0 : n; };
+    var rec = {
+      applicable: false,
+      sub: null, ooRate: null, posRate: null, posTransFee: null, hardware: null,
+      changes: [],
+      gapInitial: 0, gapClosed: 0, gapRemaining: 0,
+      canClose: false,
+      customerWouldPay: 0,
+      costRecurring: 0,
+      costOneOff: 0,
+      narrative: ''
+    };
+
+    if (!o || o.state === 'idle' || o.kioskOnly) return rec;
+    rec.applicable = true;
+
+    // Start point: list rates (best for Flipdish, no discount applied)
+    var listSub      = o.listSub;
+    var listOORate   = (p.includeOO && rates.oo) ? rates.oo.processing * 100 : null;
+    var listPosRate  = (p.includePOS && rates.pos) ? rates.pos.processing * 100 : null;
+    var listTxn      = (p.includePOS && rates.pos) ? rates.pos.txnFee : null;
+    var listHw       = o.hardwareList;
+
+    rec.sub = listSub;
+    rec.ooRate = listOORate;
+    rec.posRate = listPosRate;
+    rec.posTransFee = listTxn;
+    rec.hardware = listHw;
+
+    // If the proposal is already at-or-cheaper than current, recommendation
+    // = list rates. No discounts needed.
+    if (o.gap <= 0) {
+      rec.canClose = true;
+      rec.gapInitial = 0;
+      rec.gapRemaining = 0;
+      rec.customerWouldPay = computeCustomerPayingAt(rec, p, c, rates, locations);
+      rec.narrative = 'You\'re already cheaper than what they pay today. Hold at list rates and sell platform value.';
+      return rec;
+    }
+
+    var gap = o.gap;
+    rec.gapInitial = gap;
+    var remaining = gap;
+
+    // Compute floors per guardrails
+    var ooFloorPct  = (rates.ooCardPct  || 0) * 100 + 1.0;   // Stripe + 1pp
+    var posFloorPct = (rates.posCardPct || 0) * 100 + 0.3;   // Stripe + 0.3pp
+
+    // STEP 1: Hardware (cheapest — one-off, recovered in 3 months)
+    if (o.hwInScope && o.maxHwDiscount > 0 && remaining > 0) {
+      var hwDiscountTaken = Math.min(o.maxHwDiscount, remaining * CONTRACT_MONTHS);
+      rec.hardware = Math.max(0, listHw - hwDiscountTaken);
+      var hwAmortised = hwDiscountTaken / CONTRACT_MONTHS;
+      remaining -= hwAmortised;
+      rec.costOneOff += hwDiscountTaken;
+      if (hwDiscountTaken > 0) {
+        rec.changes.push({
+          key: 'hardware', label: 'Hardware',
+          from: fmtMoney(listHw), to: fmtMoney(rec.hardware),
+          deltaText: fmtMoney(hwDiscountTaken) + ' off (one-off)'
+        });
+      }
+    }
+
+    // STEP 2: OO processing rate (medium)
+    if (p.includeOO && rates.oo && N(c.ooGmv) > 0 && remaining > 0) {
+      var ooHeadroomPct = Math.max(0, listOORate - ooFloorPct);
+      var requiredOOReduction = (remaining / N(c.ooGmv)) * 100;
+      var ooReductionTaken = Math.min(ooHeadroomPct, requiredOOReduction);
+      if (ooReductionTaken > 0) {
+        rec.ooRate = listOORate - ooReductionTaken;
+        var ooSaving = (ooReductionTaken / 100) * N(c.ooGmv);
+        remaining -= ooSaving;
+        rec.costRecurring += ooSaving;
+        rec.changes.push({
+          key: 'ooRate', label: 'OO processing %',
+          from: listOORate.toFixed(2) + '%',
+          to: rec.ooRate.toFixed(2) + '%',
+          deltaText: '-' + ooReductionTaken.toFixed(2) + 'pp (' + fmtMoney(ooSaving) + '/mo)'
+        });
+      }
+    }
+
+    // STEP 3: POS processing rate (medium)
+    if (p.includePOS && rates.pos && N(c.posGmv) > 0 && remaining > 0) {
+      var posHeadroomPct = Math.max(0, listPosRate - posFloorPct);
+      var requiredPosReduction = (remaining / N(c.posGmv)) * 100;
+      var posReductionTaken = Math.min(posHeadroomPct, requiredPosReduction);
+      if (posReductionTaken > 0) {
+        rec.posRate = listPosRate - posReductionTaken;
+        var posSaving = (posReductionTaken / 100) * N(c.posGmv);
+        remaining -= posSaving;
+        rec.costRecurring += posSaving;
+        rec.changes.push({
+          key: 'posRate', label: 'POS processing %',
+          from: listPosRate.toFixed(2) + '%',
+          to: rec.posRate.toFixed(2) + '%',
+          deltaText: '-' + posReductionTaken.toFixed(2) + 'pp (' + fmtMoney(posSaving) + '/mo)'
+        });
+      }
+    }
+
+    // STEP 4: Bundled sub (worst — pure recurring revenue loss)
+    if (remaining > 0 && o.maxSubDiscount > 0) {
+      var subDrop = Math.min(o.maxSubDiscount, remaining);
+      if (subDrop > 0) {
+        rec.sub = Math.max(0, listSub - subDrop);
+        remaining -= subDrop;
+        rec.costRecurring += subDrop;
+        rec.changes.push({
+          key: 'sub', label: 'Bundled sub',
+          from: fmtMoney(listSub) + '/mo',
+          to: fmtMoney(rec.sub) + '/mo',
+          deltaText: fmtMoney(subDrop) + '/mo lower'
+        });
+      }
+    }
+
+    rec.gapRemaining = Math.max(0, Math.round(remaining));
+    rec.gapClosed = gap - rec.gapRemaining;
+    rec.canClose = rec.gapRemaining < 1;
+    rec.customerWouldPay = computeCustomerPayingAt(rec, p, c, rates, locations);
+
+    // Narrative
+    if (rec.canClose) {
+      var costParts = [];
+      if (rec.costOneOff > 0)   costParts.push(fmtMoney(rec.costOneOff) + ' one-off');
+      if (rec.costRecurring > 0) costParts.push(fmtMoney(rec.costRecurring * CONTRACT_MONTHS) + ' recurring over 12 months');
+      rec.narrative = '<strong>Closes the gap.</strong> Customer pays ' + fmtMoney(rec.customerWouldPay) + '/mo (vs ' + fmtMoney(o.customerTotal) + '/mo today). Cost to Flipdish: ' + costParts.join(' + ') + '.';
+    } else {
+      var costParts2 = [];
+      if (rec.costOneOff > 0)   costParts2.push(fmtMoney(rec.costOneOff) + ' one-off');
+      if (rec.costRecurring > 0) costParts2.push(fmtMoney(rec.costRecurring * CONTRACT_MONTHS) + ' recurring over 12 months');
+      var costStr = costParts2.length ? costParts2.join(' + ') : '£0';
+      rec.narrative = '<strong>Best achievable, but ' + fmtMoney(rec.gapRemaining) + '/mo gap remains.</strong> Customer would still pay ' + fmtMoney(rec.customerWouldPay) + '/mo (vs ' + fmtMoney(o.customerTotal) + '/mo today). Cost to Flipdish at this proposal: ' + costStr + '. To win, lead with platform value (Phone AI, FMM, customer ownership, kiosk traffic) rather than price-matching.';
+    }
+    return rec;
+  }
+
+  // Helper: given a recommended quote, compute what the customer would
+  // pay per month under it.
+  function computeCustomerPayingAt(rec, p, c, rates, locations) {
+    var N = function (x) { var n = parseFloat(x); return isNaN(n) ? 0 : n; };
+    var total = 0;
+    if (p.includeOO && rec.ooRate != null) {
+      total += N(c.ooGmv) * (rec.ooRate / 100);
+    }
+    if (p.includePOS && rec.posRate != null) {
+      var posAov = N(c.posAov) || N(c.aov) || 15;
+      var posTxn = posAov > 0 ? N(c.posGmv) / posAov : 0;
+      total += N(c.posGmv) * (rec.posRate / 100) + posTxn * (rec.posTransFee || 0);
+    }
+    total += rec.sub || 0;
+    return total;
+  }
+
+  function renderRecommendedDeal(rec, p, o) {
+    var panel = $('recDeal');
+    if (!rec.applicable) {
+      panel.style.display = 'none';
+      return;
+    }
+    panel.style.display = '';
+
+    // Build the quote grid — one rec-line per in-scope lever
+    var grid = $('recDealGrid');
+    grid.innerHTML = '';
+
+    function addLine(key, label, value, change) {
+      var line = document.createElement('div');
+      line.className = 'rec-line';
+      var keyEl = document.createElement('span'); keyEl.className = 'rec-key'; keyEl.textContent = label;
+      var valEl = document.createElement('div'); valEl.className = 'rec-val'; valEl.textContent = value;
+      line.appendChild(keyEl);
+      line.appendChild(valEl);
+      if (change) {
+        var chEl = document.createElement('span');
+        chEl.className = 'rec-change' + (change.muted ? ' muted' : '');
+        chEl.textContent = change.text;
+        line.appendChild(chEl);
+      }
+      grid.appendChild(line);
+    }
+
+    var subChange = (rec.changes || []).find(function (c) { return c.key === 'sub'; });
+    addLine('sub', 'Bundled sub',
+      fmtMoney(rec.sub || 0) + '/mo',
+      subChange ? { text: subChange.deltaText } : { text: 'at list', muted: true });
+
+    if (p.includeOO && rec.ooRate != null) {
+      var ooChange = (rec.changes || []).find(function (c) { return c.key === 'ooRate'; });
+      addLine('ooRate', 'OO processing %',
+        rec.ooRate.toFixed(2) + '%',
+        ooChange ? { text: ooChange.deltaText } : { text: 'at list', muted: true });
+    }
+    if (p.includePOS && rec.posRate != null) {
+      var posChange = (rec.changes || []).find(function (c) { return c.key === 'posRate'; });
+      addLine('posRate', 'POS processing %',
+        rec.posRate.toFixed(2) + '%',
+        posChange ? { text: posChange.deltaText } : { text: 'at list', muted: true });
+    }
+    if (o.hwInScope) {
+      var hwChange = (rec.changes || []).find(function (c) { return c.key === 'hardware'; });
+      addLine('hardware', 'Hardware',
+        fmtMoney(rec.hardware || 0),
+        hwChange ? { text: hwChange.deltaText } : { text: 'at list', muted: true });
+    }
+
+    // Impact line
+    var impact = $('recDealImpact');
+    if (rec.canClose && rec.changes.length === 0) {
+      impact.innerHTML = '<strong>No discounts needed</strong> — Flipdish at list already beats their current spend by ' + fmtMoney(Math.abs(o.delta)) + '/mo.';
+    } else if (rec.canClose) {
+      impact.innerHTML = '<strong>Closes the deal</strong> — customer pays <strong>' + fmtMoney(rec.customerWouldPay) + '/mo</strong> recurring (matching their ' + fmtMoney(o.customerTotal) + '/mo today).';
+    } else {
+      impact.innerHTML = '<strong>Best achievable: customer pays ' + fmtMoney(rec.customerWouldPay) + '/mo.</strong> Still <strong>' + fmtMoney(rec.gapRemaining) + '/mo more</strong> than their current spend (' + fmtMoney(o.customerTotal) + '/mo).';
+    }
+
+    // Narrative + apply button enable/disable
+    $('recDealNarrative').innerHTML = rec.narrative;
+    $('recApplyBtn').disabled = (rec.changes.length === 0);
+    $('recApplyBtn').textContent = rec.changes.length === 0 ? 'Already at list' : 'Apply to proposal →';
+
+    // Stash the rec on the button so the click handler can read it
+    $('recApplyBtn')._rec = rec;
+  }
+
+  function applyRecommendedDeal() {
+    var btn = $('recApplyBtn');
+    var rec = btn._rec;
+    if (!rec || !rec.applicable) return;
+    if (rec.sub != null) $('fdMonthlySub').value = String(Math.round(rec.sub));
+    if (rec.ooRate != null && $('fdOOProcessingRate')) $('fdOOProcessingRate').value = rec.ooRate.toFixed(2);
+    if (rec.posRate != null && $('fdPosRate')) $('fdPosRate').value = rec.posRate.toFixed(2);
+    if (rec.posTransFee != null && $('fdPosTransFee')) $('fdPosTransFee').value = (+rec.posTransFee).toFixed(2);
+    if (rec.hardware != null && $('fdPosHardware')) {
+      // Hardware split between POS and Kiosk if both present is non-trivial.
+      // Simple rule: if only POS hardware in scope, all goes there. If both,
+      // proportionally allocate by their list shares.
+      var rates = LIST_RATES[prospect.country] || LIST_RATES.UK;
+      var locations = Math.max(1, prospect.locations || 1);
+      var posListHw = (prospect.includePOS && rates.pos) ? rates.pos.hardwareStarter * locations : 0;
+      var kioskListHw = (prospect.includeKiosk && rates.kiosk) ? rates.kiosk.hardware : 0;
+      var totalListHw = posListHw + kioskListHw;
+      if (totalListHw > 0) {
+        if (posListHw > 0) $('fdPosHardware').value = String(Math.round(rec.hardware * (posListHw / totalListHw)));
+        if (kioskListHw > 0 && $('fdKioskHardware')) $('fdKioskHardware').value = String(Math.round(rec.hardware * (kioskListHw / totalListHw)));
+      }
+    }
+    // Mark sub as auto-cleared so further pre-fill doesn't overwrite
+    var subEl = $('fdMonthlySub'); if (subEl) subEl.dataset.auto = '';
+    scheduleSave();
+    recompute();
+
+    // Toast
+    var toast = $('recToast');
+    if (toast) {
+      toast.classList.add('show');
+      setTimeout(function () { toast.classList.remove('show'); }, 1600);
+    }
   }
 
   // ---------- "How does this stack up?" engine (v8.2) ----------
@@ -2307,6 +2699,8 @@
     $('printBtn').addEventListener('click', printInternal);
     $('copyLinkBtn').addEventListener('click', copyLink);
     $('deleteBtn').addEventListener('click', deleteDeal);
+    var recBtn = $('recApplyBtn');
+    if (recBtn) recBtn.addEventListener('click', applyRecommendedDeal);
     // Status-strip "Show the math" expand toggle
     var detailToggle = $('liveDetailToggle');
     if (detailToggle) {
