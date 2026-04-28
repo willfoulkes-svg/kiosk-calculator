@@ -67,7 +67,7 @@
     font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase;
   }
 
-  .wrap { max-width: 1080px; margin: 0 auto; padding: 28px 20px 80px; }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 28px 20px 80px; }
 
   .back {
     display: inline-flex; align-items: center; gap: 6px;
@@ -217,6 +217,35 @@
     .grid2, .grid3 { grid-template-columns: 1fr; }
   }
   /* v8.10: Deal Details uses .grid2 (proven 2-col helper) — no custom CSS needed */
+
+  /* v8.15: workspace grid — proposal LEFT, verdict RIGHT (sticky)
+     so the rep sees their changes ripple through in real time without
+     scrolling between Step 3 and Step 4. */
+  .workspace-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: 18px;
+    align-items: start;
+    margin-bottom: 22px;
+  }
+  .workspace-grid > .proposal-col { min-width: 0; }
+  .workspace-grid > .stackup-col {
+    position: sticky;
+    top: 14px;
+    min-width: 0;
+  }
+  /* Inside the narrower proposal column, the In-store + Direct ordering
+     pair stacks instead of trying to be 2-up. */
+  .workspace-grid .current-grid { grid-template-columns: 1fr; }
+  /* On narrower viewports, drop the side-by-side and stack everything */
+  @media (max-width: 1080px) {
+    .workspace-grid { grid-template-columns: 1fr; }
+    .workspace-grid > .stackup-col { position: static; }
+    .workspace-grid .current-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 1000px) {
+    .workspace-grid .current-grid { grid-template-columns: 1fr; }
+  }
 
   /* v8.14: SFDC pull placeholder — sits at the top of Step 3, looks
      like a clickable card but is disabled until the API is wired. */
@@ -1166,6 +1195,14 @@
        — Will: doesn't matter for the maths/pitch. -->
 
 
+  <!-- v8.15: Step 3 (proposal) + Step 4 (how does this stack up) wrapped
+       in a 2-column workspace grid. Right column (verdict) is sticky so
+       it stays visible while the rep edits the proposal sliders/inputs
+       on the left. Will: "these sections are separated and you need to
+       scroll up and down each time to see the result of a change." -->
+  <div class="workspace-grid">
+  <div class="proposal-col">
+
   <!-- ===================== STEP 3 — FLIPDISH PROPOSAL ===================== -->
   <!-- v8.2: panel order swap — proposal now sits BEFORE the "How does
        this stack up?" panel. Reps need to type the actual SFDC quote
@@ -1277,6 +1314,9 @@
        surface it then; no point asking reps to fill a field that's
        always 12. -->
 
+
+  </div><!-- /.proposal-col -->
+  <div class="stackup-col">
 
   <!-- v8.10: Step 4 heading STAYS visible (matches the Step 3 pattern).
        Only the offer-panel body is hidden until inputs are ready —
@@ -1414,6 +1454,8 @@
   </div>
 
   </section><!-- /#stackUpSection -->
+  </div><!-- /.stackup-col -->
+  </div><!-- /.workspace-grid -->
 
   <!-- Step 5 (Value Story) deleted — Will: "I don't think the value story
        serves any purpose on this page really, it feels like that should
