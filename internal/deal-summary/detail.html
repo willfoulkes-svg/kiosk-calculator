@@ -148,6 +148,41 @@
     line-height: 1.45;
   }
 
+  /* v8.16: one-line deal summary - hidden until at least Step 1 has data.
+     A glance-able snapshot of the in-progress deal (products in scope,
+     proposal recurring, vs current spend, hardware discount, guardrail
+     status). Renders as a single sentence with strong key numbers. */
+  .deal-snapshot {
+    background: linear-gradient(180deg, #FAFBFC 0%, #F1F4F9 100%);
+    border: 1px solid #E2E6EE;
+    border-left: 3px solid var(--flipdish-blue);
+    border-radius: 10px;
+    padding: 11px 16px;
+    margin: 0 0 18px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: #2C3140;
+    display: none;
+  }
+  .deal-snapshot.show { display: block; }
+  .deal-snapshot strong { color: var(--flipdish-blue-dark); font-weight: 600; }
+  .deal-snapshot .snap-sep {
+    color: var(--muted);
+    margin: 0 8px;
+  }
+  .deal-snapshot .snap-pill {
+    display: inline-flex; align-items: center;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11.5px; font-weight: 600;
+    letter-spacing: 0.01em;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .deal-snapshot .snap-pill.ok    { background: #DEF5E5; color: #1F6F3A; }
+  .deal-snapshot .snap-pill.warn  { background: #FFF1D6; color: #8A5A00; }
+  .deal-snapshot .snap-pill.bad   { background: #FBE0E0; color: #9B1C1C; }
+
   /* ---------- Steps (v8.7: icons + warm/cool variants) ---------- */
   .step {
     display: flex; align-items: center; gap: 12px;
@@ -1128,6 +1163,10 @@
        once the rep types a prospect business name in Step 1. -->
   <h1 class="page-title" id="pageTitle">Deal Building</h1>
   <p class="page-title-sub">Build the proposal, see the live commercial impact, and walk into the conversation knowing the deal is healthy.</p>
+  <!-- v8.16: one-line deal snapshot. Hidden until Step 1 has at least
+       a prospect name; once populated it gives a glance-able summary
+       of the in-progress deal that updates live. -->
+  <div class="deal-snapshot" id="dealSnapshot" aria-live="polite"></div>
 
   <!-- ===================== TOP ROW (v8.8): country first, save stamp ===================== -->
   <!-- Will: country toggle should be the main top thing; prospect name
@@ -1410,9 +1449,11 @@
       </div>
       <aside class="lever-verdict" id="verdictFees" aria-live="polite">
         <div class="lever-verdict-title">Recurring impact</div>
+        <div class="lever-verdict-row" id="vFeesCurrentRow" style="display:none;"><span class="vlabel">Their current spend</span><span class="vval" id="vFeesCurrent">-</span></div>
         <div class="lever-verdict-row"><span class="vlabel">At list (no discount)</span><span class="vval" id="vFeesList">-</span></div>
         <div class="lever-verdict-row headline"><span class="vlabel">At your proposal</span><span class="vval" id="vFeesProposal">-</span></div>
-        <div class="lever-verdict-row delta"><span class="vlabel">Recurring give-up</span><span class="vval" id="vFeesDelta">-</span></div>
+        <div class="lever-verdict-row delta" id="vFeesVsCurrentRow" style="display:none;"><span class="vlabel">Vs current spend</span><span class="vval" id="vFeesVsCurrent">-</span></div>
+        <div class="lever-verdict-row delta"><span class="vlabel">Recurring give-up vs list</span><span class="vval" id="vFeesDelta">-</span></div>
         <hr class="lever-verdict-rule">
         <div class="lever-verdict-row"><span class="vlabel">Op margin / mo</span><span class="vval" id="vFeesOpMargin">-</span></div>
         <span class="lever-verdict-pill idle" id="vFeesPill">Awaiting input</span>
@@ -1520,37 +1561,11 @@
       </div>
     </div>
 
-    <!-- Scope-aware lever cards: each is hidden by default (display:none)
-         and only un-hidden by JS when the corresponding product is in
-         scope. So OO-only deals never see the hardware or POS-rate
-         cards. Kiosk-only never see processing rate cards, etc. -->
-    <div class="offer-levers" id="offerLevers" style="display:none;">
-      <div class="lever" data-lever="sub" id="lever-sub" style="display:none;">
-        <div class="lever-label">Bundled subscription</div>
-        <div class="lever-value" id="offerSubVal">-</div>
-        <div class="lever-detail" id="offerSubDetail">-</div>
-      </div>
-      <div class="lever" data-lever="ooRate" id="lever-ooRate" style="display:none;">
-        <div class="lever-label">OO processing %</div>
-        <div class="lever-value" id="offerOORateVal">-</div>
-        <div class="lever-detail" id="offerOORateDetail">-</div>
-      </div>
-      <div class="lever" data-lever="posRate" id="lever-posRate" style="display:none;">
-        <div class="lever-label">POS processing %</div>
-        <div class="lever-value" id="offerPosRateVal">-</div>
-        <div class="lever-detail" id="offerPosRateDetail">-</div>
-      </div>
-      <div class="lever" data-lever="posTxn" id="lever-posTxn" style="display:none;">
-        <div class="lever-label">POS per-transaction fee</div>
-        <div class="lever-value" id="offerPosTxnVal">-</div>
-        <div class="lever-detail" id="offerPosTxnDetail">-</div>
-      </div>
-      <div class="lever" data-lever="hardware" id="lever-hardware" style="display:none;">
-        <div class="lever-label">Hardware (one-off)</div>
-        <div class="lever-value" id="offerHwVal">-</div>
-        <div class="lever-detail" id="offerHwDetail">-</div>
-      </div>
-    </div>
+    <!-- v8.16: per-lever match-target cards removed. Each lever now
+         has a slider + live verdict in Section A / Section B above, so
+         these cards were duplicating info reps already see while they
+         build the proposal. Step 4 now keeps just the headline 3-card
+         comparison + the Defensible discount stack + Live Check. -->
 
     <!-- Recommended deal (v8.13) - split into two zones with separate
          goals: recurring give (fees + sub) wants to MINIMISE recurring
@@ -1888,6 +1903,97 @@
     titleEl.textContent = name ? ('Deal Building - ' + name) : 'Deal Building';
     // Browser tab title too - useful when reps have several deals open.
     document.title = name ? ('Deal Building - ' + name + ' | Flipdish') : 'Deal Building | Flipdish';
+  }
+
+  // v8.16: one-line deal snapshot under the page title. Built from the
+  // same numbers Section A and Section B verdicts use - just compressed
+  // into a single sentence. Hidden until the rep has at least picked a
+  // product (Step 1 scope tile) - before that there's nothing to summarise.
+  function updateDealSnapshot(p, v) {
+    var snap = $('dealSnapshot');
+    if (!snap) return;
+
+    var anyScope = !!(p.includeOO || p.includePOS || p.includeKiosk);
+    if (!anyScope) {
+      snap.classList.remove('show');
+      snap.innerHTML = '';
+      return;
+    }
+
+    var ccy = (CCY[p.country] || '£');
+    var fmt = function (n) { return ccy + Math.round(n || 0).toLocaleString('en-US'); };
+
+    // Products in scope (short labels)
+    var products = [];
+    if (p.includePOS)   products.push('POS');
+    if (p.includeOO)    products.push('OO');
+    if (p.includeKiosk) products.push('Kiosk');
+    var productLabel = products.join(' + ');
+
+    // Proposal recurring (SNR per site × locations)
+    var locations = Math.max(1, Math.round(parseFloat(p.locations)) || 1);
+    var proposalSnr = (v.snrPerSite || 0) * locations;
+
+    // Customer's current recurring spend (OO + POS - kiosk has no incumbent)
+    var curOO  = (v.detail && v.detail.oo  && v.detail.oo.curTotal)  || 0;
+    var curPOS = (v.detail && v.detail.pos && v.detail.pos.curTotal) || 0;
+    var customerCurrent = curOO + curPOS;
+    var vsCurrent = proposalSnr - customerCurrent;
+
+    // Hardware discount (list - proposed)
+    var hwList = v.hardwareListTotal || 0;
+    var hwDiscount = v.hardwareDiscount || 0;
+
+    // Guardrail status (mirrors Section A + B logic)
+    var snrPerSite = v.snrPerSite || 0;
+    var snrFloor = GUARDRAILS.snrFloorMonthly;
+    var paybackMonths = v.paybackMonths;
+    var snrOK = snrPerSite >= snrFloor;
+    var paybackOK = !(hwDiscount > 0 && paybackMonths != null && paybackMonths > GUARDRAILS.paybackTargetMonths);
+    var allOK = snrOK && paybackOK;
+    var pillClass, pillText;
+    if (proposalSnr === 0) {
+      // Nothing typed yet beyond scope - skip the pill
+      pillClass = ''; pillText = '';
+    } else if (allOK) {
+      pillClass = 'ok'; pillText = 'within all guardrails';
+    } else if (!paybackOK) {
+      pillClass = 'bad'; pillText = 'hardware over payback';
+    } else {
+      pillClass = 'warn'; pillText = 'recurring below SNR floor';
+    }
+
+    // Build the sentence in pieces. Only include parts that have meaning.
+    var parts = [];
+    parts.push('<strong>' + productLabel + '</strong>');
+    if (proposalSnr > 0) {
+      var line = 'proposal <strong>' + fmt(proposalSnr) + '/mo recurring</strong>';
+      if (customerCurrent > 0) {
+        var deltaTxt;
+        if (Math.abs(vsCurrent) < 0.5) {
+          deltaTxt = 'level with current';
+        } else if (vsCurrent < 0) {
+          deltaTxt = '<strong>' + fmt(-vsCurrent) + '/mo below current</strong>';
+        } else {
+          deltaTxt = '<strong>' + fmt(vsCurrent) + '/mo above current</strong>';
+        }
+        line += ' (' + deltaTxt + ')';
+      }
+      parts.push(line);
+    }
+    if (hwList > 0) {
+      if (hwDiscount > 0) {
+        parts.push('hardware <strong>' + fmt(hwDiscount) + ' off list</strong>');
+      } else {
+        parts.push('hardware at list');
+      }
+    }
+    var html = parts.join(' <span class="snap-sep">·</span> ');
+    if (pillText) {
+      html += ' <span class="snap-pill ' + pillClass + '">' + pillText + '</span>';
+    }
+    snap.innerHTML = html;
+    snap.classList.add('show');
   }
 
   // ---------- Hydrate: prospect object -> form ----------
@@ -2525,6 +2631,39 @@
         feesDelta.className = 'vval';
       }
     }
+
+    // v8.16: customer's current spend + vs-current delta. Pulled from
+    // Step 2 (only OO + POS displace; Kiosk has no incumbent). Hidden
+    // when the rep hasn't entered any current commercial figures yet.
+    var curOO = (v.detail && v.detail.oo && v.detail.oo.curTotal) || 0;
+    var curPOS = (v.detail && v.detail.pos && v.detail.pos.curTotal) || 0;
+    var customerCurrent = curOO + curPOS;
+    var currentRow = $('vFeesCurrentRow');
+    var vsCurrentRow = $('vFeesVsCurrentRow');
+    if (customerCurrent > 0) {
+      if (currentRow) currentRow.style.display = '';
+      if (vsCurrentRow) vsCurrentRow.style.display = '';
+      if ($('vFeesCurrent')) $('vFeesCurrent').textContent = fmt(customerCurrent) + '/mo';
+      var vsCurrent = proposalSnr - customerCurrent;
+      var vsEl = $('vFeesVsCurrent');
+      if (vsEl) {
+        if (Math.abs(vsCurrent) < 0.5) {
+          vsEl.textContent = 'Level'; vsEl.className = 'vval';
+        } else if (vsCurrent > 0) {
+          // Proposal is ABOVE customer's current spend - red (the gap to defend)
+          vsEl.textContent = '+' + fmt(vsCurrent) + '/mo (above)';
+          vsEl.className = 'vval down';
+        } else {
+          // Proposal is BELOW customer's current spend - green
+          vsEl.textContent = '−' + fmt(-vsCurrent) + '/mo (below)';
+          vsEl.className = 'vval up';
+        }
+      }
+    } else {
+      if (currentRow) currentRow.style.display = 'none';
+      if (vsCurrentRow) vsCurrentRow.style.display = 'none';
+    }
+
     if ($('vFeesOpMargin')) $('vFeesOpMargin').textContent = fmt(v.opMarginMonthly || 0) + '/mo';
 
     var pillA = $('vFeesPill');
@@ -2631,6 +2770,9 @@
     // v8.16: per-section mini-verdicts. Cheap to render and gives the
     // rep instant feedback as they drag sliders in either section.
     renderSectionVerdicts(prospect, v);
+
+    // v8.16: one-line deal snapshot under the page title.
+    updateDealSnapshot(prospect, v);
 
     // Step 5 (Value Story hero / streams / narrative) removed in v8.3 -
     // customer-facing version lives on customer.html. This page is now
@@ -3233,15 +3375,11 @@
   }
 
   // Lever DOM ID map - links each scope-aware lever key to its card +
-  // value + detail elements. Cards are hidden by default; this fn
-  // un-hides only the ones that came back from computeOfferPanel.
-  var LEVER_DOM = {
-    sub:      { card: 'lever-sub',      val: 'offerSubVal',      detail: 'offerSubDetail' },
-    ooRate:   { card: 'lever-ooRate',   val: 'offerOORateVal',   detail: 'offerOORateDetail' },
-    posRate:  { card: 'lever-posRate',  val: 'offerPosRateVal',  detail: 'offerPosRateDetail' },
-    posTxn:   { card: 'lever-posTxn',   val: 'offerPosTxnVal',   detail: 'offerPosTxnDetail' },
-    hardware: { card: 'lever-hardware', val: 'offerHwVal',       detail: 'offerHwDetail' }
-  };
+  // v8.16: LEVER_DOM and the per-lever rendering loop were removed
+  // along with the per-lever match-target cards. Section A and Section B
+  // verdicts in Step 3 already show every lever's room live as the rep
+  // slides, so the cards were duplicating information. Kept stub here as
+  // a marker in case anyone looks for the removed code path.
 
   function renderOfferPanel(o) {
     var panel = $('offerPanel');
@@ -3249,17 +3387,9 @@
     var title = $('offerTitle');
     var summary = $('offerSummary');
     var nums  = $('offerNumbers');
-    var leversWrap = $('offerLevers');
     var suggested = $('offerSuggested');
 
     panel.classList.remove('idle','headroom','match','tight');
-
-    // Always reset all lever cards to hidden first - they'll be un-hidden
-    // selectively below if they came back in scope.
-    Object.keys(LEVER_DOM).forEach(function (k) {
-      var card = $(LEVER_DOM[k].card);
-      if (card) card.style.display = 'none';
-    });
 
     // Idle states (show summary as guidance)
     if (o.state === 'idle') {
@@ -3279,14 +3409,12 @@
         summary.innerHTML = 'Pick a product (Online Ordering / POS / Kiosk) above, type what they pay today, and type your Flipdish proposal - this panel will show the customer\'s commercial reality alongside your proposal, with the room available in each lever within Flipdish guardrails.';
       }
       nums.style.display = 'none';
-      leversWrap.style.display = 'none';
       suggested.style.display = 'none';
       return;
     }
 
     panel.classList.add(o.state);
     nums.style.display = '';
-    leversWrap.style.display = '';
     // v8.8: hide the verbose summary paragraph in active states.
     // The 3-number row + pill + title already say everything the
     // paragraph used to. Will: "feels like a wasted line."
@@ -3337,20 +3465,15 @@
     } else {
       // match - discount room available
       pill.textContent = 'Discount room available';
-      title.textContent = 'One lever has enough room to match their current spend';
-      summary.innerHTML = 'Your proposal of <strong>' + fmtMoney(o.proposedRecurring) + '/mo</strong> sits <strong>' + fmtMoney(o.gap) + '/mo above</strong> their current spend (' + fmtMoney(o.customerTotal) + '/mo). The lever cards below show the room available in each - any one of them, at the level shown, would put your proposal level with their current spend.';
+      title.textContent = 'A single lever has enough room to match their current spend';
+      summary.innerHTML = 'Your proposal of <strong>' + fmtMoney(o.proposedRecurring) + '/mo</strong> sits <strong>' + fmtMoney(o.gap) + '/mo above</strong> their current spend (' + fmtMoney(o.customerTotal) + '/mo). Use the Defensible discount stack below for the cheapest combination, or adjust the sliders in Section A / Section B directly.';
     }
 
-    // Render the scope-aware lever cards
-    (o.levers || []).forEach(function (lever) {
-      var dom = LEVER_DOM[lever.key];
-      if (!dom) return;
-      var card = $(dom.card);
-      if (!card) return;
-      card.style.display = '';
-      var valEl = $(dom.val); if (valEl) valEl.textContent = lever.valueLabel;
-      var detEl = $(dom.detail); if (detEl) detEl.innerHTML = lever.detail;
-    });
+    // v8.16: per-lever match-target cards removed. The data they used
+    // to surface (room per lever, target to match current spend) is now
+    // visible live in Section A / Section B as the rep slides, so this
+    // render loop has nothing left to populate. The Defensible discount
+    // stack below picks the cheapest combination automatically.
 
     // Suggested play - rank closeable levers by costRank ascending
     // (1 = cheapest for Flipdish: hardware. 3 = worst: sub.)

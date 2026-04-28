@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Your Flipdish cost justification</title>
+<title>Your Flipdish proposal</title>
 <meta name="robots" content="noindex, nofollow">
 
 <!-- Password gate (the rep is the one opening this; the page reads from the rep's browser) -->
@@ -365,13 +365,13 @@
   <!-- Empty-state placeholder (shown when no prospect matches ?id=...) -->
   <div class="empty" id="emptyState" style="display:none;">
     <strong>We couldn't load this deal.</strong>
-    <p style="margin: 6px 0 0;">This cost justification is generated from a saved deal in the Deal Room. If you got here by accident, please go back and open it from there.</p>
+    <p style="margin: 6px 0 0;">This proposal is generated from a saved deal in the Deal Room. If you got here by accident, please go back and open it from there.</p>
     <p style="margin: 12px 0 0;"><a href="./">← Back to all deals</a></p>
   </div>
 
 </div>
 
-<footer>Flipdish · Cost justification · v1.0</footer>
+<footer>Flipdish · Proposal summary · v1.0</footer>
 
 <script>
   // ====================================================================
@@ -519,13 +519,15 @@
   }
 
   // ---------- Render helpers ----------
-  function saveCallout(amount, country) {
+  // Neutral month-on-month delta display vs current setup. No "you save"
+  // framing - the deal is sold on platform value, not on price-replacement.
+  function deltaCallout(amount, country) {
     if (amount > 0) {
-      return '<span class="save-callout">You save ' + fmtMoney(amount, country) + '/mo</span>';
+      return '<span class="save-callout">' + fmtMoney(amount, country) + '/mo lower than current</span>';
     } else if (amount < 0) {
-      return '<span class="save-callout negative">+' + fmtMoney(-amount, country) + '/mo vs today</span>';
+      return '<span class="save-callout negative">' + fmtMoney(-amount, country) + '/mo above current</span>';
     }
-    return '<span class="save-callout zero">Same as today</span>';
+    return '<span class="save-callout zero">Level with current</span>';
   }
 
   function ooCompareHtml(v, country) {
@@ -538,8 +540,8 @@
         '<div class="row"><span class="k">Monthly online revenue</span><span class="v">' + fmtMoney(d.gmv, country) + '</span></div>' +
         '<div class="row"><span class="k">' + providerLabel + ' - all-in monthly</span><span class="v">-' + fmtMoney(d.curTotal, country) + '</span></div>' +
         '<div class="row"><span class="k">Flipdish - all-in monthly</span><span class="v">-' + fmtMoney(d.fdTotal, country) + '</span></div>' +
-        '<div class="total-row"><span>Monthly saving</span><span class="v">' + fmtMoney(v.ooSavings, country) + '</span></div>' +
-        saveCallout(v.ooSavings, country) +
+        '<div class="total-row"><span>Monthly difference</span><span class="v">' + fmtMoney(v.ooSavings, country) + '</span></div>' +
+        deltaCallout(v.ooSavings, country) +
       '</div>';
   }
 
@@ -553,8 +555,8 @@
         '<div class="row"><span class="k">Monthly in-store revenue</span><span class="v">' + fmtMoney(d.gmv, country) + '</span></div>' +
         '<div class="row"><span class="k">' + providerLabel + ' - all-in monthly</span><span class="v">-' + fmtMoney(d.curTotal, country) + '</span></div>' +
         '<div class="row"><span class="k">Flipdish - all-in monthly</span><span class="v">-' + fmtMoney(d.newTotal, country) + '</span></div>' +
-        '<div class="total-row"><span>Monthly saving</span><span class="v">' + fmtMoney(v.posSavings, country) + '</span></div>' +
-        saveCallout(v.posSavings, country) +
+        '<div class="total-row"><span>Monthly difference</span><span class="v">' + fmtMoney(v.posSavings, country) + '</span></div>' +
+        deltaCallout(v.posSavings, country) +
       '</div>';
   }
 
@@ -583,7 +585,7 @@
           '<div class="stack-label">' + escapeHtml(label) + '</div>' +
           '<div class="stack-cell list"><span class="stack-cell-label">List price</span><span class="stack-cell-value">' + listText + '</span></div>' +
           '<div class="stack-cell yours"><span class="stack-cell-label">Your price</span><span class="stack-cell-value">' + youText + '</span></div>' +
-          '<div class="stack-cell save"><span class="stack-cell-label">You save</span><span class="stack-cell-value">' + saveText + (savePct != null ? ' &nbsp;<small>(' + savePct + '% off)</small>' : '') + '</span></div>' +
+          '<div class="stack-cell save"><span class="stack-cell-label">Your discount</span><span class="stack-cell-value">' + saveText + (savePct != null ? ' &nbsp;<small>(' + savePct + '% off list)</small>' : '') + '</span></div>' +
         '</div>';
     }
 
@@ -700,14 +702,14 @@
     if (totalSaveYearOne > 0) {
       totalLine = '' +
         '<div class="stack-total">' +
-          '<span class="stack-total-label">Total package value vs list (Year 1)</span>' +
-          '<span class="stack-total-value">' + fmtMoney(totalSaveYearOne, country) + ' off</span>' +
+          '<span class="stack-total-label">Total discount vs list (Year 1)</span>' +
+          '<span class="stack-total-value">' + fmtMoney(totalSaveYearOne, country) + ' off list</span>' +
         '</div>';
     }
 
     return '' +
       '<div class="discount-stack">' +
-        '<p class="discount-stack-intro"><strong>Your special pricing.</strong> Below is the discount we\'re putting on the table for your business - comparing standard list pricing to what you\'ll actually be paying.</p>' +
+        '<p class="discount-stack-intro"><strong>Your agreed pricing.</strong> Below is the pricing your Flipdish rep has put together for your business - showing standard list pricing alongside what you\'ll be paying.</p>' +
         '<div class="stack-rows">' + rows.join('') + '</div>' +
         totalLine +
       '</div>';
@@ -727,17 +729,17 @@
 
   function paybackLine(v, country) {
     if (v.paybackMonths == null) {
-      return 'On these numbers the monthly figures don\'t yet show a positive return. Ask your Flipdish rep to review the rates.';
+      return 'Your Flipdish package sits above your current monthly spend - the value comes from the platform itself (online ordering, kiosk, marketplace integration, customer ownership), not from a lower bill.';
     }
     if (v.paybackMonths === 0) {
-      return 'No hardware one-off to recover - you\'re net-positive from day one.';
+      return 'No hardware one-off in this package - your monthly with Flipdish is what you see above.';
     }
     if (v.paybackMonths <= 12) {
       var whole = Math.round(v.paybackMonths);
-      return 'The ' + fmtMoney(v.hardwareOneOff, country) + ' hardware investment pays back in roughly <strong>' + whole + ' month' + (whole === 1 ? '' : 's') + '</strong> - after that, the full monthly saving is yours.';
+      return 'Your ' + fmtMoney(v.hardwareOneOff, country) + ' hardware investment is offset by the monthly difference vs your current setup in roughly <strong>' + whole + ' month' + (whole === 1 ? '' : 's') + '</strong>.';
     }
     var yrs = (v.paybackMonths / 12).toFixed(1);
-    return 'The ' + fmtMoney(v.hardwareOneOff, country) + ' hardware investment pays back in about <strong>' + yrs + ' years</strong> on these numbers.';
+    return 'Your ' + fmtMoney(v.hardwareOneOff, country) + ' hardware investment is offset by the monthly difference vs your current setup over about <strong>' + yrs + ' years</strong>.';
   }
 
   // ---------- Main render ----------
@@ -764,9 +766,9 @@
     // Build the header
     var headerHtml = '' +
       '<div class="doc-header">' +
-        '<div class="doc-kicker">Cost justification</div>' +
+        '<div class="doc-kicker">Your Flipdish proposal</div>' +
         '<h1 class="doc-title">' + escapeHtml(prospect.name || 'Your business') + '</h1>' +
-        '<p class="doc-subtitle">Here\'s what moving to Flipdish looks like for your business, month on month.</p>' +
+        '<p class="doc-subtitle">A summary of the Flipdish package and the pricing your rep has put together for your business.</p>' +
         '<div class="doc-meta">' +
           (prospect.locations ? '<span class="meta-item"><strong>' + prospect.locations + '</strong> ' + (prospect.locations == 1 ? 'location' : 'locations') + '</span>' : '') +
           '<span class="meta-item"><strong>' + LOC[country] + '</strong></span>' +
@@ -781,35 +783,43 @@
       return;
     }
 
-    // Hero
-    var heroClass = (v.netMonthly > 0) ? 'hero' : 'hero no-value';
-    var monthlyLabel = v.netMonthly >= 0 ? 'What you save / month' : 'Net monthly delta';
+    // Hero - frame the Flipdish package itself, not "savings vs incumbent".
+    // Three cells: monthly Flipdish recurring, hardware one-off, total
+    // first-year investment. Neutral, not a price-replacement pitch.
+    var heroClass = 'hero';
+    var heroMonthly = (v.fdMonthlySub || 0);
+    if (v.detail && v.detail.oo)  heroMonthly += (v.detail.oo.fdTotal  || 0);
+    if (v.detail && v.detail.pos) heroMonthly += (v.detail.pos.newTotal || 0);
+    var heroHardware = v.hardwareOneOff || 0;
+    var heroFirstYear = (heroMonthly * 12) + heroHardware;
     var heroHtml = '' +
       '<div class="' + heroClass + '">' +
         '<div class="cell">' +
-          '<div class="label">' + monthlyLabel + '</div>' +
-          '<div class="big">' + fmtMoney(v.netMonthly, country) + '</div>' +
-          '<div class="sub">After the Flipdish monthly subscription</div>' +
+          '<div class="label">Your Flipdish monthly</div>' +
+          '<div class="big">' + fmtMoney(heroMonthly, country) + '</div>' +
+          '<div class="sub">Subscription + processing across all products</div>' +
         '</div>' +
         '<div class="cell">' +
-          '<div class="label">Year 1 value</div>' +
-          '<div class="big">' + fmtMoney(v.annualValue, country) + '</div>' +
-          '<div class="sub">12 months, net of hardware one-off</div>' +
+          '<div class="label">Hardware (one-off)</div>' +
+          '<div class="big">' + fmtMoney(heroHardware, country) + '</div>' +
+          '<div class="sub">After the discount your rep has applied</div>' +
         '</div>' +
         '<div class="cell">' +
-          '<div class="label">Over the ' + v.contractMonths + '-month contract</div>' +
-          '<div class="big">' + fmtMoney(v.contractValue, country) + '</div>' +
-          '<div class="sub">Total value across the term</div>' +
+          '<div class="label">Year 1 total</div>' +
+          '<div class="big">' + fmtMoney(heroFirstYear, country) + '</div>' +
+          '<div class="sub">Hardware + 12 months of subscription &amp; processing</div>' +
         '</div>' +
       '</div>';
 
-    // Discount stack (the hype: list price → your price, per lever)
+    // Discount stack (list price → your price, per lever) - record of
+    // the discount the rep has agreed.
     var stackHtml = discountStackHtml(prospect, country);
     var stackSection = stackHtml
-      ? '<h2 class="section-title"><span class="dot"></span>Your special pricing</h2>' + stackHtml
+      ? '<h2 class="section-title"><span class="dot"></span>Your agreed pricing</h2>' + stackHtml
       : '';
 
-    // Savings section (OO + POS)
+    // Side-by-side comparison vs current setup. Neutral framing - not
+    // "savings", just "what you pay today vs what you\'ll pay with us".
     var savingsHtml = '';
     var savingsTiles = [];
     if (prospect.includeOO) {
@@ -821,19 +831,30 @@
       if (posTile) savingsTiles.push(posTile);
     }
     if (savingsTiles.length) {
-      savingsHtml = '<h2 class="section-title"><span class="dot"></span>Where the savings come from</h2>' +
+      savingsHtml = '<h2 class="section-title"><span class="dot"></span>Side by side with your current setup</h2>' +
         '<div class="compare-grid">' + savingsTiles.join('') + '</div>';
     }
 
-    // Investment
+    // What\'s in your Flipdish package
     var investHtml = investmentHtml(v, country);
     var investSectionHtml = investHtml
-      ? '<h2 class="section-title"><span class="dot"></span>What it costs</h2>' + investHtml
+      ? '<h2 class="section-title"><span class="dot"></span>Your Flipdish package</h2>' + investHtml
       : '';
 
-    // Bottom line + payback
-    var blLabel = v.netMonthly > 0 ? 'Bottom line' : 'Where we stand today';
-    var blBig = fmtMoney(v.netMonthly, country) + '/mo';
+    // Bottom line + payback. Neutral framing of the monthly difference -
+    // not "you save", not "delta", just a clear statement of the position.
+    var blLabel;
+    var blBig;
+    if (v.netMonthly > 0) {
+      blLabel = 'Monthly difference vs current';
+      blBig   = fmtMoney(v.netMonthly, country) + '/mo lower';
+    } else if (v.netMonthly < 0) {
+      blLabel = 'Monthly difference vs current';
+      blBig   = fmtMoney(-v.netMonthly, country) + '/mo higher';
+    } else {
+      blLabel = 'Monthly difference vs current';
+      blBig   = 'Level with current';
+    }
     var blSub = paybackLine(v, country);
     var bottomLineHtml = '' +
       '<div class="bottom-line">' +
@@ -843,7 +864,7 @@
       '</div>';
 
     // Fine-print footnote
-    var finePrint = '<p class="fineprint">Figures above are based on what you and your Flipdish rep captured about your current setup and the rates in our proposal. Final quote values, contract terms and payment schedules are in the signed order form from Salesforce; this page is a summary for discussion.</p>';
+    var finePrint = '<p class="fineprint">Figures above are based on what you and your Flipdish rep captured about your current setup and the pricing in this proposal. Final quote values, contract terms and payment schedules are in the signed order form from Salesforce; this page is a summary for discussion.</p>';
 
     // Actions (not shown when printing)
     var actionsHtml = '' +
