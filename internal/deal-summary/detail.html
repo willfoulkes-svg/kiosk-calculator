@@ -459,9 +459,11 @@
   }
   .lever-slider {
     -webkit-appearance: none; appearance: none;
-    width: 100%; height: 6px;
-    background: linear-gradient(90deg, #FFE5D2 0%, var(--flipdish-blue-light) 100%);
-    border-radius: 3px;
+    width: 100%; height: 8px;
+    /* v8.16: solid Flipdish blue track so the slider reads obviously
+       as a draggable control. Slightly thicker too for clearer affordance. */
+    background: var(--flipdish-blue);
+    border-radius: 4px;
     outline: none;
     cursor: pointer;
     margin: 4px 0 2px;
@@ -492,6 +494,40 @@
   }
   .lever-meta .lever-floor { color: var(--peach-dark); }
   .lever-meta .lever-list { color: var(--flipdish-blue); }
+
+  /* v8.16: hardware section pairs a "List price" row with a "Proposal"
+     row, both styled identically so they read as twin reference points.
+     The slider sits below the proposal row and visualises the discount
+     between them. */
+  .hw-pair { display: flex; flex-direction: column; gap: 6px; }
+  .hw-list-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px;
+    padding: 6px 10px;
+    background: var(--flipdish-blue-light);
+    border-radius: 6px;
+  }
+  /* Proposal row uses a slightly stronger fill so the rep can tell
+     the two rows apart at a glance. */
+  .hw-proposal-row {
+    background: #E1ECFA;
+  }
+  .hw-list-label {
+    font-size: 11.5px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--flipdish-blue-dark);
+  }
+  .hw-list-input {
+    width: 130px;
+    padding: 4px 10px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    text-align: right;
+    margin-bottom: 0 !important;
+  }
+  .hw-slider-wrap {
+    padding: 4px 4px 0;
+  }
 
   /* v8.8: side-by-side current - In-store left, Direct ordering right */
   .current-grid {
@@ -535,7 +571,9 @@
     font-family: inherit; font-weight: 400; color: var(--muted);
     text-transform: none; letter-spacing: 0; margin-left: 6px;
   }
-  .field input, .field select, .field textarea {
+  /* v8.16: scope this to non-range inputs so the field-input cream
+     background doesn't leak onto the lever sliders. */
+  .field input:not([type="range"]), .field select, .field textarea {
     border: 1px solid var(--input-border);
     background: var(--input-bg);
     padding: 10px 12px;
@@ -1163,10 +1201,10 @@
        once the rep types a prospect business name in Step 1. -->
   <h1 class="page-title" id="pageTitle">Deal Building</h1>
   <p class="page-title-sub">Build the proposal, see the live commercial impact, and walk into the conversation knowing the deal is healthy.</p>
-  <!-- v8.16: one-line deal snapshot. Hidden until Step 1 has at least
-       a prospect name; once populated it gives a glance-able summary
-       of the in-progress deal that updates live. -->
-  <div class="deal-snapshot" id="dealSnapshot" aria-live="polite"></div>
+  <!-- v8.16: deal snapshot relocated below Step 4 (just above the
+       action bar) - sits as a final at-a-glance line summarising
+       the deal once Steps 1-3 are populated. -->
+
 
   <!-- ===================== TOP ROW (v8.8): country first, save stamp ===================== -->
   <!-- Will: country toggle should be the main top thing; prospect name
@@ -1197,7 +1235,7 @@
     <div class="grid2">
       <div class="field">
         <label>Prospect business name</label>
-        <input id="prospectName" type="text" placeholder="e.g. Billy's Pizza" autocomplete="off">
+        <input id="prospectName" type="text" value="Billy's Pizza" autocomplete="off">
       </div>
       <div class="field">
         <label>Number of locations</label>
@@ -1205,7 +1243,7 @@
       </div>
       <div class="field">
         <label>Primary contact</label>
-        <input id="contactName" type="text" placeholder="e.g. Alex Murphy, Operations Manager">
+        <input id="contactName" type="text" value="Alex Murphy, Operations Manager">
       </div>
       <div class="field">
         <label>Deal owner (rep)</label>
@@ -1220,7 +1258,7 @@
     <span class="step-icon" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
     </span>
-    <span class="text">Their current commercial reality <span class="sub">What the customer processes and pays today</span></span>
+    <span class="text">Current commercials <span class="sub">What the customer processes and pays today</span></span>
   </div>
 
   <!-- Document upload stub - UI in place, extraction wires up later
@@ -1237,7 +1275,7 @@
       </div>
       <div class="upload-text">
         <div class="upload-title">Drop a current provider statement <span class="badge-soon">Coming soon</span></div>
-        <p class="upload-desc">Drop in a Foodhub, Mealzo, OrderYoyo, Toast, Square or Clover invoice/statement (PDF or image) and we'll read the rates and pre-fill the cards below. Until this is wired, fill in the numbers manually below - same fields, same outcome.</p>
+        <p class="upload-desc">Drop in an invoice or statement from the customer's current provider (Foodhub, Mealzo, OrderYoyo, Toast, Square, Clover or any other) and we'll read the rates and pre-fill the cards below. Until this is wired, fill in the numbers manually below - same fields, same outcome.</p>
       </div>
     </div>
   </div>
@@ -1293,27 +1331,27 @@
       <div class="grid2">
         <div class="field">
           <label>Current POS provider</label>
-          <input id="curPosProvider" type="text" placeholder="e.g. Clover, Square">
+          <input id="curPosProvider" type="text" value="Clover">
         </div>
         <div class="field">
           <label>Monthly POS GMV <span class="hint">(in-store sales)</span></label>
-          <input id="curPosGmv" type="number" min="0" step="100" placeholder="e.g. 20000">
+          <input id="curPosGmv" type="number" min="0" step="100" value="20000">
         </div>
         <div class="field">
           <label>Average order value (POS)</label>
-          <input id="curAov" type="number" min="0" step="0.5" placeholder="e.g. 15">
+          <input id="curAov" type="number" min="0" step="0.5" value="15">
         </div>
         <div class="field">
           <label>Current merchant rate % <span class="hint">(card)</span></label>
-          <input id="curPosRate" type="number" min="0" step="0.05" placeholder="e.g. 1">
+          <input id="curPosRate" type="number" min="0" step="0.05" value="1">
         </div>
         <div class="field">
           <label>Current per-transaction fee</label>
-          <input id="curPosTransFee" type="number" min="0" step="0.01" placeholder="e.g. 0.10">
+          <input id="curPosTransFee" type="number" min="0" step="0.01" value="0.10">
         </div>
         <div class="field">
           <label>Current POS monthly subscription</label>
-          <input id="curPosSub" type="number" min="0" step="1" placeholder="e.g. 99">
+          <input id="curPosSub" type="number" min="0" step="1" value="99">
         </div>
       </div>
     </div>
@@ -1324,27 +1362,27 @@
       <div class="grid2">
         <div class="field">
           <label>Current provider</label>
-          <input id="curOOProvider" type="text" placeholder="e.g. Foodhub, Mealzo">
+          <input id="curOOProvider" type="text" value="Foodhub">
         </div>
         <div class="field">
           <label>Monthly online revenue <span class="hint">(direct)</span></label>
-          <input id="curOOGmv" type="number" min="0" step="100" placeholder="e.g. 2000">
+          <input id="curOOGmv" type="number" min="0" step="100" value="2000">
         </div>
         <div class="field">
           <label>Average online order value</label>
-          <input id="curOOAov" type="number" min="0" step="0.5" placeholder="e.g. 25">
+          <input id="curOOAov" type="number" min="0" step="0.5" value="25">
         </div>
         <div class="field">
           <label>Software subscription <span class="hint">(£/mo)</span></label>
-          <input id="curOOSub" type="number" min="0" step="1" placeholder="e.g. 79">
+          <input id="curOOSub" type="number" min="0" step="1" value="79">
         </div>
         <div class="field">
           <label>Processing fee % <span class="hint">(or commission %)</span></label>
-          <input id="curOOProcessingRate" type="number" min="0" step="0.1" placeholder="e.g. 3.4">
+          <input id="curOOProcessingRate" type="number" min="0" step="0.1" value="3.4">
         </div>
         <div class="field">
           <label>Per-transaction fee</label>
-          <input id="curOOTransFee" type="number" min="0" step="0.01" placeholder="e.g. 0.05">
+          <input id="curOOTransFee" type="number" min="0" step="0.01" value="0.05">
         </div>
       </div>
       <!-- v8.9: marketplace context lives here, not in its own card.
@@ -1356,14 +1394,14 @@
         <div class="grid2">
           <div class="field">
             <label>Monthly marketplace revenue <span class="hint">(combined)</span></label>
-            <input id="curMarketGmv" type="number" min="0" step="100" placeholder="e.g. 10000">
+            <input id="curMarketGmv" type="number" min="0" step="100" value="10000">
           </div>
           <div class="field">
-            <label>Average commission % <span class="hint">(typical 25-35%)</span></label>
-            <input id="curMarketCommission" type="number" min="0" step="0.5" placeholder="e.g. 30">
+            <label>Average commission % <span class="hint">(typical 12-14%)</span></label>
+            <input id="curMarketCommission" type="number" min="0" step="0.5" value="13">
           </div>
         </div>
-        <p class="market-strip-note">Not part of the cost-replacement maths - but heavy marketplace dependence strengthens the case for direct ordering, kiosk and hardware investment. Use it in the pitch.</p>
+        <p class="market-strip-note">Marketplaces charge heavy commission and own the customer relationship. Flipdish brings that revenue back in-house through direct ordering, kiosk and POS - reclaiming margin and the customer.</p>
       </div>
     </div>
   </div>
@@ -1420,30 +1458,34 @@
           <div class="field" id="fdPosRateField" style="display:none;">
             <label>POS processing %</label>
             <div class="lever-control">
-              <input id="fdPosRate" type="number" min="0" step="0.05" placeholder="e.g. 1.2">
-              <input type="range" class="lever-slider" data-target="fdPosRate" min="1.0" max="1.2" step="0.01" value="1.2">
-              <div class="lever-meta"><span class="lever-floor">Floor 1.00%</span><span class="lever-list">List 1.20%</span></div>
+              <input id="fdPosRate" type="number" min="0" step="0.05" value="1.2">
+              <input type="range" class="lever-slider" data-target="fdPosRate" min="0.5" max="1.5" step="0.01" value="1.2">
+              <div class="lever-meta"><span class="lever-floor">0.50%</span><span class="lever-list">1.50%</span></div>
             </div>
           </div>
           <div class="field" id="fdPosTransFeeField" style="display:none;">
             <label>POS per-transaction fee</label>
             <div class="lever-control">
-              <input id="fdPosTransFee" type="number" min="0" step="0.01" placeholder="e.g. 0.10">
-              <input type="range" class="lever-slider" data-target="fdPosTransFee" min="0" max="0.10" step="0.01" value="0.10">
-              <div class="lever-meta"><span class="lever-floor">£0.00</span><span class="lever-list">List £0.10</span></div>
+              <input id="fdPosTransFee" type="number" min="0" step="0.01" value="0.10">
+              <input type="range" class="lever-slider" data-target="fdPosTransFee" min="0" max="0.15" step="0.01" value="0.10">
+              <div class="lever-meta"><span class="lever-floor">£0.00</span><span class="lever-list">£0.15</span></div>
             </div>
           </div>
           <div class="field" id="fdOOProcessingRateField" style="display:none;">
             <label>OO processing %</label>
             <div class="lever-control">
-              <input id="fdOOProcessingRate" type="number" min="0" step="0.05" placeholder="e.g. 5">
-              <input type="range" class="lever-slider" data-target="fdOOProcessingRate" min="1.64" max="5" step="0.05" value="5">
-              <div class="lever-meta"><span class="lever-floor">Floor 1.64%</span><span class="lever-list">List 5.00%</span></div>
+              <input id="fdOOProcessingRate" type="number" min="0" step="0.05" value="5">
+              <input type="range" class="lever-slider" data-target="fdOOProcessingRate" min="3" max="7" step="0.05" value="5">
+              <div class="lever-meta"><span class="lever-floor">3.00%</span><span class="lever-list">7.00%</span></div>
             </div>
           </div>
           <div class="field" id="fdMonthlySubField" style="display:none;">
-            <label>Bundled sub from SFDC quote <span class="hint">(£/mo all-in across all products)</span></label>
-            <input id="fdMonthlySub" type="number" min="0" step="1" placeholder="e.g. 199">
+            <label>Bundled sub <span class="hint">(all-in monthly across all products)</span></label>
+            <div class="lever-control">
+              <input id="fdMonthlySub" type="number" min="0" step="1" value="129">
+              <input type="range" class="lever-slider" data-target="fdMonthlySub" min="119" max="139" step="1" value="129">
+              <div class="lever-meta"><span class="lever-floor">£119</span><span class="lever-list">£139</span></div>
+            </div>
           </div>
         </div>
       </div>
@@ -1453,11 +1495,11 @@
         <div class="lever-verdict-row"><span class="vlabel">At list (no discount)</span><span class="vval" id="vFeesList">-</span></div>
         <div class="lever-verdict-row headline"><span class="vlabel">At your proposal</span><span class="vval" id="vFeesProposal">-</span></div>
         <div class="lever-verdict-row delta" id="vFeesVsCurrentRow" style="display:none;"><span class="vlabel">Vs current spend</span><span class="vval" id="vFeesVsCurrent">-</span></div>
-        <div class="lever-verdict-row delta"><span class="vlabel">Recurring give-up vs list</span><span class="vval" id="vFeesDelta">-</span></div>
+        <div class="lever-verdict-row delta"><span class="vlabel">Off list</span><span class="vval" id="vFeesDelta">-</span></div>
         <hr class="lever-verdict-rule">
         <div class="lever-verdict-row"><span class="vlabel">Op margin / mo</span><span class="vval" id="vFeesOpMargin">-</span></div>
         <span class="lever-verdict-pill idle" id="vFeesPill">Awaiting input</span>
-        <div class="lever-verdict-note">Op margin funds Section B's hardware envelope. Drop fees further → envelope shrinks.</div>
+        <div class="lever-verdict-note">Op margin is the monthly profit Flipdish keeps after card-processing costs. Discount fees harder and you also shrink the room available to discount hardware in Section B.</div>
       </aside>
     </div>
   </div>
@@ -1475,24 +1517,43 @@
     <div class="lever-section-body">
       <div class="lever-section-fields">
         <div class="grid2">
+          <!-- v8.16: hardware list price is now a per-deal input.
+               Rep types the actual SFDC list (could be £799 starter or
+               £4000 multi-till). The proposal slider goes 0 to that
+               typed list - it shows the discount off the rep's stated
+               list, not off a hardcoded baseline. -->
           <div class="field" id="fdPosHardwareField" style="display:none;">
             <label>POS hardware <span class="hint">(one-off, total)</span></label>
-            <div class="lever-control">
-              <input id="fdPosHardware" type="number" min="0" step="50" placeholder="e.g. 799">
-              <input type="range" class="lever-slider" data-target="fdPosHardware" min="0" max="799" step="25" value="799">
-              <div class="lever-meta"><span class="lever-floor">£0 (free)</span><span class="lever-list">List £799</span></div>
+            <div class="hw-pair">
+              <div class="hw-list-row">
+                <span class="hw-list-label">List price</span>
+                <input id="fdPosHardwareList" type="number" min="0" step="50" value="799" class="hw-list-input">
+              </div>
+              <div class="hw-list-row hw-proposal-row">
+                <span class="hw-list-label">Proposal</span>
+                <input id="fdPosHardware" type="number" min="0" step="50" value="799" class="hw-list-input">
+              </div>
+              <div class="hw-slider-wrap">
+                <input type="range" class="lever-slider" data-target="fdPosHardware" min="0" max="799" step="25" value="799">
+                <div class="lever-meta"><span class="lever-floor">£0 (free)</span><span class="lever-list" id="fdPosHardwareListLabel">List £799</span></div>
+              </div>
             </div>
-          </div>
-          <div class="field" id="fdKioskCountField" style="display:none;">
-            <label>Number of kiosks <span class="hint">(in this deal)</span></label>
-            <input id="fdKioskCount" type="number" min="1" step="1" placeholder="e.g. 1">
           </div>
           <div class="field" id="fdKioskHardwareField" style="display:none;">
             <label>Kiosk hardware <span class="hint">(one-off, total across all kiosks)</span></label>
-            <div class="lever-control">
-              <input id="fdKioskHardware" type="number" min="0" step="50" placeholder="e.g. 1500">
-              <input type="range" class="lever-slider" data-target="fdKioskHardware" min="0" max="1500" step="50" value="1500">
-              <div class="lever-meta"><span class="lever-floor">£0 (free)</span><span class="lever-list">List £1,500</span></div>
+            <div class="hw-pair">
+              <div class="hw-list-row">
+                <span class="hw-list-label">List price</span>
+                <input id="fdKioskHardwareList" type="number" min="0" step="50" value="1500" class="hw-list-input">
+              </div>
+              <div class="hw-list-row hw-proposal-row">
+                <span class="hw-list-label">Proposal</span>
+                <input id="fdKioskHardware" type="number" min="0" step="50" value="1500" class="hw-list-input">
+              </div>
+              <div class="hw-slider-wrap">
+                <input type="range" class="lever-slider" data-target="fdKioskHardware" min="0" max="1500" step="50" value="1500">
+                <div class="lever-meta"><span class="lever-floor">£0 (free)</span><span class="lever-list" id="fdKioskHardwareListLabel">List £1,500</span></div>
+              </div>
             </div>
           </div>
         </div>
@@ -1513,122 +1574,20 @@
     </div>
   </div>
 
-  <!-- ===================== STEP 4 - HOW DOES THIS STACK UP? ===================== -->
-  <!-- v8.16: stack-up panel now sits full-width below the two lever
-       sections. One combined view of "your proposal vs their current
-       spend" + Recommended Deal + single Apply button. -->
-  <section id="stackUpSection">
+  <!-- v8.16: Step 4 / Defensible discount stack removed. With Section A
+       and Section B per-section verdicts (recurring impact vs current
+       spend + hardware payback + guardrail pills) plus the deal snapshot
+       footer, the rep is doing the optimisation themselves with full
+       information as they slide. The auto-recommender was nudging back
+       toward "match current spend" - the old price-replacement framing -
+       so removing it both simplifies the page and reinforces the
+       platform-value motion. The compute / render functions remain in
+       JS as dead code in case the recommender needs reviving later. -->
 
-  <!-- ===================== STEP 4 - HOW DOES THIS STACK UP? ===================== -->
-  <!-- v8.2 redesign: this panel now sits BELOW the Flipdish proposal so
-       the rep sees their ACTUAL TYPED QUOTE compared against the
-       customer's current spend (not Flipdish list). It's also fully
-       scope-aware - for OO-only deals, no hardware or POS-rate lever
-       cards appear; for kiosk-only, no processing-rate cards; etc.
-       Each lever shows: list value, what the rep typed, and a concrete
-       "to match their current spend, drop this to £X" target where
-       single-lever match is feasible. The Live Commercial Check (deal
-       health from Flipdish's side) is folded into the bottom of the
-       same panel. -->
-  <div class="step">
-    <span class="num">4</span>
-    <span class="step-icon" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-    </span>
-    <span class="text">Discount justification <span class="sub">The customer's commercial reality alongside your proposal - the evidence base that defends the discount level you've offered</span></span>
-  </div>
-
-  <div class="offer-panel idle" id="offerPanel">
-    <div class="offer-headline">
-      <span class="offer-state-pill" id="offerStatePill">Awaiting inputs</span>
-      <h3 id="offerTitle">Fill in Steps 2 and 3 to see the justification view</h3>
-    </div>
-    <div class="offer-summary" id="offerSummary">
-      Pick a product (Online Ordering / POS / Kiosk) above, type what they pay today, and type your Flipdish proposal - this panel will show the customer's commercial reality alongside your proposal and the room you have available in each lever within Flipdish's guardrails.
-    </div>
-    <div class="offer-numbers" id="offerNumbers" style="display:none;">
-      <div class="offer-num">
-        <div class="offer-num-label">They pay today</div>
-        <div class="offer-num-value" id="offerCurrentVal">-</div>
-      </div>
-      <div class="offer-num">
-        <div class="offer-num-label">You proposed (recurring)</div>
-        <div class="offer-num-value" id="offerProposedVal">-</div>
-      </div>
-      <div class="offer-num">
-        <div class="offer-num-label" id="offerDeltaLabel">Gap</div>
-        <div class="offer-num-value" id="offerDeltaVal">-</div>
-      </div>
-    </div>
-
-    <!-- v8.16: per-lever match-target cards removed. Each lever now
-         has a slider + live verdict in Section A / Section B above, so
-         these cards were duplicating info reps already see while they
-         build the proposal. Step 4 now keeps just the headline 3-card
-         comparison + the Defensible discount stack + Live Check. -->
-
-    <!-- Recommended deal (v8.13) - split into two zones with separate
-         goals: recurring give (fees + sub) wants to MINIMISE recurring
-         revenue damage; one-off give (hardware) has a HARD cap at
-         3-month payback. Each zone has its own grid; either zone can
-         be hidden if there's nothing to recommend in that lane. -->
-    <div class="rec-deal" id="recDeal" style="display:none;">
-      <div class="rec-deal-head">
-        <h3 class="rec-deal-title">Defensible discount stack</h3>
-        <button type="button" class="rec-apply-btn" id="recApplyBtn">Apply to proposal →</button>
-      </div>
-
-      <div class="rec-zone" id="recZoneRecurring" style="display:none;">
-        <div class="rec-zone-head">
-          <span class="rec-zone-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><polyline points="21 4 21 12 13 12"/></svg>
-          </span>
-          <span class="rec-zone-title">Recurring give <span class="rec-zone-sub">- fees & subscription</span></span>
-          <span class="rec-zone-goal">Goal: minimise damage to recurring revenue</span>
-        </div>
-        <div class="rec-deal-grid" id="recDealGridRecurring"></div>
-      </div>
-
-      <div class="rec-zone" id="recZoneHardware" style="display:none;">
-        <div class="rec-zone-head">
-          <span class="rec-zone-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="18" x2="12" y2="21"/></svg>
-          </span>
-          <span class="rec-zone-title">One-off give <span class="rec-zone-sub">- hardware</span></span>
-          <span class="rec-zone-goal">Hard cap: 3-month payback</span>
-        </div>
-        <div class="rec-deal-grid" id="recDealGridHardware"></div>
-      </div>
-
-      <div class="rec-deal-impact" id="recDealImpact"></div>
-      <div class="rec-deal-narrative" id="recDealNarrative"></div>
-    </div>
-
-    <!-- Legacy suggested-play (kept hidden as fallback for cases the rec
-         engine doesn't cover - e.g. scope picked but no current entered) -->
-    <div class="offer-suggested" id="offerSuggested" style="display:none;"></div>
-
-    <!-- Folded-in Live Commercial Check - deal health from Flipdish's side. -->
-    <div class="status-strip embedded" id="liveCheck" style="margin-top:14px;margin-bottom:0;">
-      <span class="status-pill" id="liveStatus">Awaiting inputs</span>
-      <span class="status-message" id="liveMessage">Type a proposal in Step 3 to see whether the deal is healthy for Flipdish.</span>
-      <button class="status-detail-toggle" id="liveDetailToggle" type="button" aria-expanded="false">Show the math</button>
-      <div class="status-detail" id="liveDetail" hidden>
-        <div class="detail-row"><span>Recurring revenue per site</span><span id="liveDetSnr">-</span></div>
-        <div class="detail-row"><span>Operating margin / mo (SNR × 0.75)</span><span id="liveDetOpMargin">-</span></div>
-        <div class="detail-row"><span>Hardware payback at proposed price</span><span id="liveDetPayback">-</span></div>
-        <div class="detail-row"><span>Hardware discount headroom (3-month envelope)</span><span id="liveDetMaxHw">-</span></div>
-      </div>
-    </div>
-  </div>
-
-  </section><!-- /#stackUpSection -->
-
-  <!-- Step 5 (Value Story) deleted - Will: "I don't think the value story
-       serves any purpose on this page really, it feels like that should
-       be on the customer facing page". customer.html already renders
-       the full customer-facing value story when the rep clicks Open
-       customer page. -->
+  <!-- v8.16: deal snapshot - one-line at-a-glance summary of the
+       in-progress deal. Sits just above the action bar so reps see
+       it last as they finish building the deal. -->
+  <div class="deal-snapshot" id="dealSnapshot" aria-live="polite"></div>
 
   <!-- ===================== ACTIONS (v8.9: cleaner action bar) ===================== -->
   <div class="action-bar">
@@ -1784,8 +1743,8 @@
       // in the quote tool on salesforce."
       flipdish: {
         ooProcessingRate: '',
-        posRate: '', posTransFee: '', posHardware: '',
-        kioskCount: '', kioskHardware: '',
+        posRate: '', posTransFee: '', posHardware: '', posHardwareList: '',
+        kioskCount: '', kioskHardware: '', kioskHardwareList: '',
         monthlySub: ''
       },
       createdAt: Date.now(),
@@ -1894,6 +1853,14 @@
   function val(id) { var el = $(id); return el ? el.value : ''; }
   function num(id) { var v = parseFloat($(id).value); return isNaN(v) ? 0 : v; }
 
+  // v8.16: kiosk count field removed. The rep types the total kiosk
+  // hardware figure (across however many kiosks) directly into the one
+  // hardware input - the SFDC quote already gives them that total.
+  // Likewise the bundled sub from SFDC is an all-in figure that
+  // already accounts for any number of kiosks. So the math reads
+  // single-unit list rates as the auto-fill BASELINE; the rep
+  // overwrites with their actual SFDC totals.
+
   // v8.16: page title reflects the prospect business name once typed.
   // "Deal Building" → "Deal Building - Billy's Pizza".
   function updatePageTitle() {
@@ -1963,29 +1930,48 @@
       pillClass = 'warn'; pillText = 'recurring below SNR floor';
     }
 
+    // v8.16: snapshot reads in components, not as a single recurring
+    // total. And the processing/transaction fees are shown PER PRODUCT
+    // as the actual rate (X% + Yp/c) - the way reps quote it - not as
+    // a £/mo total which can trigger sticker shock and hides the
+    // structure of the deal.
+    var fdSub = parseFloat(($('fdMonthlySub') || {}).value) || 0;
+    var fdPosRate    = parseFloat(($('fdPosRate') || {}).value) || 0;
+    var fdPosTxn     = parseFloat(($('fdPosTransFee') || {}).value) || 0;
+    var fdOORate     = parseFloat(($('fdOOProcessingRate') || {}).value) || 0;
+    var fdHwTotal = (parseFloat(($('fdPosHardware') || {}).value) || 0) +
+                    (parseFloat(($('fdKioskHardware') || {}).value) || 0);
+
+    // Per-currency minor-unit suffix for the per-transaction fee.
+    // Will: format "Yp/c" (pence per card) for UK; equivalent suffix
+    // for the active market.
+    var minorUnit = (p.country === 'UK') ? 'p' : (p.country === 'US' ? '¢' : 'c');
+    function fmtTxn(amount) {
+      var minor = Math.round((amount || 0) * 100);
+      return minor + minorUnit + '/c';
+    }
+
     // Build the sentence in pieces. Only include parts that have meaning.
     var parts = [];
     parts.push('<strong>' + productLabel + '</strong>');
-    if (proposalSnr > 0) {
-      var line = 'proposal <strong>' + fmt(proposalSnr) + '/mo recurring</strong>';
-      if (customerCurrent > 0) {
-        var deltaTxt;
-        if (Math.abs(vsCurrent) < 0.5) {
-          deltaTxt = 'level with current';
-        } else if (vsCurrent < 0) {
-          deltaTxt = '<strong>' + fmt(-vsCurrent) + '/mo below current</strong>';
-        } else {
-          deltaTxt = '<strong>' + fmt(vsCurrent) + '/mo above current</strong>';
-        }
-        line += ' (' + deltaTxt + ')';
+    if (fdSub > 0) {
+      parts.push('sub <strong>' + fmt(fdSub) + '/mo</strong>');
+    }
+    if (p.includePOS && fdPosRate > 0) {
+      var posBit = '<strong>POS ' + fdPosRate.toFixed(2) + '%</strong>';
+      if (fdPosTxn > 0) {
+        posBit += ' + <strong>' + fmtTxn(fdPosTxn) + '</strong>';
       }
-      parts.push(line);
+      parts.push(posBit);
+    }
+    if (p.includeOO && fdOORate > 0) {
+      parts.push('<strong>OO ' + fdOORate.toFixed(2) + '%</strong>');
     }
     if (hwList > 0) {
       if (hwDiscount > 0) {
-        parts.push('hardware <strong>' + fmt(hwDiscount) + ' off list</strong>');
-      } else {
-        parts.push('hardware at list');
+        parts.push('hardware <strong>' + fmt(fdHwTotal) + '</strong> (' + fmt(hwDiscount) + ' off list)');
+      } else if (fdHwTotal > 0) {
+        parts.push('hardware <strong>' + fmt(fdHwTotal) + '</strong> at list');
       }
     }
     var html = parts.join(' <span class="snap-sep">·</span> ');
@@ -1997,11 +1983,20 @@
   }
 
   // ---------- Hydrate: prospect object -> form ----------
+  // v8.16: hyd() helper - only overrides the HTML default value when
+  // the saved prospect has a non-empty value. Lets the form ship with
+  // realistic defaults via value="..." attributes, while still
+  // restoring saved values when a deal is loaded by ?id=xxx.
   function hydrate() {
-    $('prospectName').value = prospect.name || '';
-    $('locations').value = prospect.locations || 1;
-    $('contactName').value = prospect.contactName || '';
-    $('ownerName').value = prospect.ownerName || '';
+    function hyd(id, savedVal) {
+      var el = $(id);
+      if (!el) return;
+      if (savedVal != null && savedVal !== '') el.value = savedVal;
+    }
+    hyd('prospectName', prospect.name);
+    hyd('locations', prospect.locations);
+    hyd('contactName', prospect.contactName);
+    hyd('ownerName', prospect.ownerName);
 
     $('includeOO').checked = !!prospect.includeOO;
     $('includePOS').checked = !!prospect.includePOS;
@@ -2010,32 +2005,36 @@
     var c = prospect.current || {};
     // OO - direct ordering: provider + revenue + AOV + sub + processing %
     // + per-transaction fee (Foodhub etc. charge 3.4% + Xp/c)
-    $('curOOProvider').value       = c.ooProvider || '';
-    $('curOOGmv').value            = c.ooGmv || '';
-    $('curOOAov').value             = c.ooAov || '';
-    $('curOOSub').value             = c.ooSub || '';
-    $('curOOProcessingRate').value  = c.ooProcessingRate || '';
-    $('curOOTransFee').value        = c.ooTransFee || '';
+    hyd('curOOProvider',        c.ooProvider);
+    hyd('curOOGmv',             c.ooGmv);
+    hyd('curOOAov',             c.ooAov);
+    hyd('curOOSub',             c.ooSub);
+    hyd('curOOProcessingRate',  c.ooProcessingRate);
+    hyd('curOOTransFee',        c.ooTransFee);
     // In-store (POS)
-    $('curPosProvider').value         = c.posProvider || '';
-    $('curPosGmv').value              = c.posGmv || '';
-    $('curAov').value                 = c.aov || '';
-    $('curPosRate').value             = c.posRate || '';
-    $('curPosTransFee').value         = c.posTransFee || '';
-    $('curPosSub').value              = c.posSub || '';
-    // v8.8: Marketplace context (Deliveroo / Uber Eats / JustEat)
-    if ($('curMarketGmv'))         $('curMarketGmv').value         = c.marketGmv || '';
-    if ($('curMarketCommission'))  $('curMarketCommission').value  = c.marketCommission || '';
-    if ($('curMarketPrimary'))     $('curMarketPrimary').value     = c.marketPrimary || '';
+    hyd('curPosProvider',       c.posProvider);
+    hyd('curPosGmv',            c.posGmv);
+    hyd('curAov',               c.aov);
+    hyd('curPosRate',           c.posRate);
+    hyd('curPosTransFee',       c.posTransFee);
+    hyd('curPosSub',            c.posSub);
+    // Marketplace context (Deliveroo / Uber Eats / JustEat)
+    hyd('curMarketGmv',         c.marketGmv);
+    hyd('curMarketCommission',  c.marketCommission);
+    hyd('curMarketPrimary',     c.marketPrimary);
 
     var f = prospect.flipdish || {};
-    $('fdOOProcessingRate').value   = f.ooProcessingRate || '';
-    $('fdPosRate').value             = f.posRate || '';
-    $('fdPosTransFee').value         = f.posTransFee || '';
-    $('fdPosHardware').value         = f.posHardware || '';
-    $('fdKioskHardware').value       = f.kioskHardware || '';
-    if ($('fdKioskCount')) $('fdKioskCount').value = f.kioskCount || '';
-    $('fdMonthlySub').value          = f.monthlySub || '';
+    hyd('fdOOProcessingRate',   f.ooProcessingRate);
+    hyd('fdPosRate',            f.posRate);
+    hyd('fdPosTransFee',        f.posTransFee);
+    hyd('fdPosHardware',        f.posHardware);
+    hyd('fdPosHardwareList',    f.posHardwareList);
+    hyd('fdKioskHardware',      f.kioskHardware);
+    hyd('fdKioskHardwareList',  f.kioskHardwareList);
+    // v8.16: kiosk count field removed from the form. Older saved deals
+    // may still have a kioskCount value in localStorage - left untouched
+    // for back-compat but no longer surfaced or used.
+    hyd('fdMonthlySub',         f.monthlySub);
 
     setCountry(prospect.country || 'UK', /*skipSave*/true);
     applyScopeVisibility();
@@ -2086,9 +2085,11 @@
       posRate:          val('fdPosRate'),
       posTransFee:      val('fdPosTransFee'),
       posHardware:      val('fdPosHardware'),
-      // Kiosk
-      kioskCount:       val('fdKioskCount'),
+      posHardwareList:  val('fdPosHardwareList'),
+      // Kiosk - rep types the total kiosk hardware figure directly
+      // (across however many kiosks are in the deal).
       kioskHardware:    val('fdKioskHardware'),
+      kioskHardwareList: val('fdKioskHardwareList'),
       // Single bundled subscription from the SFDC quote
       monthlySub:       val('fdMonthlySub')
       // (contractMonths is the CONTRACT_MONTHS constant - not stored)
@@ -2113,7 +2114,6 @@
     if ($('fdPosTransFeeField'))     $('fdPosTransFeeField').style.display     = posOn ? '' : 'none';
     if ($('fdOOProcessingRateField')) $('fdOOProcessingRateField').style.display = ooOn ? '' : 'none';
     if ($('fdPosHardwareField'))     $('fdPosHardwareField').style.display     = posOn ? '' : 'none';
-    if ($('fdKioskCountField'))      $('fdKioskCountField').style.display      = kioskOn ? '' : 'none';
     if ($('fdKioskHardwareField'))   $('fdKioskHardwareField').style.display   = kioskOn ? '' : 'none';
 
     // Bundled-sub field - same gate as before: any scope ticked AND at
@@ -2172,25 +2172,17 @@
     if ($('includeKiosk').checked && rates.kiosk) {
       fillIfBlank('fdKioskHardware', rates.kiosk.hardware);
     }
-    // Bundled subscription - sum the in-scope list subs as a sensible
-    // starting point. Rep replaces this with the actual SFDC bundled
-    // figure (which incorporates Flipdish's bundle discounts).
-    //
-    // Special case: fdMonthlySub keeps re-filling whenever the in-scope
-    // mix changes (e.g. rep ticks Kiosk after POS) UNTIL the rep types
-    // something manually. We track this with a data-auto flag - set when
-    // pre-fill writes the field, cleared by the input listener.
-    var listSubSum = 0;
-    if ($('includeOO').checked    && rates.oo)    listSubSum += rates.oo.sub;
-    if ($('includePOS').checked   && rates.pos)   listSubSum += rates.pos.sub * locations;
-    if ($('includeKiosk').checked && rates.kiosk) listSubSum += rates.kiosk.sub;
-    if (listSubSum > 0) {
+    // v8.16: Bundled sub defaults to £129 (Flipdish's typical bundle
+    // figure across deals). Rep overwrites with the actual SFDC quote
+    // figure - the slider gives ±10 fine-tuning around the typed value.
+    var anyScope = $('includeOO').checked || $('includePOS').checked || $('includeKiosk').checked;
+    if (anyScope) {
       var subEl = $('fdMonthlySub');
       if (subEl) {
         var isBlank = subEl.value === '' || subEl.value == null;
         var isAuto = subEl.dataset.auto === '1';
         if (isBlank || isAuto) {
-          subEl.value = String(listSubSum);
+          subEl.value = '129';
           subEl.dataset.auto = '1';
         }
       }
@@ -2225,32 +2217,48 @@
     var ccy = CCY[prospect.country];
     var fmt = function (n, d) { return ccy + (d ? n.toFixed(d) : Math.round(n).toLocaleString('en-US')); };
 
-    // OO processing - floor is Stripe + 1pp
+    // v8.16: slider ranges hardcoded across markets (Will's call) so the
+    // slider extremes are always commercial-meaningful regardless of
+    // which country is active.
+    //   OO processing:  3% - 7%
+    //   POS processing: 0.5% - 1.5%
+    //   POS per-txn:    £0 - £0.15
+    //   Bundled sub:    £119 - £139 (default 129, ±10)
+    //   POS hardware:   0 - max(list × locations, currentTyped) [auto-expands]
+    //   Kiosk hardware: 0 - max(list, currentTyped) [auto-expands]
     if (rates.oo) {
-      var ooFloor = ((rates.ooCardPct || 0) * 100 + 1.0);
-      var ooList  = rates.oo.processing * 100;
-      setSliderBounds('fdOOProcessingRate', ooFloor, ooList,
-        'Floor ' + ooFloor.toFixed(2) + '%', 'List ' + ooList.toFixed(2) + '%');
+      setSliderBounds('fdOOProcessingRate', 3, 7, '3.00%', '7.00%');
     }
-    // POS processing - floor is Stripe + 0.3pp
     if (rates.pos) {
-      var posFloor = ((rates.posCardPct || 0) * 100 + 0.3);
-      var posList  = rates.pos.processing * 100;
-      setSliderBounds('fdPosRate', posFloor, posList,
-        'Floor ' + posFloor.toFixed(2) + '%', 'List ' + posList.toFixed(2) + '%');
-      // Per-txn fee - 0 to list
-      setSliderBounds('fdPosTransFee', 0, rates.pos.txnFee,
-        ccy + '0.00', 'List ' + ccy + rates.pos.txnFee.toFixed(2));
-      // POS hardware - 0 to list × locations
-      var posHw = rates.pos.hardwareStarter * locations;
-      setSliderBounds('fdPosHardware', 0, posHw,
-        ccy + '0 (free)', 'List ' + fmt(posHw));
+      setSliderBounds('fdPosRate', 0.5, 1.5, '0.50%', '1.50%');
+      setSliderBounds('fdPosTransFee', 0, 0.15, ccy + '0.00', ccy + '0.15');
+      // v8.16: POS hardware list is now a per-deal input. The slider
+      // max comes straight from that list price - the slider shows the
+      // discount off whatever list the rep typed. Falls back to the
+      // rates.pos.hardwareStarter baseline if the list field is blank.
+      var posListInput = parseFloat((($('fdPosHardwareList') || {}).value)) || 0;
+      var posHwBaseline = posListInput > 0 ? posListInput : (rates.pos.hardwareStarter * locations);
+      setSliderBounds('fdPosHardware', 0, posHwBaseline,
+        ccy + '0 (free)', 'List ' + fmt(posHwBaseline));
+      var posListLabel = $('fdPosHardwareListLabel');
+      if (posListLabel) posListLabel.textContent = 'List ' + fmt(posHwBaseline);
     }
-    // Kiosk hardware - 0 to list (per kiosk count later in v8.14, for now flat)
     if (rates.kiosk) {
-      setSliderBounds('fdKioskHardware', 0, rates.kiosk.hardware,
-        ccy + '0 (free)', 'List ' + fmt(rates.kiosk.hardware));
+      // v8.16: kiosk hardware list is also a per-deal input.
+      var kioskListInput = parseFloat((($('fdKioskHardwareList') || {}).value)) || 0;
+      var kioskHwBaseline = kioskListInput > 0 ? kioskListInput : rates.kiosk.hardware;
+      setSliderBounds('fdKioskHardware', 0, kioskHwBaseline,
+        ccy + '0 (free)', 'List ' + fmt(kioskHwBaseline));
+      var kioskListLabel = $('fdKioskHardwareListLabel');
+      if (kioskListLabel) kioskListLabel.textContent = 'List ' + fmt(kioskHwBaseline);
     }
+    // v8.16: bundled sub can be anything (£3, €74, $150, £500+).
+    // Min always 0 in the active currency. Max = max(typed x 2, 300)
+    // so a £20 sub still has slide room and a £500 sub still fits.
+    var subTyped = parseFloat((($('fdMonthlySub') || {}).value)) || 0;
+    var subMax = Math.max(subTyped * 2, 300);
+    setSliderBounds('fdMonthlySub', 0, subMax,
+      ccy + '0', ccy + Math.round(subMax));
   }
   function setSliderBounds(targetId, minVal, maxVal, floorLabel, listLabel) {
     var slider = document.querySelector('.lever-slider[data-target="' + targetId + '"]');
@@ -2491,9 +2499,18 @@
     // hardwareOneOff = what the rep is actually quoting (≤ list)
     // discount       = list - quoted (always ≥ 0)
     // paybackMonths  = discount / eligibleOpMargin (0 when no discount)
+    // v8.16: hardware list is now a per-deal input (rep types the
+    // actual SFDC list - £799 starter or £4000 multi-till etc.).
+    // Falls back to rates table values if the rep hasn't typed a list.
     var hardwareListTotal = 0;
-    if (p.includePOS && rates.pos)   hardwareListTotal += rates.pos.hardwareStarter * locations;
-    if (p.includeKiosk && rates.kiosk) hardwareListTotal += rates.kiosk.hardware;
+    if (p.includePOS && rates.pos) {
+      var posListTyped = N(f.posHardwareList);
+      hardwareListTotal += posListTyped > 0 ? posListTyped : (rates.pos.hardwareStarter * locations);
+    }
+    if (p.includeKiosk && rates.kiosk) {
+      var kioskListTyped = N(f.kioskHardwareList);
+      hardwareListTotal += kioskListTyped > 0 ? kioskListTyped : rates.kiosk.hardware;
+    }
     var hardwareDiscount = Math.max(0, hardwareListTotal - totalHardware);
     result.hardwareListTotal = hardwareListTotal;
     result.hardwareDiscount  = hardwareDiscount;
@@ -2774,25 +2791,11 @@
     // v8.16: one-line deal snapshot under the page title.
     updateDealSnapshot(prospect, v);
 
-    // Step 5 (Value Story hero / streams / narrative) removed in v8.3 -
-    // customer-facing version lives on customer.html. This page is now
-    // purely a deal-builder workspace.
-    //
-    // "How does this stack up?" panel (Step 4) - sits below the rep's
-    // proposal. Compares what they typed vs the customer's current spend,
-    // scope-aware, with concrete "to match" + "cost to Flipdish"
-    // prescriptions. Live Check folded in at the bottom.
-    var o = computeOfferPanel(prospect, v);
-    // v8.10: keep the Step 4 heading visible (matches Step 3 pattern).
-    // Hide ONLY the offer-panel body when idle. The heading + sub-line
-    // remain visible like the Flipdish proposal step header so the rep
-    // sees what's coming next without dead-space "Awaiting inputs".
-    var op = $('offerPanel');
-    if (op) op.style.display = (o.state === 'idle') ? 'none' : '';
-    renderOfferPanel(o);
-    var rec = computeRecommendedDeal(prospect, v, o);
-    renderRecommendedDeal(rec, prospect, o);
-    renderLiveCheck(v);
+    // v8.16: Step 4 (Defensible discount stack) markup removed. The
+    // rep now does the optimisation themselves via Section A and B
+    // sliders + their live verdicts. The compute / render functions
+    // for the offer panel + recommended deal remain in code below as
+    // dead callees - safe to delete later if not revived.
   }
 
   // ---------- Recommended Deal engine (v8.4) ----------
@@ -3081,8 +3084,15 @@
       // proportionally allocate by their list shares.
       var rates = LIST_RATES[prospect.country] || LIST_RATES.UK;
       var locations = Math.max(1, prospect.locations || 1);
-      var posListHw = (prospect.includePOS && rates.pos) ? rates.pos.hardwareStarter * locations : 0;
-      var kioskListHw = (prospect.includeKiosk && rates.kiosk) ? rates.kiosk.hardware : 0;
+      // v8.16: prefer the rep's typed per-deal list price; fall back to
+      // the rates table baseline if the list field is blank.
+      var fdData = prospect.flipdish || {};
+      var posListTyped = parseFloat(fdData.posHardwareList) || 0;
+      var kioskListTyped = parseFloat(fdData.kioskHardwareList) || 0;
+      var posListHw = (prospect.includePOS && rates.pos)
+        ? (posListTyped > 0 ? posListTyped : rates.pos.hardwareStarter * locations) : 0;
+      var kioskListHw = (prospect.includeKiosk && rates.kiosk)
+        ? (kioskListTyped > 0 ? kioskListTyped : rates.kiosk.hardware) : 0;
       var totalListHw = posListHw + kioskListHw;
       if (totalListHw > 0) {
         if (posListHw > 0) $('fdPosHardware').value = String(Math.round(rec.hardware * (posListHw / totalListHw)));
@@ -3386,7 +3396,6 @@
     var pill  = $('offerStatePill');
     var title = $('offerTitle');
     var summary = $('offerSummary');
-    var nums  = $('offerNumbers');
     var suggested = $('offerSuggested');
 
     panel.classList.remove('idle','headroom','match','tight');
@@ -3398,49 +3407,24 @@
       if (o.awaitingProposal) {
         pill.textContent = 'Awaiting proposal';
         title.textContent = 'Type your Flipdish proposal in Step 3';
-        summary.innerHTML = 'The current spend (Step 2) is in. Now type your Flipdish quote into Step 3 above - at list, or whatever discount level you\'re considering - and this panel will show the customer\'s commercial reality alongside your proposal and the room available in each lever within Flipdish guardrails.';
+        summary.innerHTML = 'The current commercials (Step 2) are in. Now type your Flipdish quote into Step 3 above - at list, or whatever discount level you\'re considering - and this panel will recommend the cheapest discount stack that defends it.';
       } else if (o.awaitingCurrent) {
         pill.textContent = 'Awaiting inputs';
-        title.textContent = 'Need their current commercial reality';
+        title.textContent = 'Need the current commercials';
         summary.innerHTML = 'You\'ve picked a product but Step 2 is empty. Type what they pay today (GMV, AOV, current rates) - this is the evidence base the discount you\'re proposing in Step 3 needs to be defended against.';
       } else {
         pill.textContent = 'Awaiting inputs';
-        title.textContent = 'Fill in Steps 2 and 3 to see the justification view';
-        summary.innerHTML = 'Pick a product (Online Ordering / POS / Kiosk) above, type what they pay today, and type your Flipdish proposal - this panel will show the customer\'s commercial reality alongside your proposal, with the room available in each lever within Flipdish guardrails.';
+        title.textContent = 'Fill in Steps 2 and 3 to see the recommended stack';
+        summary.innerHTML = 'Pick a product (Online Ordering / POS / Kiosk), type what they pay today, and type your Flipdish proposal - this panel will recommend the cheapest combination of discounts that defends your proposal vs their current spend.';
       }
-      nums.style.display = 'none';
       suggested.style.display = 'none';
       return;
     }
 
     panel.classList.add(o.state);
-    nums.style.display = '';
     // v8.8: hide the verbose summary paragraph in active states.
-    // The 3-number row + pill + title already say everything the
-    // paragraph used to. Will: "feels like a wasted line."
+    // Section A's verdict + the deal snapshot up top already say it.
     summary.style.display = 'none';
-
-    // Headline numbers - comparison vs the rep's typed proposal
-    $('offerCurrentVal').textContent  = fmtMoney(o.customerTotal) + '/mo';
-    $('offerProposedVal').textContent = fmtMoney(o.proposedRecurring) + '/mo';
-    var deltaVal = $('offerDeltaVal');
-    var deltaLbl = $('offerDeltaLabel');
-    deltaVal.classList.remove('positive','negative');
-    if (o.kioskOnly) {
-      deltaLbl.textContent = 'Comparison';
-      deltaVal.textContent = 'Kiosk-only - no incumbent to compare';
-    } else if (o.delta > 0) {
-      deltaLbl.textContent = 'Below their current spend by';
-      deltaVal.textContent = fmtMoney(o.delta) + '/mo';
-      deltaVal.classList.add('positive');
-    } else if (o.delta < 0) {
-      deltaLbl.textContent = 'Above their current spend by';
-      deltaVal.textContent = fmtMoney(-o.delta) + '/mo';
-      deltaVal.classList.add('negative');
-    } else {
-      deltaLbl.textContent = 'Vs current spend';
-      deltaVal.textContent = fmtMoney(0) + '/mo';
-    }
 
     // Title + summary by state
     if (o.state === 'headroom') {
@@ -3522,81 +3506,11 @@
   // Render the Live Commercial status strip - single plain-English
   // verdict + headroom + optional "Show the math" expand. Replaces
   // the old four-tile finance dashboard because reps don't speak
-  // SNR / op margin / payback envelope.
-  function renderLiveCheck(v) {
-    var hasAnything = prospect.includeOO || prospect.includePOS || prospect.includeKiosk;
-    var panel = $('liveCheck');
-    var pill = $('liveStatus');
-    var msg  = $('liveMessage');
-    var detSnr = $('liveDetSnr');
-    var detOp  = $('liveDetOpMargin');
-    var detPb  = $('liveDetPayback');
-    var detHw  = $('liveDetMaxHw');
-
-    panel.classList.remove('warn', 'bust', 'idle');
-
-    if (!hasAnything) {
-      panel.classList.add('idle');
-      pill.textContent = 'Awaiting inputs';
-      msg.innerHTML    = 'Pick at least one lever above (Online Ordering, POS, or Kiosk) and fill in the customer\'s current commercial reality to see whether the deal\'s approvable.';
-      detSnr.textContent = '-';
-      detOp.textContent  = '-';
-      detPb.textContent  = '-';
-      detHw.textContent  = '-';
-      return;
-    }
-
-    var snr = v.snrPerSite || 0;
-    var op  = v.opMarginMonthly || 0;
-    var paybackEnv = v.paybackEnvelope || 0;
-    var pbMonths = v.paybackMonths;        // discount / opMargin - 0 when no discount
-    var hwDiscount = v.hardwareDiscount || 0;
-    var hwList     = v.hardwareListTotal || 0;
-    var floor = GUARDRAILS.snrFloorMonthly;
-    var below = snr < floor;
-    // Payback is "bust" only when there IS a discount AND it would take
-    // more than the target months to earn back. Hardware at list = 0
-    // months payback = nothing to bust.
-    var paybackBust = (hwDiscount > 0 && pbMonths != null && pbMonths > GUARDRAILS.paybackTargetMonths);
-
-    // Headroom = how much MORE discount the rep can still give before
-    // payback breaches 3 months. It's the envelope minus whatever has
-    // been discounted already.
-    var headroom = Math.max(0, paybackEnv - hwDiscount);
-
-    // Detail (expanded) values
-    detSnr.textContent = fmtMoney(snr) + '/mo per site';
-    detOp.textContent  = fmtMoney(op) + '/mo';
-    detPb.textContent  = (hwDiscount === 0)
-      ? '0 months (no hardware discount)'
-      : (pbMonths == null ? '-' : pbMonths.toFixed(1) + ' months');
-    detHw.textContent  = fmtMoney(Math.max(0, paybackEnv));
-
-    if (paybackBust) {
-      panel.classList.add('bust');
-      pill.textContent = 'Hardware discount too aggressive';
-      msg.innerHTML = 'You\'ve discounted hardware by <strong>' + fmtMoney(hwDiscount) + '</strong> off list (£' + Math.round(hwList) + '). Earning that back from this deal\'s op margin would take <strong>' + pbMonths.toFixed(1) + ' months</strong> - past the 3-month target. <strong>Pull the discount back</strong> to ≤ ' + fmtMoney(paybackEnv) + ' off list, or push for more recurring revenue (sub or processing rate).';
-    } else if (below) {
-      panel.classList.add('bust');
-      pill.textContent = 'Below margin floor';
-      msg.innerHTML = 'Recurring revenue per site is <strong>' + fmtMoney(snr) + '/mo</strong>, below the <strong>' + fmtMoney(floor) + '</strong> floor. <strong>Raise the bundled subscription or the processing rate</strong> to bring it back up.';
-    } else if (snr < floor * 1.2) {
-      panel.classList.add('warn');
-      pill.textContent = 'Tight';
-      msg.innerHTML = 'You\'re earning <strong>' + fmtMoney(snr) + '/mo per site</strong> after costs - workable but close to the floor. Push discounts further only if you really need to.';
-    } else {
-      pill.textContent = 'Healthy';
-      var headroomStr;
-      if (hwDiscount > 0) {
-        headroomStr = ' You\'ve discounted hardware by <strong>' + fmtMoney(hwDiscount) + '</strong> (paying back in <strong>' + pbMonths.toFixed(1) + ' months</strong>); <strong>' + fmtMoney(headroom) + '</strong> more discount available before breaching the 3-month target.';
-      } else if (headroom > 0) {
-        headroomStr = ' Hardware is at list (no discount given) - you have up to <strong>' + fmtMoney(headroom) + '</strong> of discount room before payback breaches 3 months.';
-      } else {
-        headroomStr = '';
-      }
-      msg.innerHTML = 'You\'re earning <strong>' + fmtMoney(snr) + '/mo per site</strong> after costs.' + headroomStr;
-    }
-  }
+  // v8.16: renderLiveCheck stub - the original Live Check strip was
+  // removed from the page (Section A's Healthy SNR pill + Section B's
+  // Within Cap pill cover the same signals as the rep slides). The
+  // function is kept as a no-op so any older callers don't break.
+  function renderLiveCheck(v) { /* removed in v8.16 */ }
 
   // v8.2.2 - full scope-awareness for Step 5 savings cards. When a
   // product is OFF in Step 1, hide the entire card (not just dim the
@@ -3707,8 +3621,8 @@
       'curPosProvider','curPosGmv','curAov','curPosRate','curPosTransFee','curPosSub',
       'curMarketGmv','curMarketCommission',
       'fdOOProcessingRate',
-      'fdPosRate','fdPosTransFee','fdPosHardware',
-      'fdKioskCount','fdKioskHardware',
+      'fdPosRate','fdPosTransFee','fdPosHardware','fdPosHardwareList',
+      'fdKioskHardware','fdKioskHardwareList',
       'fdMonthlySub'
     ];
     allInputIds.forEach(function (id) {
@@ -3721,7 +3635,39 @@
         // v8.12: keep the paired slider in sync if this is a lever input
         var pairedSlider = document.querySelector('.lever-slider[data-target="' + id + '"]');
         if (pairedSlider && el.value && !isNaN(parseFloat(el.value))) {
+          // v8.16: bundled sub auto-grows slider max if typed exceeds it
+          // (sub can be £3 to £500+). Hardware proposal sliders are now
+          // capped by the typed list price (see fdPosHardwareList /
+          // fdKioskHardwareList listener below) - they don't auto-grow.
+          var typed = parseFloat(el.value);
+          var smax = parseFloat(pairedSlider.max);
+          if (id === 'fdMonthlySub' && typed >= smax) {
+            pairedSlider.max = String(Math.ceil(typed * 2));
+          }
           pairedSlider.value = el.value;
+        }
+        // v8.16: hardware list price drives the proposal slider max.
+        // When the rep changes the list, update the slider's bounds
+        // and the meta label, and clamp the proposal value if it's
+        // now above the new list.
+        if (id === 'fdPosHardwareList' || id === 'fdKioskHardwareList') {
+          var proposalId = id.replace('List', '');
+          var listVal = parseFloat(el.value) || 0;
+          var proposalSlider = document.querySelector('.lever-slider[data-target="' + proposalId + '"]');
+          var proposalInput = $(proposalId);
+          if (proposalSlider) proposalSlider.max = String(listVal);
+          if (proposalInput) {
+            var current = parseFloat(proposalInput.value) || 0;
+            if (current > listVal) {
+              proposalInput.value = String(listVal);
+              if (proposalSlider) proposalSlider.value = String(listVal);
+            }
+          }
+          var labelEl = $(id + 'Label');
+          if (labelEl) {
+            var ccySym = (CCY[prospect.country] || '£');
+            labelEl.textContent = 'List ' + ccySym + Math.round(listVal).toLocaleString('en-US');
+          }
         }
         scheduleSave();
         recompute();
@@ -3746,19 +3692,9 @@
     $('printBtn').addEventListener('click', printInternal);
     $('copyLinkBtn').addEventListener('click', copyLink);
     $('deleteBtn').addEventListener('click', deleteDeal);
-    var recBtn = $('recApplyBtn');
-    if (recBtn) recBtn.addEventListener('click', applyRecommendedDeal);
-    // Status-strip "Show the math" expand toggle
-    var detailToggle = $('liveDetailToggle');
-    if (detailToggle) {
-      detailToggle.addEventListener('click', function () {
-        var detail = $('liveDetail');
-        var open = detail.hidden === false;
-        detail.hidden = open;
-        detailToggle.setAttribute('aria-expanded', open ? 'false' : 'true');
-        detailToggle.textContent = open ? 'Show the math' : 'Hide the math';
-      });
-    }
+    // v8.16: Defensible discount stack panel + Live Check both removed.
+    // Section A and Section B verdicts cover deal health and the rep
+    // is now the one driving the discount choice via the sliders.
   }
 
   // ---------- Init ----------
