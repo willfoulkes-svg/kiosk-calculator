@@ -1276,16 +1276,16 @@
     <div class="grid2">
       <div class="field">
         <label>Prospect business name</label>
-        <input id="prospectName" type="text" value="Billy's Pizza" autocomplete="off">
+        <input id="prospectName" type="text" placeholder="e.g. Billy's Pizza" autocomplete="off">
       </div>
       <div class="field">
         <label>Number of locations</label>
-        <input id="locations" type="number" min="1" step="1" value="1">
+        <input id="locations" type="number" min="1" step="1" placeholder="e.g. 3">
         <span class="vol-tier-pill" id="volTierPill" aria-live="polite"></span>
       </div>
       <div class="field">
         <label>Primary contact</label>
-        <input id="contactName" type="text" value="Alex Murphy, Operations Manager">
+        <input id="contactName" type="text" placeholder="e.g. Alex Murphy, Operations Manager">
       </div>
       <div class="field">
         <label>Deal owner (rep)</label>
@@ -1388,27 +1388,27 @@
       <div class="grid2">
         <div class="field">
           <label>Current POS provider</label>
-          <input id="curPosProvider" type="text" value="Clover">
+          <input id="curPosProvider" type="text" placeholder="e.g. Clover, Square">
         </div>
         <div class="field">
           <label>Monthly POS GMV <span class="hint">(in-store sales)</span></label>
-          <input id="curPosGmv" type="number" min="0" step="100" value="20000">
+          <input id="curPosGmv" type="number" min="0" step="100" placeholder="e.g. 20000">
         </div>
         <div class="field">
           <label>Average order value (POS)</label>
-          <input id="curAov" type="number" min="0" step="0.5" value="15">
+          <input id="curAov" type="number" min="0" step="0.5" placeholder="e.g. 15">
         </div>
         <div class="field">
           <label>Current merchant rate % <span class="hint">(card)</span></label>
-          <input id="curPosRate" type="number" min="0" step="0.05" value="1">
+          <input id="curPosRate" type="number" min="0" step="0.05" placeholder="e.g. 1">
         </div>
         <div class="field">
           <label>Current per-transaction fee</label>
-          <input id="curPosTransFee" type="number" min="0" step="0.01" value="0.10">
+          <input id="curPosTransFee" type="number" min="0" step="0.01" placeholder="e.g. 0.10">
         </div>
         <div class="field">
           <label>Current POS monthly subscription</label>
-          <input id="curPosSub" type="number" min="0" step="1" value="99">
+          <input id="curPosSub" type="number" min="0" step="1" placeholder="e.g. 99">
         </div>
       </div>
     </div>
@@ -1419,27 +1419,27 @@
       <div class="grid2">
         <div class="field">
           <label>Current provider</label>
-          <input id="curOOProvider" type="text" value="Foodhub">
+          <input id="curOOProvider" type="text" placeholder="e.g. Foodhub, Mealzo">
         </div>
         <div class="field">
           <label>Monthly online revenue <span class="hint">(direct)</span></label>
-          <input id="curOOGmv" type="number" min="0" step="100" value="2000">
+          <input id="curOOGmv" type="number" min="0" step="100" placeholder="e.g. 2000">
         </div>
         <div class="field">
           <label>Average online order value</label>
-          <input id="curOOAov" type="number" min="0" step="0.5" value="25">
+          <input id="curOOAov" type="number" min="0" step="0.5" placeholder="e.g. 25">
         </div>
         <div class="field">
           <label>Software subscription <span class="hint">(£/mo)</span></label>
-          <input id="curOOSub" type="number" min="0" step="1" value="79">
+          <input id="curOOSub" type="number" min="0" step="1" placeholder="e.g. 79">
         </div>
         <div class="field">
           <label>Processing fee % <span class="hint">(or commission %)</span></label>
-          <input id="curOOProcessingRate" type="number" min="0" step="0.1" value="3.4">
+          <input id="curOOProcessingRate" type="number" min="0" step="0.1" placeholder="e.g. 3.4">
         </div>
         <div class="field">
           <label>Per-transaction fee</label>
-          <input id="curOOTransFee" type="number" min="0" step="0.01" value="0.05">
+          <input id="curOOTransFee" type="number" min="0" step="0.01" placeholder="e.g. 0.05">
         </div>
       </div>
       <!-- v8.9: marketplace context lives here, not in its own card.
@@ -1451,11 +1451,11 @@
         <div class="grid2">
           <div class="field">
             <label>Monthly marketplace revenue <span class="hint">(combined)</span></label>
-            <input id="curMarketGmv" type="number" min="0" step="100" value="10000">
+            <input id="curMarketGmv" type="number" min="0" step="100" placeholder="e.g. 10000">
           </div>
           <div class="field">
             <label>Average commission % <span class="hint">(typical 12-14%)</span></label>
-            <input id="curMarketCommission" type="number" min="0" step="0.5" value="13">
+            <input id="curMarketCommission" type="number" min="0" step="0.5" placeholder="e.g. 13">
           </div>
         </div>
         <p class="market-strip-note">Marketplaces charge heavy commission and own the customer relationship. Flipdish brings that revenue back in-house through direct ordering, kiosk and POS - reclaiming margin and the customer.</p>
@@ -1470,11 +1470,11 @@
       <div class="grid2">
         <div class="field">
           <label>Projected monthly kiosk GMV</label>
-          <input id="curKioskGmv" type="number" min="0" step="100" value="8000">
+          <input id="curKioskGmv" type="number" min="0" step="100" placeholder="e.g. 8000">
         </div>
         <div class="field">
           <label>Projected average kiosk order value</label>
-          <input id="curKioskAov" type="number" min="0" step="0.5" value="20">
+          <input id="curKioskAov" type="number" min="0" step="0.5" placeholder="e.g. 20">
         </div>
       </div>
     </div>
@@ -1486,11 +1486,11 @@
       <div class="grid2">
         <div class="field">
           <label>Projected monthly QROP GMV</label>
-          <input id="curQROPGmv" type="number" min="0" step="100" value="6000">
+          <input id="curQROPGmv" type="number" min="0" step="100" placeholder="e.g. 6000">
         </div>
         <div class="field">
           <label>Projected average QROP order value</label>
-          <input id="curQROPAov" type="number" min="0" step="0.5" value="22">
+          <input id="curQROPAov" type="number" min="0" step="0.5" placeholder="e.g. 22">
         </div>
       </div>
     </div>
