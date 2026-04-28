@@ -35,6 +35,13 @@
     /* Cross-product accent (orange) */
     --fam: #D97706;
     --fam-soft: #FDECD3;
+    /* v8.7: warm/cool theme pair — "their" side vs "your" side */
+    --peach-soft: #FFF1E6;
+    --peach-tint: #FFE5D2;
+    --peach-strong: #E0723D;
+    --peach-dark: #A04A1F;
+    --skyblue-soft: #EAF1FB;
+    --skyblue-tint: #DCE8F7;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
@@ -129,10 +136,10 @@
     font-weight: 600;
   }
 
-  /* ---------- Steps (v8.5: nicer typography) ---------- */
+  /* ---------- Steps (v8.7: icons + warm/cool variants) ---------- */
   .step {
     display: flex; align-items: center; gap: 12px;
-    margin: 28px 0 14px;
+    margin: 30px 0 14px;
   }
   .step .num {
     display: inline-flex; align-items: center; justify-content: center;
@@ -141,6 +148,22 @@
     font-size: 12px; font-weight: 600; flex: 0 0 auto;
     letter-spacing: 0;
   }
+  /* Step icon — small monoline SVG in a circular tint chip */
+  .step .step-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 34px; height: 34px; border-radius: 10px;
+    background: var(--flipdish-blue-light);
+    color: var(--flipdish-blue-dark);
+    flex: 0 0 auto;
+  }
+  .step .step-icon svg { width: 18px; height: 18px; }
+  /* Warm variant — used on "Their current commercial reality" */
+  .step.step-warm .num { background: var(--peach-strong); }
+  .step.step-warm .step-icon { background: var(--peach-soft); color: var(--peach-dark); }
+  /* Cool variant — used on "Flipdish proposal" */
+  .step.step-cool .num { background: var(--flipdish-blue); }
+  .step.step-cool .step-icon { background: var(--skyblue-soft); color: var(--flipdish-blue-dark); }
+
   .step .text {
     font-family: 'Domine', Georgia, serif;
     font-size: 19px; font-weight: 500;
@@ -155,7 +178,25 @@
     letter-spacing: 0;
   }
 
-  /* ---------- Cards (v8.5: softer borders, cleaner h3s) ---------- */
+  /* ---------- Cards (v8.5: softer borders, cleaner h3s) ----------
+     v8.7 adds warm (peach) theme to "Their current" cards and cool
+     (sky-blue) theme to "Flipdish proposal" cards via ID prefix
+     selectors — visually pairs "theirs" against "ours". */
+  [id^="card-current"] {
+    background: linear-gradient(180deg, #FFF7EF 0%, #FFFAF5 100%);
+    border-left: 3px solid var(--peach-strong);
+  }
+  [id^="card-current"] h3 { color: var(--peach-dark); border-bottom-color: rgba(224, 114, 61, 0.18); }
+
+  [id^="card-proposal"], #card-bundleSub {
+    background: linear-gradient(180deg, #F1F6FD 0%, #F8FAFE 100%);
+    border-left: 3px solid var(--flipdish-blue);
+  }
+  [id^="card-proposal"] h3, #card-bundleSub h3 {
+    color: var(--flipdish-blue-dark);
+    border-bottom-color: rgba(0, 116, 217, 0.18);
+  }
+
   .card {
     background: var(--card);
     border: 1px solid rgba(15, 23, 42, 0.06);
@@ -344,10 +385,11 @@
   }
   .offer-num-value {
     font-family: 'Domine', Georgia, serif;
-    font-size: 22px; font-weight: 600; color: var(--flipdish-blue-dark);
+    font-size: 26px; font-weight: 700; color: var(--flipdish-blue-dark);
     font-variant-numeric: tabular-nums;
     margin-top: 4px;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.022em;
+    line-height: 1.15;
   }
   .offer-num-value.positive { color: #2F7A4D; }
   .offer-num-value.negative { color: #B23A2A; }
@@ -722,6 +764,9 @@
   <!-- ===================== STEP 1 — WHO ===================== -->
   <div class="step">
     <span class="num">1</span>
+    <span class="step-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </span>
     <span class="text">Who <span class="sub">Basics for the deal record</span></span>
   </div>
   <div class="card">
@@ -742,8 +787,11 @@
   </div>
 
   <!-- ===================== STEP 2 — CURRENT REALITY ===================== -->
-  <div class="step">
+  <div class="step step-warm">
     <span class="num">2</span>
+    <span class="step-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+    </span>
     <span class="text">Their current commercial reality <span class="sub">What the customer processes and pays today</span></span>
   </div>
 
@@ -852,8 +900,11 @@
        this stack up?" panel. Reps need to type the actual SFDC quote
        first; the diagnostic below then compares THEIR PROPOSAL (not
        list) against the customer's current spend. -->
-  <div class="step">
+  <div class="step step-cool">
     <span class="num">3</span>
+    <span class="step-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    </span>
     <span class="text">Flipdish proposal <span class="sub">Type the rates from the SFDC quote · only the cards for products you ticked above appear here</span></span>
   </div>
 
@@ -932,6 +983,9 @@
        same panel. -->
   <div class="step">
     <span class="num">4</span>
+    <span class="step-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    </span>
     <span class="text">How does this stack up? <span class="sub">Compares your proposal vs their current spend, shows what to tweak to match, and validates the deal is healthy for Flipdish</span></span>
   </div>
 
