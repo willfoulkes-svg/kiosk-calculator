@@ -218,6 +218,41 @@
   }
   /* v8.10: Deal Details uses .grid2 (proven 2-col helper) — no custom CSS needed */
 
+  /* v8.14: SFDC pull placeholder — sits at the top of Step 3, looks
+     like a clickable card but is disabled until the API is wired. */
+  .sfdc-strip {
+    display: flex; align-items: center; gap: 12px;
+    width: 100%;
+    text-align: left;
+    padding: 12px 14px;
+    background: #F1F6FD;
+    border: 1px dashed var(--flipdish-blue-line);
+    border-radius: 10px;
+    margin-bottom: 12px;
+    cursor: not-allowed;
+    transition: all .12s ease;
+    font: inherit;
+  }
+  .sfdc-strip:not(:disabled) { cursor: pointer; }
+  .sfdc-strip:not(:disabled):hover { background: var(--flipdish-blue-light); border-color: var(--flipdish-blue); }
+  .sfdc-strip:disabled { opacity: 0.85; }
+  .sfdc-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--flipdish-blue-light);
+    color: var(--flipdish-blue);
+    flex: 0 0 auto;
+  }
+  .sfdc-icon svg { width: 18px; height: 18px; }
+  .sfdc-text { display: flex; flex-direction: column; gap: 2px; }
+  .sfdc-title {
+    font-size: 13.5px; font-weight: 600; color: var(--flipdish-blue-dark);
+    display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    letter-spacing: -0.005em;
+  }
+  .sfdc-desc { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
   /* ---------- Lever control (v8.12): number input + slider + bounds ---------- */
   .lever-control { display: flex; flex-direction: column; gap: 6px; }
   .lever-control input[type="number"] {
@@ -1144,6 +1179,20 @@
     <span class="text">Flipdish proposal <span class="sub">Type the rates from the SFDC quote · only the cards for products you ticked above appear here</span></span>
   </div>
 
+  <!-- v8.14: SFDC pull placeholder. When the SFDC API is wired up,
+       this becomes a one-click "Pull quote from Salesforce" button
+       that populates the rate / hardware / sub fields below. For now
+       it's a "coming soon" affordance so reps know it's on the way. -->
+  <button type="button" class="card sfdc-strip" id="sfdcPullBtn" disabled>
+    <span class="sfdc-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    </span>
+    <span class="sfdc-text">
+      <span class="sfdc-title">Pull from SFDC quote <span class="badge-soon">Coming soon</span></span>
+      <span class="sfdc-desc">One click and the rates, hardware and bundled sub below auto-fill from your Salesforce quote.</span>
+    </span>
+  </button>
+
   <!-- v8.11: side-by-side proposal — In-store (POS + Kiosk hardware) on
        the left, Direct ordering (OO) on the right. Mirrors Step 2's
        layout so "theirs vs ours" reads as a clean visual pairing. -->
@@ -1178,8 +1227,12 @@
             <div class="lever-meta"><span class="lever-floor">£0 (free)</span><span class="lever-list">List £799</span></div>
           </div>
         </div>
+        <div class="field" id="fdKioskCountField" style="display:none;">
+          <label>Number of kiosks <span class="hint">(in this deal)</span></label>
+          <input id="fdKioskCount" type="number" min="1" step="1" placeholder="e.g. 1">
+        </div>
         <div class="field" id="fdKioskHardwareField" style="display:none;">
-          <label>Kiosk hardware <span class="hint">(one-off, total)</span></label>
+          <label>Kiosk hardware <span class="hint">(one-off, total across all kiosks)</span></label>
           <div class="lever-control">
             <input id="fdKioskHardware" type="number" min="0" step="50" placeholder="e.g. 1500">
             <input type="range" class="lever-slider" data-target="fdKioskHardware" min="0" max="1500" step="50" value="1500">
@@ -1523,7 +1576,7 @@
       flipdish: {
         ooProcessingRate: '',
         posRate: '', posTransFee: '', posHardware: '',
-        kioskHardware: '',
+        kioskCount: '', kioskHardware: '',
         monthlySub: ''
       },
       createdAt: Date.now(),
@@ -1670,6 +1723,7 @@
     $('fdPosTransFee').value         = f.posTransFee || '';
     $('fdPosHardware').value         = f.posHardware || '';
     $('fdKioskHardware').value       = f.kioskHardware || '';
+    if ($('fdKioskCount')) $('fdKioskCount').value = f.kioskCount || '';
     $('fdMonthlySub').value          = f.monthlySub || '';
 
     setCountry(prospect.country || 'UK', /*skipSave*/true);
@@ -1721,6 +1775,7 @@
       posTransFee:      val('fdPosTransFee'),
       posHardware:      val('fdPosHardware'),
       // Kiosk
+      kioskCount:       val('fdKioskCount'),
       kioskHardware:    val('fdKioskHardware'),
       // Single bundled subscription from the SFDC quote
       monthlySub:       val('fdMonthlySub')
@@ -1743,6 +1798,7 @@
     if ($('fdPosRateField'))       $('fdPosRateField').style.display       = posOn ? '' : 'none';
     if ($('fdPosTransFeeField'))   $('fdPosTransFeeField').style.display   = posOn ? '' : 'none';
     if ($('fdPosHardwareField'))   $('fdPosHardwareField').style.display   = posOn ? '' : 'none';
+    if ($('fdKioskCountField'))    $('fdKioskCountField').style.display    = kioskOn ? '' : 'none';
     if ($('fdKioskHardwareField')) $('fdKioskHardwareField').style.display = kioskOn ? '' : 'none';
     // v8.8: Bundled-sub card only appears once the rep has at least one
     // proposal-side input (rate or hardware). Will: "Total monthly
@@ -3168,7 +3224,7 @@
       'curMarketGmv','curMarketCommission',
       'fdOOProcessingRate',
       'fdPosRate','fdPosTransFee','fdPosHardware',
-      'fdKioskHardware',
+      'fdKioskCount','fdKioskHardware',
       'fdMonthlySub'
     ];
     allInputIds.forEach(function (id) {
