@@ -1494,16 +1494,16 @@
     <span class="step-icon" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
     </span>
-    <span class="text">How does this stack up? <span class="sub">Compares your proposal vs their current spend, shows what to tweak to match, and validates the deal is healthy for Flipdish</span></span>
+    <span class="text">Discount justification <span class="sub">The customer's commercial reality alongside your proposal - the evidence base that defends the discount level you've offered</span></span>
   </div>
 
   <div class="offer-panel idle" id="offerPanel">
     <div class="offer-headline">
       <span class="offer-state-pill" id="offerStatePill">Awaiting inputs</span>
-      <h3 id="offerTitle">Fill in Steps 2 and 3 to see how the deal stacks up</h3>
+      <h3 id="offerTitle">Fill in Steps 2 and 3 to see the justification view</h3>
     </div>
     <div class="offer-summary" id="offerSummary">
-      Pick a product (Online Ordering / POS / Kiosk) above, type what they pay today, and type your Flipdish proposal - this panel will then compare them and show you what to adjust to match.
+      Pick a product (Online Ordering / POS / Kiosk) above, type what they pay today, and type your Flipdish proposal - this panel will show the customer's commercial reality alongside your proposal and the room you have available in each lever within Flipdish's guardrails.
     </div>
     <div class="offer-numbers" id="offerNumbers" style="display:none;">
       <div class="offer-num">
@@ -1559,7 +1559,7 @@
          be hidden if there's nothing to recommend in that lane. -->
     <div class="rec-deal" id="recDeal" style="display:none;">
       <div class="rec-deal-head">
-        <h3 class="rec-deal-title">Recommended deal</h3>
+        <h3 class="rec-deal-title">Defensible discount stack</h3>
         <button type="button" class="rec-apply-btn" id="recApplyBtn">Apply to proposal →</button>
       </div>
 
@@ -2426,7 +2426,7 @@
         if (v.ooSavings > 0) {
           lines.push('On the direct ordering side, switching from <strong>' + providerLabel + '</strong> to Flipdish on ' + fmtMoney(d.gmv) + '/mo of online revenue saves <strong>' + fmtMoney(v.ooSavings) + '/mo</strong> across sub + processing + per-transaction fees.');
         } else if (v.ooSavings < 0) {
-          lines.push('On direct ordering, Flipdish is coming out <strong>' + fmtMoney(-v.ooSavings) + '/mo more expensive</strong> than ' + providerLabel + '. Sense-check the proposed rates.');
+          lines.push('On direct ordering, Flipdish at this proposal sits <strong>' + fmtMoney(-v.ooSavings) + '/mo above</strong> ' + providerLabel + '. Sense-check the proposed rates against the value the platform delivers above the incumbent (Phone AI, FMM, marketplace integration, customer ownership).');
         }
       }
     }
@@ -2437,7 +2437,7 @@
         if (v.posSavings > 0) {
           lines.push('On the POS / in-store side - merchant rate from <strong>' + pd.curRate + '%</strong> to <strong>' + pd.newRate + '%</strong> on ' + fmtMoney(pd.gmv) + '/mo of in-store revenue, plus differences in sub' + (pd.curHardware > 0 ? ' and the ' + fmtMoney(pd.curHardware) + '/mo they currently pay for hardware' : '') + ' - nets <strong>' + fmtMoney(v.posSavings) + '/mo</strong> saved.');
         } else if (v.posSavings < 0) {
-          lines.push('POS / in-store is coming out <strong>' + fmtMoney(-v.posSavings) + '/mo more expensive</strong> than what they pay today. Sense-check the proposed rates or current setup figures.');
+          lines.push('POS / in-store at this proposal sits <strong>' + fmtMoney(-v.posSavings) + '/mo above</strong> what they pay today. Sense-check the proposed rates against platform value (Phone AI, kiosk traffic, FMM) - or revisit the current setup figures.');
         }
       }
     }
@@ -2458,9 +2458,9 @@
     if (v.netMonthly > 0) {
       closing = '<strong>Net monthly delta: ' + fmtMoney(v.netMonthly) + '</strong>. Annual (Year 1, after hardware one-off): <strong>' + fmtMoney(v.annualValue) + '</strong>. Over the ' + v.contractMonths + '-month contract: <strong>' + fmtMoney(v.contractValue) + '</strong>.';
     } else if (v.netMonthly === 0) {
-      closing = 'Net monthly delta is <strong>break-even</strong>. Worth tightening the proposed rates in Step 3 or sense-checking the current cost figures.';
+      closing = 'Net monthly delta is <strong>break-even</strong>. The proposal is recurring-neutral vs their current spend - the deal is justified by platform value above the incumbent.';
     } else {
-      closing = 'On these numbers the customer ends up paying <strong>' + fmtMoney(-v.netMonthly) + '/mo more</strong> with Flipdish. That usually means the proposed rates in Step 3 need tightening, or the current setup has hidden costs not yet captured.';
+      closing = 'On these numbers the customer pays <strong>' + fmtMoney(-v.netMonthly) + '/mo above</strong> their current spend with Flipdish. That gap is the platform-value conversation - either justified by what Flipdish delivers above the incumbent, or revisit the proposed rates / current setup figures.';
     }
     out.push('<p>' + closing + '</p>');
 
@@ -2717,7 +2717,7 @@
       rec.gapInitial = 0;
       rec.gapRemaining = 0;
       rec.customerWouldPay = computeCustomerPayingAt(rec, p, c, rates, locations);
-      rec.narrative = 'You\'re already cheaper than what they pay today. Hold at list rates and sell platform value.';
+      rec.narrative = 'Your proposal already sits at-or-below what they pay today. Hold at list rates and lead with platform value.';
       return rec;
     }
 
@@ -2809,13 +2809,13 @@
       var costParts = [];
       if (rec.costOneOff > 0)   costParts.push(fmtMoney(rec.costOneOff) + ' one-off');
       if (rec.costRecurring > 0) costParts.push(fmtMoney(rec.costRecurring * CONTRACT_MONTHS) + ' recurring over 12 months');
-      rec.narrative = '<strong>Closes the gap.</strong> Customer pays ' + fmtMoney(rec.customerWouldPay) + '/mo (vs ' + fmtMoney(o.customerTotal) + '/mo today). Cost to Flipdish: ' + costParts.join(' + ') + '.';
+      rec.narrative = '<strong>Defensible package within the guardrails.</strong> Customer recurring sits at ' + fmtMoney(rec.customerWouldPay) + '/mo (vs ' + fmtMoney(o.customerTotal) + '/mo today). Cost to Flipdish: ' + costParts.join(' + ') + '.';
     } else {
       var costParts2 = [];
       if (rec.costOneOff > 0)   costParts2.push(fmtMoney(rec.costOneOff) + ' one-off');
       if (rec.costRecurring > 0) costParts2.push(fmtMoney(rec.costRecurring * CONTRACT_MONTHS) + ' recurring over 12 months');
       var costStr = costParts2.length ? costParts2.join(' + ') : '£0';
-      rec.narrative = '<strong>Best achievable, but ' + fmtMoney(rec.gapRemaining) + '/mo gap remains.</strong> Customer would still pay ' + fmtMoney(rec.customerWouldPay) + '/mo (vs ' + fmtMoney(o.customerTotal) + '/mo today). Cost to Flipdish at this proposal: ' + costStr + '. To win, lead with platform value (Phone AI, FMM, customer ownership, kiosk traffic) rather than price-matching.';
+      rec.narrative = '<strong>Maximum defensible discount within the guardrails.</strong> Customer recurring sits at ' + fmtMoney(rec.customerWouldPay) + '/mo, still ' + fmtMoney(rec.gapRemaining) + '/mo above their current ' + fmtMoney(o.customerTotal) + '/mo. Cost to Flipdish at this stack: ' + costStr + '. The remaining ' + fmtMoney(rec.gapRemaining) + '/mo is a platform-value conversation (Phone AI, FMM, customer ownership, kiosk traffic) - not somewhere Flipdish should keep discounting.';
     }
     return rec;
   }
@@ -2909,11 +2909,11 @@
     // Impact line
     var impact = $('recDealImpact');
     if (rec.canClose && rec.changes.length === 0) {
-      impact.innerHTML = '<strong>No discounts needed</strong> - Flipdish at list already beats their current spend by ' + fmtMoney(Math.abs(o.delta)) + '/mo.';
+      impact.innerHTML = '<strong>No discounts needed</strong> - Flipdish at list already sits ' + fmtMoney(Math.abs(o.delta)) + '/mo below their current spend.';
     } else if (rec.canClose) {
-      impact.innerHTML = '<strong>Closes the deal</strong> - customer pays <strong>' + fmtMoney(rec.customerWouldPay) + '/mo</strong> recurring (matching their ' + fmtMoney(o.customerTotal) + '/mo today).';
+      impact.innerHTML = '<strong>Defensible package</strong> - customer recurring at <strong>' + fmtMoney(rec.customerWouldPay) + '/mo</strong> (vs their ' + fmtMoney(o.customerTotal) + '/mo today). All levers within Flipdish guardrails.';
     } else {
-      impact.innerHTML = '<strong>Best achievable: customer pays ' + fmtMoney(rec.customerWouldPay) + '/mo.</strong> Still <strong>' + fmtMoney(rec.gapRemaining) + '/mo more</strong> than their current spend (' + fmtMoney(o.customerTotal) + '/mo).';
+      impact.innerHTML = '<strong>Maximum defensible discount: customer recurring at ' + fmtMoney(rec.customerWouldPay) + '/mo.</strong> Still <strong>' + fmtMoney(rec.gapRemaining) + '/mo above</strong> their current spend (' + fmtMoney(o.customerTotal) + '/mo) - the rest is a platform-value conversation.';
     }
 
     // Narrative + apply button enable/disable
@@ -3080,10 +3080,10 @@
     var subDetail;
     var subCostNote = null;
     if (gap > 0 && subTarget != null) {
-      subDetail = 'To match: <strong>drop the sub to ' + fmtMoney(subTarget) + '/mo</strong> (' + fmtMoney(fdSub - subTarget) + ' off your proposal). Floor is ' + fmtMoney(GUARDRAILS.snrFloorMonthly) + '/mo per site.';
+      subDetail = 'To match their current spend: <strong>drop the sub to ' + fmtMoney(subTarget) + '/mo</strong> (' + fmtMoney(fdSub - subTarget) + ' off your proposal). Floor is ' + fmtMoney(GUARDRAILS.snrFloorMonthly) + '/mo per site.';
       subCostNote = '<strong>Cost to Flipdish: ' + fmtMoney(contractCost(gap)) + ' over 12 months</strong> · pure recurring revenue loss · sets renewal precedent.';
     } else if (gap > 0) {
-      subDetail = 'Sub alone can\'t close the ' + fmtMoney(gap) + '/mo gap - only ' + fmtMoney(maxSubDiscount) + '/mo of headroom before the SNR floor.';
+      subDetail = 'Sub: only ' + fmtMoney(maxSubDiscount) + '/mo of room available before the SNR floor - not enough on its own to bring the recurring number level with their ' + fmtMoney(customerTotal) + '/mo.';
     } else if (maxSubDiscount > 0) {
       subDetail = 'Up to ' + fmtMoney(maxSubDiscount) + '/mo of room before SNR floor (' + fmtMoney(GUARDRAILS.snrFloorMonthly) + '/mo per site). Most expensive lever - use last.';
     } else {
@@ -3110,10 +3110,10 @@
       }
       var ooDetail, ooCostNote = null;
       if (gap > 0 && ooTarget != null) {
-        ooDetail = 'To match: <strong>drop OO processing to ' + ooTarget.toFixed(2) + '%</strong> (' + (fdOOPct - ooTarget).toFixed(2) + 'pp off). Floor ' + ooFloorPct.toFixed(2) + '% (Stripe + 1pp).';
+        ooDetail = 'To match their current spend: <strong>drop OO processing to ' + ooTarget.toFixed(2) + '%</strong> (' + (fdOOPct - ooTarget).toFixed(2) + 'pp off). Floor ' + ooFloorPct.toFixed(2) + '% (Stripe + 1pp).';
         ooCostNote = '<strong>Cost to Flipdish: ' + fmtMoney(contractCost(gap)) + ' over 12 months</strong> · recurring rate loss · sets rate precedent for renewal.';
       } else if (gap > 0) {
-        ooDetail = 'OO rate alone can\'t close the gap - at the ' + ooFloorPct.toFixed(2) + '% floor that\'s ' + fmtMoney(ooMaxMonthly) + '/mo of give max.';
+        ooDetail = 'OO rate: ' + fmtMoney(ooMaxMonthly) + '/mo of room available down to the ' + ooFloorPct.toFixed(2) + '% floor - not enough on its own to bring the recurring number level with their current spend.';
       } else {
         ooDetail = 'List ' + ooListPct.toFixed(1) + '% → floor ' + ooFloorPct.toFixed(2) + '%. Up to ' + ooHeadroomPP.toFixed(2) + 'pp of room ≈ ' + fmtMoney(ooMaxMonthly) + '/mo recurring give.';
       }
@@ -3139,10 +3139,10 @@
       }
       var posDetail, posCostNote = null;
       if (gap > 0 && posTarget != null) {
-        posDetail = 'To match: <strong>drop POS processing to ' + posTarget.toFixed(2) + '%</strong> (' + (fdPOSPct - posTarget).toFixed(2) + 'pp off). Floor ' + posFloorPct.toFixed(2) + '% (Stripe + 0.3pp).';
+        posDetail = 'To match their current spend: <strong>drop POS processing to ' + posTarget.toFixed(2) + '%</strong> (' + (fdPOSPct - posTarget).toFixed(2) + 'pp off). Floor ' + posFloorPct.toFixed(2) + '% (Stripe + 0.3pp).';
         posCostNote = '<strong>Cost to Flipdish: ' + fmtMoney(contractCost(gap)) + ' over 12 months</strong> · recurring rate loss · sets rate precedent for renewal.';
       } else if (gap > 0) {
-        posDetail = 'POS rate alone can\'t close the gap - at the ' + posFloorPct.toFixed(2) + '% floor that\'s ' + fmtMoney(posMaxMonthly) + '/mo of give max.';
+        posDetail = 'POS rate: ' + fmtMoney(posMaxMonthly) + '/mo of room available down to the ' + posFloorPct.toFixed(2) + '% floor - not enough on its own to bring the recurring number level with their current spend.';
       } else {
         posDetail = 'List ' + posListPct.toFixed(2) + '% → floor ' + posFloorPct.toFixed(2) + '%. Up to ' + posHeadroomPP.toFixed(2) + 'pp of room ≈ ' + fmtMoney(posMaxMonthly) + '/mo recurring give.';
       }
@@ -3159,7 +3159,7 @@
       levers.push({
         key: 'posTxn', label: 'POS per-transaction fee',
         valueLabel: fmtMoney2(fdPosTxn),
-        detail: 'List ' + fmtMoney2(posListTxn) + ' per txn. Small recurring give. Use as a last-resort sweetener, not a closer.',
+        detail: 'List ' + fmtMoney2(posListTxn) + ' per txn. Small recurring give. Use as a last-resort sweetener for justification, not a primary lever.',
         target: null,
         costRank: 2
       });
@@ -3180,10 +3180,10 @@
       var hwPctOff = hardwareList > 0 ? Math.round((maxHwDiscount / hardwareList) * 100) : 0;
       var hwDetail, hwCostNote = null;
       if (gap > 0 && hwTarget != null) {
-        hwDetail = 'To match across the 12-month contract: <strong>drop hardware to ' + fmtMoney(hwTarget) + '</strong> (' + fmtMoney(hardwareList - hwTarget) + ' off list). Inside the 3-month payback envelope.';
-        hwCostNote = '<strong>Cost to Flipdish: ' + fmtMoney(hwRequired) + ' one-off, recovered in ~3 months</strong> from op margin · no rate precedent · cheapest lever.';
+        hwDetail = 'To match their current spend across the 12-month contract: <strong>drop hardware to ' + fmtMoney(hwTarget) + '</strong> (' + fmtMoney(hardwareList - hwTarget) + ' off list). Inside the 3-month payback envelope.';
+        hwCostNote = '<strong>Cost to Flipdish: ' + fmtMoney(hwRequired) + ' one-off, recovered in ~3 months</strong> from op margin · no rate precedent · cheapest lever for justification.';
       } else if (gap > 0) {
-        hwDetail = 'Hardware alone can\'t close the gap - max ' + fmtMoney(maxHwDiscount) + ' off (≈ ' + fmtMoney(hwAmortisedMonthly) + '/mo amortised over 12 months).';
+        hwDetail = 'Hardware: ' + fmtMoney(maxHwDiscount) + ' of discount available within the 3-month payback envelope (≈ ' + fmtMoney(hwAmortisedMonthly) + '/mo amortised over 12 months) - not enough on its own to bring the recurring number level with their current spend.';
       } else {
         hwDetail = 'List ' + fmtMoney(hardwareList) + '. Up to ' + fmtMoney(maxHwDiscount) + ' off (' + hwPctOff + '%) one-off, recovered in ≤3 months. Worth ~' + fmtMoney(hwAmortisedMonthly) + '/mo of customer-perceived value across the contract.';
       }
@@ -3268,15 +3268,15 @@
       if (o.awaitingProposal) {
         pill.textContent = 'Awaiting proposal';
         title.textContent = 'Type your Flipdish proposal in Step 3';
-        summary.innerHTML = 'The current spend (Step 2) is in. Now type your Flipdish quote into Step 3 above - at list, or whatever discount you\'re considering - and this panel will show you the comparison and what you can adjust to match.';
+        summary.innerHTML = 'The current spend (Step 2) is in. Now type your Flipdish quote into Step 3 above - at list, or whatever discount level you\'re considering - and this panel will show the customer\'s commercial reality alongside your proposal and the room available in each lever within Flipdish guardrails.';
       } else if (o.awaitingCurrent) {
         pill.textContent = 'Awaiting inputs';
         title.textContent = 'Need their current commercial reality';
-        summary.innerHTML = 'You\'ve picked a product but Step 2 is empty. Type what they pay today (GMV, AOV, current rates) and this panel will compare it to your proposal.';
+        summary.innerHTML = 'You\'ve picked a product but Step 2 is empty. Type what they pay today (GMV, AOV, current rates) - this is the evidence base the discount you\'re proposing in Step 3 needs to be defended against.';
       } else {
         pill.textContent = 'Awaiting inputs';
-        title.textContent = 'Fill in Steps 2 and 3 to see how the deal stacks up';
-        summary.innerHTML = 'Pick a product (Online Ordering / POS / Kiosk) above, type what they pay today, and type your Flipdish proposal - this panel will compare them and show you what to adjust to match.';
+        title.textContent = 'Fill in Steps 2 and 3 to see the justification view';
+        summary.innerHTML = 'Pick a product (Online Ordering / POS / Kiosk) above, type what they pay today, and type your Flipdish proposal - this panel will show the customer\'s commercial reality alongside your proposal, with the room available in each lever within Flipdish guardrails.';
       }
       nums.style.display = 'none';
       leversWrap.style.display = 'none';
@@ -3300,45 +3300,45 @@
     deltaVal.classList.remove('positive','negative');
     if (o.kioskOnly) {
       deltaLbl.textContent = 'Comparison';
-      deltaVal.textContent = 'Kiosk-only - no displacement';
+      deltaVal.textContent = 'Kiosk-only - no incumbent to compare';
     } else if (o.delta > 0) {
-      deltaLbl.textContent = 'You\'re cheaper by';
+      deltaLbl.textContent = 'Below their current spend by';
       deltaVal.textContent = fmtMoney(o.delta) + '/mo';
       deltaVal.classList.add('positive');
     } else if (o.delta < 0) {
-      deltaLbl.textContent = 'You\'re more expensive by';
+      deltaLbl.textContent = 'Above their current spend by';
       deltaVal.textContent = fmtMoney(-o.delta) + '/mo';
       deltaVal.classList.add('negative');
     } else {
-      deltaLbl.textContent = 'Gap';
+      deltaLbl.textContent = 'Vs current spend';
       deltaVal.textContent = fmtMoney(0) + '/mo';
     }
 
     // Title + summary by state
     if (o.state === 'headroom') {
       if (o.delta > 0) {
-        pill.textContent = 'You\'re cheaper';
-        title.textContent = 'Your proposal already beats their current spend';
-        summary.innerHTML = 'Your Flipdish proposal of <strong>' + fmtMoney(o.proposedRecurring) + '/mo</strong> recurring is <strong>' + fmtMoney(o.delta) + '/mo cheaper</strong> than what they pay today (' + fmtMoney(o.customerTotal) + '/mo). You can lead with this. The levers below show how much further you could push if needed - but you don\'t need to.';
+        pill.textContent = 'No discount needed';
+        title.textContent = 'Your proposal already sits below their current spend';
+        summary.innerHTML = 'Your Flipdish proposal of <strong>' + fmtMoney(o.proposedRecurring) + '/mo</strong> recurring is <strong>' + fmtMoney(o.delta) + '/mo below</strong> what they pay today (' + fmtMoney(o.customerTotal) + '/mo). Lead with platform value. The levers below show further room if needed - but the commercial picture already supports holding at list.';
       } else {
         // delta === 0: exact match
-        pill.textContent = 'Exact match';
-        title.textContent = 'Your proposal exactly matches their current spend';
-        summary.innerHTML = 'Your Flipdish proposal of <strong>' + fmtMoney(o.proposedRecurring) + '/mo</strong> recurring is identical to what they pay today (' + fmtMoney(o.customerTotal) + '/mo). The levers below show how much you could push further if you wanted - but the deal already lines up.';
+        pill.textContent = 'Level with current spend';
+        title.textContent = 'Your proposal lines up with their current spend';
+        summary.innerHTML = 'Your Flipdish proposal of <strong>' + fmtMoney(o.proposedRecurring) + '/mo</strong> recurring is level with what they pay today (' + fmtMoney(o.customerTotal) + '/mo). The levers below show further room if you wanted - but the proposal is already defensible at this level.';
       }
     } else if (o.state === 'tight') {
-      pill.textContent = 'Won\'t close';
-      title.textContent = 'No single lever closes the gap';
-      summary.innerHTML = 'Your proposal of <strong>' + fmtMoney(o.proposedRecurring) + '/mo</strong> is <strong>' + fmtMoney(o.gap) + '/mo more expensive</strong> than what they pay today. None of the levers below - at their floor - can close that gap on their own. Either combine multiple levers, reduce scope (starter kit only, fewer kiosks), or push back on price (Flipdish offers value beyond cost replacement).';
+      pill.textContent = 'Significant give-up needed';
+      title.textContent = 'Multi-lever discount needed within guardrails';
+      summary.innerHTML = 'Your proposal of <strong>' + fmtMoney(o.proposedRecurring) + '/mo</strong> sits <strong>' + fmtMoney(o.gap) + '/mo above</strong> their current spend. No single lever, at its floor, has enough room to bring the recurring number in line. Options: combine multiple levers, reduce scope (starter kit only, fewer kiosks), or hold the proposal and frame the value gap (Flipdish is a broader platform than the incumbent).';
     } else if (o.kioskOnly) {
       pill.textContent = 'Kiosk-only';
-      title.textContent = 'Kiosk-only deal - no current cost to displace';
-      summary.innerHTML = 'Kiosk is incremental - there\'s nothing to displace because they don\'t have kiosks today. Sell on incremental revenue (basket lift, queue reduction). Hardware discount is your main lever.';
+      title.textContent = 'Kiosk-only deal - no incumbent to compare';
+      summary.innerHTML = 'Kiosk is incremental - there\'s nothing to displace because they don\'t have kiosks today. Sell on incremental revenue (basket lift, queue reduction). Hardware discount is your main lever for justification.';
     } else {
-      // match - closeable
-      pill.textContent = 'Closeable';
-      title.textContent = 'A single lever can close the gap';
-      summary.innerHTML = 'Your proposal of <strong>' + fmtMoney(o.proposedRecurring) + '/mo</strong> is <strong>' + fmtMoney(o.gap) + '/mo more expensive</strong> than what they pay today (' + fmtMoney(o.customerTotal) + '/mo). The lever cards below show concrete targets - pick one and adjust your Step 3 quote to match.';
+      // match - discount room available
+      pill.textContent = 'Discount room available';
+      title.textContent = 'One lever has enough room to match their current spend';
+      summary.innerHTML = 'Your proposal of <strong>' + fmtMoney(o.proposedRecurring) + '/mo</strong> sits <strong>' + fmtMoney(o.gap) + '/mo above</strong> their current spend (' + fmtMoney(o.customerTotal) + '/mo). The lever cards below show the room available in each - any one of them, at the level shown, would put your proposal level with their current spend.';
     }
 
     // Render the scope-aware lever cards
@@ -3355,20 +3355,20 @@
     // Suggested play - rank closeable levers by costRank ascending
     // (1 = cheapest for Flipdish: hardware. 3 = worst: sub.)
     if (o.state === 'headroom') {
-      suggested.innerHTML = '<strong>Suggested play:</strong> Hold at your current proposal. You\'re already cheaper than their incumbent - sell on platform value, not on price. If they push for a sweetener, hardware is the cheapest lever for Flipdish.';
+      suggested.innerHTML = '<strong>Suggested play:</strong> Hold at your current proposal. The recurring number already sits at-or-below their incumbent - lead with platform value, not on price. If a sweetener is needed for justification, hardware is the cheapest lever for Flipdish.';
     } else if (o.kioskOnly) {
-      suggested.innerHTML = '<strong>Suggested play:</strong> Sell on incremental revenue. Use the hardware-discount lever above as a deal-closer.';
+      suggested.innerHTML = '<strong>Suggested play:</strong> Sell on incremental revenue. Use the hardware-discount lever above as a justifiable sweetener within the 3-month payback envelope.';
     } else if (o.state === 'tight') {
-      // No single lever closes - recommend the cheapest PARTIAL close.
-      // Pick the lever with the most headroom / least bad cost rank that's
-      // still in scope, and tell the rep how much it gets them.
+      // No single lever has enough room - recommend the most defensible
+      // combination. Pick the lever with the most room / least bad cost
+      // rank that's still in scope, and tell the rep how much it gets them.
       var hwLever = (o.levers || []).find(function (l) { return l.key === 'hardware'; });
       var hwLine = '';
       if (hwLever && o.maxHwDiscount > 0 && o.hardwareList > 0) {
         var hwAmortised = o.maxHwDiscount / CONTRACT_MONTHS;
-        hwLine = ' <strong>Bespoke option:</strong> max hardware discount of ' + fmtMoney(o.maxHwDiscount) + ' (' + fmtMoney(hwAmortised) + '/mo amortised) is the cheapest way to give the customer a meaningful sweetener - one-off, recovered in 3 months, no rate precedent.';
+        hwLine = ' <strong>Bespoke option:</strong> max hardware discount of ' + fmtMoney(o.maxHwDiscount) + ' (' + fmtMoney(hwAmortised) + '/mo amortised) is the cheapest way to give a meaningful sweetener - one-off, recovered in 3 months, no rate precedent for renewal.';
       }
-      suggested.innerHTML = '<strong>Suggested play:</strong> No single lever closes the ' + fmtMoney(o.gap) + '/mo gap inside the guardrails. Reduce scope (starter kit only, fewer tills/kiosks), push back on price as a platform investment, or qualify out at this scale.' + hwLine;
+      suggested.innerHTML = '<strong>Suggested play:</strong> No single lever has enough room to bring the recurring ' + fmtMoney(o.gap) + '/mo delta in line within the guardrails. Reduce scope (starter kit only, fewer tills/kiosks), hold and frame the platform value gap, or qualify out at this scale.' + hwLine;
     } else {
       // closeable - rank viable levers by costRank ascending
       var viable = (o.levers || []).filter(function (l) { return l.target != null; });
@@ -3384,10 +3384,10 @@
           ? 'Cheapest for Flipdish - one-off, recovered in 3 months from op margin, no rate precedent.'
           : (preferred.key === 'sub'
              ? 'Most expensive for Flipdish - pure recurring revenue loss, sets renewal precedent. Use only if hardware/rate options are exhausted.'
-             : 'Recurring rate impact, sets a rate precedent for renewal - but cheaper than dropping the sub.');
-        suggested.innerHTML = '<strong>Suggested play:</strong> Cheapest single-lever close is the <strong>' + label + '</strong> - adjust to <strong>' + targetTxt + '</strong> in Step 3 and the deal matches their current spend. ' + rationale;
+             : 'Recurring rate impact, sets a rate precedent for renewal - but a smaller recurring give-up than dropping the sub.');
+        suggested.innerHTML = '<strong>Suggested play:</strong> Cheapest single-lever justification is the <strong>' + label + '</strong> - adjust to <strong>' + targetTxt + '</strong> in Step 3 and the proposal lines up with their current spend. ' + rationale;
       } else {
-        suggested.innerHTML = '<strong>Suggested play:</strong> See the levers above for the gap-closing options.';
+        suggested.innerHTML = '<strong>Suggested play:</strong> See the levers above for the room available in each.';
       }
     }
   }
