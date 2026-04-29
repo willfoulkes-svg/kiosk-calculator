@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Flipdish vs OrderYoyo - Direct Ordering Take Comparison</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Domine:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --flipdish-blue: #0074D9;
+    --flipdish-blue-dark: #064885;
+    --flipdish-blue-light: #E6F1FB;
+    --flipdish-blue-line: #BEDAF2;
+    --flipdish-dark: #1A1A1A;
+    --muted: #6B7280;
+    --bg: #F6F9FC;
+    --card: #FFFFFF;
+    --border: #E5E7EB;
+    --input-bg: #F8FBFF;
+    --input-border: #C7DEF3;
+    --rival: #6B5BD2;
+    --rival-soft: #EFEDFB;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--flipdish-dark);
+    padding: 32px 20px 48px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    font-weight: 400;
+  }
+  h1, h2, .hero .big {
+    font-family: 'Domine', Georgia, serif;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; }
+
+  .back {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 500; color: var(--muted);
+    text-decoration: none; margin-bottom: 14px;
+  }
+  .back:hover { color: var(--flipdish-blue); }
+  .back svg { width: 14px; height: 14px; }
+
+  /* ---------- Product family pill ---------- */
+  :root { --fam: #0074D9; --fam-soft: #E6F1FB; }
+  .fam-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--fam-soft);
+    color: var(--fam);
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    margin: 4px 0 16px;
+    text-transform: uppercase;
+  }
+  .fam-pill::before {
+    content: '';
+    width: 8px; height: 8px;
+    border-radius: 999px;
+    background: var(--fam);
+  }
+
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+    padding-bottom: 16px; border-bottom: 1px solid var(--border);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand svg { height: 36px; width: auto; display: block; }
+  .brand .tag {
+    font-family: 'Roboto', sans-serif; font-size: 13px; font-weight: 500;
+    color: var(--muted); padding-left: 12px; border-left: 1px solid var(--border);
+    margin-left: 2px;
+  }
+  .meta { font-size: 12px; color: var(--muted); }
+
+  h1 { font-size: 30px; margin: 0 0 6px; letter-spacing: -0.01em; font-weight: 700; color: var(--flipdish-blue-dark); }
+  .lede { color: var(--muted); margin: 0 0 20px; font-size: 15px; max-width: 720px; }
+
+  /* ---------- Country bar ---------- */
+  .country-bar {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 18px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .country-bar-label {
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .country-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+  .country-btn {
+    background: white;
+    border: 1.5px solid var(--border);
+    padding: 8px 16px;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--flipdish-dark);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all .15s ease;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .country-btn:hover { border-color: var(--flipdish-blue); color: var(--flipdish-blue); }
+  .country-btn.active {
+    background: var(--flipdish-blue-dark);
+    border-color: var(--flipdish-blue-dark);
+    color: white;
+  }
+
+  .layout { display: grid; grid-template-columns: 1fr 1.25fr; gap: 20px; align-items: start; }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px 22px;
+  }
+  .card h2 {
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--muted); margin: 0 0 16px; font-weight: 700;
+  }
+
+  .input-row { display: flex; flex-direction: column; margin-bottom: 14px; }
+  .input-row label {
+    font-size: 13px; font-weight: 600; margin-bottom: 5px;
+    display: flex; justify-content: space-between; align-items: baseline; gap: 10px;
+  }
+  .hint { font-size: 11px; font-weight: 400; color: var(--muted); font-style: italic; }
+  .input-row input, .input-row select {
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--flipdish-dark);
+    width: 100%;
+  }
+  .input-row input:focus, .input-row select:focus {
+    outline: 2px solid var(--flipdish-blue); outline-offset: -1px;
+  }
+
+  details summary {
+    cursor: pointer; font-size: 13px; font-weight: 600;
+    color: var(--muted); padding: 6px 0; user-select: none;
+  }
+  details summary:hover { color: var(--flipdish-blue); }
+  details[open] { padding-top: 4px; }
+
+  .hero {
+    background: linear-gradient(135deg, #E6F1FB 0%, #C6DEF3 100%);
+    border: 1px solid var(--flipdish-blue-line);
+    border-radius: 12px;
+    padding: 24px 26px;
+    margin-bottom: 12px;
+  }
+  .hero .label {
+    font-size: 12px; color: var(--flipdish-blue-dark); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .hero .big {
+    font-size: 48px; font-weight: 700; color: var(--flipdish-blue-dark);
+    line-height: 1.1; margin: 8px 0 6px; letter-spacing: -0.02em;
+  }
+  .hero .sub { font-size: 14px; color: var(--flipdish-blue-dark); opacity: 0.85; }
+
+  .detail-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 14px;
+  }
+  .detail {
+    background: white; border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .detail .k {
+    font-size: 11px; color: var(--muted); font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .detail .v { font-size: 18px; font-weight: 700; margin-top: 3px; }
+
+  /* Side-by-side compare cards (OrderYoyo vs Flipdish) */
+  .vs-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px;
+  }
+  @media (max-width: 600px) { .vs-grid { grid-template-columns: 1fr; } }
+  .vs-card {
+    background: white; border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .vs-card.rival { border-top: 3px solid var(--rival); }
+  .vs-card.flip  { border-top: 3px solid var(--flipdish-blue); }
+  .vs-card .who {
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .vs-card.rival .who { color: var(--rival); }
+  .vs-card.flip  .who { color: var(--flipdish-blue); }
+  .vs-card .keep {
+    font-family: 'Domine', Georgia, serif;
+    font-size: 24px; font-weight: 700; margin: 4px 0 2px;
+    color: var(--flipdish-dark);
+  }
+  .vs-card.flip .keep { color: var(--flipdish-blue-dark); }
+  .vs-card .keep-sub { font-size: 12px; color: var(--muted); }
+
+  .breakdown {
+    margin-top: 16px; padding: 18px 20px;
+    border-left: 3px solid var(--flipdish-blue);
+    background: #F5FAFE; font-size: 13px; color: #0A2A47;
+    border-radius: 0 8px 8px 0;
+  }
+  .breakdown > strong {
+    display: block; font-size: 13px; margin-bottom: 14px;
+    color: var(--flipdish-dark);
+  }
+  .breakdown-section { margin-bottom: 16px; }
+  .breakdown-section:last-child { margin-bottom: 0; }
+  .breakdown-title {
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 6px; padding-bottom: 5px;
+    border-bottom: 1px solid #D7E5F0;
+  }
+  .breakdown-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 4px 0; gap: 12px;
+  }
+  .breakdown-row > span:first-child { color: #334155; }
+  .breakdown-row > span:last-child {
+    font-weight: 600; font-variant-numeric: tabular-nums; text-align: right;
+  }
+  .breakdown-row.total {
+    font-weight: 700;
+    border-top: 1px solid #D7E5F0;
+    padding-top: 6px; margin-top: 2px;
+  }
+  .breakdown-row.total > span:last-child {
+    color: var(--flipdish-blue-dark);
+  }
+  .breakdown-section.result {
+    background: white; border: 1px solid var(--flipdish-blue-line);
+    border-radius: 8px; padding: 10px 14px;
+  }
+  .breakdown-row.total.headline {
+    border-top: none; padding-top: 3px; margin-top: 0;
+    font-size: 14px;
+  }
+  .breakdown-row.total.headline > span:last-child { font-size: 15px; }
+
+  footer {
+    margin-top: 28px; font-size: 12px; color: var(--muted); text-align: center;
+    padding-top: 20px; border-top: 1px solid var(--border);
+  }
+
+  .legend {
+    display: inline-block; background: var(--flipdish-blue-light); border: 1px solid var(--flipdish-blue-line);
+    padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600;
+    color: var(--flipdish-blue-dark); margin-left: 6px;
+  }
+
+  .scope-note {
+    background: var(--flipdish-blue-light);
+    border: 1px solid var(--flipdish-blue-line);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin: 0 0 18px;
+    font-size: 13.5px;
+    color: var(--flipdish-blue-dark);
+    line-height: 1.55;
+  }
+  .scope-note strong { color: var(--flipdish-blue-dark); }
+
+  /* Mobile */
+  @media (max-width: 640px) {
+    body { padding: 16px 12px 32px; }
+    h1 { font-size: 22px; }
+    .lede { font-size: 14px; }
+    .card { padding: 16px 16px; }
+    .hero { padding: 18px 18px; }
+    .hero .big { font-size: 34px; letter-spacing: -0.01em; word-break: break-word; }
+    .hero .sub { font-size: 13px; }
+    .detail .k { font-size: 10px; }
+    .detail .v { font-size: 16px; }
+    .detail { padding: 10px 12px; }
+    header { gap: 8px; }
+    .brand svg { height: 28px; }
+    .brand .tag { display: none; }
+    .meta { font-size: 11px; width: 100%; }
+    .input-row label { flex-wrap: wrap; }
+    .input-row input, .input-row select { font-size: 16px; }
+  }
+  @media (max-width: 480px) {
+    .detail-grid { grid-template-columns: 1fr; }
+    .hero .big { font-size: 30px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a href="../" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    All calculators
+  </a>
+
+  <span class="fam-pill">Flipdish vs OrderYoyo</span>
+
+  <header>
+    <div class="brand">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 288" aria-label="Flipdish">
+        <g fill="#020203">
+          <path d="M581.63,126.64c5.01,0.42,9.77,1.06,14.48,3.15c4,1.82,6.77,4.78,9.03,8.45c2.03,3.42,0.92,7.69-2.76,10.19 c-3.19,2.28-6.78,2.15-10.27-0.6c-1.4-1.01-2.78-2.49-4.18-3.5c-3.48-2.99-9.7-3.21-13.61-0.72c-2.45,1.59-3.75,4.41-3.12,7.06 c0.64,2.18,2.02,3.66,4.15,4.45c1.89,0.78,4.03,1.1,5.92,1.65c4.27,1.11,8.53,2.22,12.55,3.56c4.96,1.85,8.93,4.62,11.88,9.03 c5.23,7.6,4.62,18.1-0.92,25.8c-4.27,5.59-9.88,8.74-16.85,9.69c-8.42,1.37-16.53,0.61-24.29-3.25c-4.46-2.31-8.18-5.55-10.89-9.95 c-1.8-3.17-1.43-6.75,1.05-9.29c3.73-3.93,8.52-4,12.68-0.03c0.69,0.74,1.38,1.48,2.07,2.23c3.45,3.95,7.94,5.54,12.97,5.24 c1.92-0.17,3.61-0.59,5.32-1.72c3.92-2.73,4.12-8.23,0.15-11c-1.87-1.26-4-1.82-6.14-2.37c-4.26-1.35-8.77-2.23-13.02-3.81 c-4.97-1.61-9.17-4.63-11.88-9.03c-5-7.35-4.39-17.86,1.62-25.3c3.65-4.64,8.22-7.56,13.62-9.08 C574.59,126.52,578.13,126.52,581.63,126.64z"/>
+          <path d="M365.85,243.99c5.74,0,10.28-4.53,10.28-10.25l0-22.39v-16.36c5.93,6.03,13.69,9.69,22.19,9.69 c18.61,0,33.7-17.51,33.7-39.11c0-21.6-15.09-39.11-33.7-39.11c-8.51,0-16.28,3.67-22.21,9.72c-0.28-5.46-4.7-9.72-10.26-9.72 c-5.74,0-10.28,4.53-10.28,10.25v15.95l0,58.68l0,22.39C355.56,239.46,360.11,243.99,365.85,243.99z M394.65,144.32 c10.33,0,18.7,9.51,18.7,21.25c0,11.74-8.37,21.25-18.7,21.25c-10.33,0-18.7-9.51-18.7-21.25 C375.95,153.84,384.32,144.32,394.65,144.32z"/>
+          <path d="M502.01,90.92c-5.74,0-10.28,4.53-10.28,10.25v18.52v16.36c-5.93-6.03-13.69-9.69-22.19-9.69 c-18.61,0-33.7,17.51-33.7,39.11s15.09,39.11,33.7,39.11c8.51,0,16.28-3.67,22.21-9.72c0.28,5.46,4.7,9.72,10.26,9.72 c5.74,0,10.28-4.53,10.28-10.25v-15.95V119.7v-18.52C512.29,95.45,507.75,90.92,502.01,90.92z M473.21,186.72 c-10.33,0-18.7-9.51-18.7-21.25c0-11.74,8.37-21.25,18.7-21.25c10.33,0,18.7,9.51,18.7,21.25 C491.91,177.21,483.54,186.72,473.21,186.72z"/>
+          <path d="M205.01,128.94h-3.21l-0.23-3.4c-0.27-2.73-0.96-5.26-1.65-8.02c-3.37-12.77-10.11-23.36-19.75-32.04 c-9.39-8.43-20.23-13.49-32.27-15.66c0.72-1.69,1.2-3.37,1.2-5.3c0-6.99-5.54-12.53-12.52-12.53c-6.74,0-12.52,5.54-12.52,12.53 c0,1.93,0.48,3.61,1.2,5.06c-3.13,0.48-6.5,1.45-9.63,2.41c-7.95,2.89-15.17,6.99-21.43,12.53H42.92 c-5.06,0.24-9.15,4.34-9.15,9.39s4.09,9.15,9.15,9.15h37.08c-0.72,1.2-1.2,2.41-1.93,3.61H55.69c-5.06,0-9.15,4.1-9.15,9.15 c0,5.06,4.09,9.15,9.15,9.15h17.1c-0.24,1.19-0.42,2.6-0.48,3.95h-4.99c-4.62,0-8.39,3.78-8.39,8.39v0.84 c0,4.62,3.78,8.39,8.39,8.39h50.72l-0.23,10.46l-30.34,12.04c-2.41,0.96-4.33,2.89-5.06,5.54c-0.72,2.41-0.48,5.3,0.72,7.47 l7.95,13.73c1.69,2.89,4.82,4.58,7.71,4.58c1.44,0,3.13-0.48,4.58-1.2c4.33-2.65,5.78-8.19,3.13-12.53l-2.65-4.58l26.25-10.84 c3.37-1.45,5.54-4.58,5.54-8.19l0.48-16.48h3.44l10.53,21.3l-13.97,22.88c-1.69,2.89-1.93,6.26-0.24,9.15 c1.69,2.89,4.58,4.58,7.95,4.58h16.62c5.06,0,9.15-4.1,9.15-9.15c0-5.06-4.09-9.15-9.15-9.15h-0.48l8.19-13.25 c1.69-2.65,1.93-6.02,0.48-8.91l-8.6-17.44h45c4.62,0,8.39-3.78,8.39-8.39v-0.84C213.4,132.72,209.63,128.94,205.01,128.94z M177.77,126.29c-0.13,0.01-0.25,0.01-0.38,0.01c-2.57,0-4.73-2.01-4.93-4.58c-1.33-17.67-13.42-23.89-20.51-26.03 c-2.61-0.79-4.1-3.55-3.31-6.16c0.78-2.6,3.55-4.09,6.16-3.31c16.2,4.88,26.23,17.55,27.52,34.76 C182.54,123.71,180.49,126.09,177.77,126.29z"/>
+          <path d="M326.41,115.27c-4.65-4.65-4.65-12.29,0.17-17.1c4.65-4.65,12.45-4.82,17.27,0c4.82,4.82,4.82,12.45,0,17.27 C339.03,120.25,331.23,120.08,326.41,115.27z"/>
+          <path d="M345.42,194.06c0,5.73-4.69,10.42-10.42,10.42l0,0c-5.73,0-10.42-4.69-10.42-10.42v-57.18 c0-5.73,4.69-10.42,10.42-10.42h0c5.73,0,10.42,4.69,10.42,10.42V194.06z"/>
+          <path d="M524.27,115.27c-4.65-4.65-4.65-12.29,0.17-17.1c4.65-4.65,12.45-4.82,17.27,0s4.82,12.45,0,17.27 C536.89,120.25,529.09,120.08,524.27,115.27z"/>
+          <path d="M543.28,194.06c0,5.73-4.69,10.42-10.42,10.42l0,0c-5.73,0-10.42-4.69-10.42-10.42v-57.18 c0-5.73,4.69-10.42,10.42-10.42h0c5.73,0,10.42,4.69,10.42,10.42V194.06z"/>
+          <path d="M314.39,194.13c0,5.73-4.69,10.42-10.42,10.42l0,0c-5.73,0-10.42-4.69-10.42-10.42V99.58 c0-5.73,4.69-10.42,10.42-10.42h0c5.73,0,10.42,4.69,10.42,10.42V194.13z"/>
+          <path d="M265.37,112.27c1.28-1.96,3.17-3.51,5.85-4.11c1.42-0.3,2.92-0.38,4.17-0.46c2.02-0.13,4.01,0.19,5.77-0.06 c6.27-0.75,9.03-7.28,5.77-12.55c-1.76-2.76-4.26-4.27-7.28-5.02c-4.26-1.25-8.53-1.25-13.04-0.75 c-13.04,1.76-22.33,11.29-23.33,24.59c-0.18,2.95-0.23,5.76-0.25,8.63l-0.01,0.01v3.16v3.24h-9.95c-4.85,0-8.81,3.97-8.81,8.81 c0,4.85,3.97,8.81,8.81,8.81h9.95l0.14,47.71c0,5.73,4.69,10.42,10.42,10.42c5.73,0,10.42-4.69,10.42-10.42l0.01-47.57v-0.14h10.54 c4.85,0,8.81-3.97,8.81-8.81c0-4.85-3.97-8.81-8.81-8.81h-10.54v-12.95C264.02,114.68,264.65,113.37,265.37,112.27z"/>
+          <path d="M684.97,145.6c-2.26-8.28-6.53-14.8-14.57-18.31c-5.78-2.76-12.06-3.26-18.34-2.26 c-5.94,0.99-11.15,3.21-15.39,7.59V98.75c0-5.73-4.69-10.42-10.42-10.42c-5.73,0-10.42,4.69-10.42,10.42v95.84 c0,5.73,4.69,10.42,10.42,10.42c5.73,0,10.42-4.69,10.42-10.42v-39.1c0.84-3.86,2.57-7.06,5.84-9.38 c3.27-2.51,7.04-2.76,11.06-2.26c5.03,0.75,8.54,3.26,10.3,7.77c1.01,2.51,1.26,5.02,1.26,7.52c0,13.04,0,22.29,0,35.33 c0,5.77,4.52,10.53,10.55,10.53c5.78,0,10.55-4.76,10.55-10.53c0-14.3,0-24.8,0-39.34C686.23,151.87,685.72,148.61,684.97,145.6z"/>
+        </g>
+      </svg>
+      <span class="tag">Business Value Assessment</span>
+    </div>
+    <div class="meta">Direct ordering · OrderYoyo comparison · v1.0</div>
+  </header>
+
+  <h1 id="pageTitle">How much more does the restaurant keep with Flipdish vs OrderYoyo?</h1>
+  <p class="lede">Both Flipdish and OrderYoyo run direct online ordering for restaurants. The pricing models are different. This is what's left in the till after each provider takes their cut, on the same monthly order value.</p>
+
+  <div class="scope-note">
+    <strong>This is a like-for-like direct ordering comparison.</strong>
+    Same restaurant, same orders, same delivery setup. Only the provider changes. All fees come out before the restaurant keeps anything.
+  </div>
+
+  <!-- COUNTRY SELECTOR -->
+  <div class="country-bar">
+    <span class="country-bar-label">Country</span>
+    <div class="country-buttons" id="countryButtons">
+      <button class="country-btn" data-country="UK">United Kingdom</button>
+      <button class="country-btn" data-country="IE">Ireland</button>
+      <button class="country-btn" data-country="US">United States</button>
+    </div>
+  </div>
+
+  <div class="layout">
+
+    <!-- INPUTS -->
+    <div class="card">
+      <h2>Restaurant numbers <span class="legend">editable</span></h2>
+
+      <div class="input-row">
+        <label>Monthly direct ordering GMV <span class="hint">order value before any fees</span></label>
+        <input id="gmv" type="number" value="20000">
+      </div>
+
+      <div class="input-row">
+        <label>Average order value (AOV) <span class="hint">used to work out order counts</span></label>
+        <input id="aov" type="number" value="25">
+      </div>
+
+      <details open>
+        <summary>OrderYoyo pricing</summary>
+
+        <div class="input-row" style="margin-top:10px;">
+          <label>OrderYoyo commission % <span class="hint">taken on every order</span></label>
+          <input id="oyoRate" type="number" value="7" step="0.1">
+        </div>
+
+        <div class="input-row">
+          <label>OrderYoyo monthly fee <span class="hint">leave 0 if commission only</span></label>
+          <input id="oyoSub" type="number" value="0">
+        </div>
+
+        <div class="input-row">
+          <label>VAT on commission <span class="hint">marketplace-style VAT, where applicable</span></label>
+          <input id="oyoVat" type="number" value="0" step="0.5">
+        </div>
+      </details>
+
+      <details open>
+        <summary>Flipdish pricing</summary>
+
+        <div class="input-row" style="margin-top:10px;">
+          <label>Flipdish processing % <span class="hint">on online card volume</span></label>
+          <input id="fdFee" type="number" value="2.5" step="0.1">
+        </div>
+
+        <div class="input-row">
+          <label>Flipdish per-order transaction fee <span class="hint">flat, per order</span></label>
+          <input id="fdTxn" type="number" value="0.20" step="0.05">
+        </div>
+
+        <div class="input-row">
+          <label>Flipdish Online Ordering subscription <span class="hint">monthly, fixed</span></label>
+          <input id="fdSub" type="number" value="99">
+        </div>
+      </details>
+
+    </div>
+
+    <!-- RESULTS -->
+    <div>
+      <div class="hero">
+        <div class="label">Annual extra in the till with Flipdish</div>
+        <div class="big" id="heroBig">-</div>
+        <div class="sub" id="heroSub">vs the same orders running through OrderYoyo</div>
+      </div>
+
+      <div class="vs-grid">
+        <div class="vs-card rival">
+          <div class="who">With OrderYoyo</div>
+          <div class="keep" id="oyoKeep">-</div>
+          <div class="keep-sub">kept per month</div>
+        </div>
+        <div class="vs-card flip">
+          <div class="who">With Flipdish</div>
+          <div class="keep" id="fdKeep">-</div>
+          <div class="keep-sub">kept per month</div>
+        </div>
+      </div>
+
+      <div class="detail-grid">
+        <div class="detail">
+          <div class="k">Monthly difference</div>
+          <div class="v" id="kDiff">-</div>
+        </div>
+        <div class="detail">
+          <div class="k">OrderYoyo total cost</div>
+          <div class="v" id="kOyoCost">-</div>
+        </div>
+        <div class="detail">
+          <div class="k">Flipdish total cost</div>
+          <div class="v" id="kFdCost">-</div>
+        </div>
+      </div>
+
+      <div class="breakdown">
+        <strong>How we got there</strong>
+
+        <div class="breakdown-section">
+          <div class="breakdown-title">Same monthly orders</div>
+          <div class="breakdown-row"><span>Monthly GMV</span><span id="b-gmv">-</span></div>
+          <div class="breakdown-row"><span>Monthly orders</span><span id="b-orders">-</span></div>
+        </div>
+
+        <div class="breakdown-section">
+          <div class="breakdown-title">With OrderYoyo</div>
+          <div class="breakdown-row"><span id="b-oyo-rate-label">Commission</span><span id="b-oyo-rate">-</span></div>
+          <div class="breakdown-row"><span>Monthly fee</span><span id="b-oyo-sub">-</span></div>
+          <div class="breakdown-row total"><span>Restaurant keeps</span><span id="b-oyo-keep">-</span></div>
+        </div>
+
+        <div class="breakdown-section">
+          <div class="breakdown-title">With Flipdish</div>
+          <div class="breakdown-row"><span id="b-fd-fee-label">Processing</span><span id="b-fd-fee">-</span></div>
+          <div class="breakdown-row"><span id="b-fd-txn-label">Per-order fee</span><span id="b-fd-txn">-</span></div>
+          <div class="breakdown-row"><span>Subscription</span><span id="b-fd-sub">-</span></div>
+          <div class="breakdown-row total"><span>Restaurant keeps</span><span id="b-fd-keep">-</span></div>
+        </div>
+
+        <div class="breakdown-section result">
+          <div class="breakdown-row total headline"><span>Monthly difference</span><span id="b-monthly">-</span></div>
+          <div class="breakdown-row total headline"><span>Annual difference</span><span id="b-annual">-</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    Flipdish vs OrderYoyo Value Calculator. Live calculation, nothing is saved.
+  </footer>
+
+</div>
+
+<script>
+  // ---------- defaults by market ----------
+  // OrderYoyo headline commission varies by plan (Direct vs Plus vs Pro).
+  // Sensible "Direct plan" defaults used here. Rep can override per deal.
+  const defaultsByMarket = {
+    UK: { oyoRate: 7,  oyoSub: 0, oyoVat: 0,  fdFee: 2.5, fdTxn: 0.20, fdSub: 99, currency: "£" },
+    IE: { oyoRate: 7,  oyoSub: 0, oyoVat: 0,  fdFee: 2.5, fdTxn: 0.20, fdSub: 99, currency: "€" },
+    US: { oyoRate: 7,  oyoSub: 0, oyoVat: 0,  fdFee: 2.9, fdTxn: 0.30, fdSub: 99, currency: "$" }
+  };
+
+  let currency = "£";
+
+  // ---------- helpers ----------
+  const $ = id => document.getElementById(id);
+  const num = id => parseFloat($(id).value) || 0;
+  const fmtMoney = n => {
+    if (!isFinite(n)) return '-';
+    const sign = n < 0 ? '-' : '';
+    const abs = Math.abs(n);
+    return sign + currency + abs.toLocaleString(undefined, { maximumFractionDigits: 0 });
+  };
+  const fmtMoney2 = n => {
+    if (!isFinite(n)) return '-';
+    const sign = n < 0 ? '-' : '';
+    const abs = Math.abs(n);
+    return sign + currency + abs.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+  };
+  const fmtPct = n => (n).toFixed(1) + '%';
+  const fmtOrders = n => n.toLocaleString(undefined, { maximumFractionDigits: 0 });
+
+  // ---------- country selector ----------
+  let activeCountry = 'UK';
+  function setCountry(code) {
+    activeCountry = code;
+    document.querySelectorAll('.country-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.country === code);
+    });
+    const m = defaultsByMarket[code];
+    $('oyoRate').value = m.oyoRate;
+    $('oyoSub').value  = m.oyoSub;
+    $('oyoVat').value  = m.oyoVat;
+    $('fdFee').value   = m.fdFee;
+    $('fdTxn').value   = m.fdTxn;
+    $('fdSub').value   = m.fdSub;
+    currency = m.currency;
+    calc();
+  }
+  document.querySelectorAll('.country-btn').forEach(btn => {
+    btn.addEventListener('click', () => setCountry(btn.dataset.country));
+  });
+
+  // ---------- live recalculation ----------
+  document.querySelectorAll('input').forEach(el => el.addEventListener('input', calc));
+
+  function calc() {
+    currency = defaultsByMarket[activeCountry].currency;
+
+    // Inputs
+    const gmv     = num('gmv');
+    const aov     = num('aov');
+    const oyoRate = num('oyoRate');
+    const oyoSub  = num('oyoSub');
+    const oyoVat  = num('oyoVat');
+    const fdFee   = num('fdFee');
+    const fdTxn   = num('fdTxn');
+    const fdSub   = num('fdSub');
+
+    const orders = aov > 0 ? gmv / aov : 0;
+
+    // ---- OrderYoyo cost ----
+    const oyoEffectiveRate = (oyoRate / 100) * (1 + oyoVat / 100);
+    const oyoCommission    = gmv * oyoEffectiveRate;
+    const oyoCost          = oyoCommission + oyoSub;
+    const oyoKeep          = gmv - oyoCost;
+
+    // ---- Flipdish cost ----
+    const fdProcessing = gmv * (fdFee / 100);
+    const fdTxnTotal   = orders * fdTxn;
+    const fdCost       = fdProcessing + fdTxnTotal + fdSub;
+    const fdKeep       = gmv - fdCost;
+
+    // ---- Difference ----
+    const monthlyDiff = fdKeep - oyoKeep;
+    const annualDiff  = monthlyDiff * 12;
+
+    // ---- Render headline ----
+    $('heroBig').textContent = fmtMoney(annualDiff) + '/yr';
+
+    // ---- vs cards ----
+    $('oyoKeep').textContent = fmtMoney(oyoKeep);
+    $('fdKeep').textContent  = fmtMoney(fdKeep);
+
+    // ---- detail grid ----
+    $('kDiff').textContent     = fmtMoney(monthlyDiff) + '/mo';
+    $('kOyoCost').textContent  = fmtMoney(oyoCost) + '/mo';
+    $('kFdCost').textContent   = fmtMoney(fdCost) + '/mo';
+
+    // ---- breakdown ----
+    $('b-gmv').textContent    = fmtMoney(gmv) + '/mo';
+    $('b-orders').textContent = fmtOrders(orders);
+
+    const oyoRateLabel = oyoVat > 0
+      ? `Commission (${fmtPct(oyoRate)} + ${fmtPct(oyoVat)} VAT = ${fmtPct(oyoEffectiveRate * 100)})`
+      : `Commission (${fmtPct(oyoRate)})`;
+    $('b-oyo-rate-label').textContent = oyoRateLabel;
+    $('b-oyo-rate').textContent = '-' + fmtMoney(oyoCommission);
+    $('b-oyo-sub').textContent  = '-' + fmtMoney(oyoSub);
+    $('b-oyo-keep').textContent = fmtMoney(oyoKeep) + '/mo';
+
+    $('b-fd-fee-label').textContent = `Processing (${fmtPct(fdFee)})`;
+    $('b-fd-fee').textContent       = '-' + fmtMoney(fdProcessing);
+    $('b-fd-txn-label').textContent = `Per-order fee (${fmtMoney2(fdTxn)} x ${fmtOrders(orders)})`;
+    $('b-fd-txn').textContent       = '-' + fmtMoney(fdTxnTotal);
+    $('b-fd-sub').textContent       = '-' + fmtMoney(fdSub);
+    $('b-fd-keep').textContent      = fmtMoney(fdKeep) + '/mo';
+
+    $('b-monthly').textContent = fmtMoney(monthlyDiff) + '/mo';
+    $('b-annual').textContent  = fmtMoney(annualDiff) + '/yr';
+  }
+
+  setCountry('UK');
+</script>
+</body>
+</html>
