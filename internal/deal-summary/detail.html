@@ -690,40 +690,78 @@
     font-style: italic;
   }
 
-  /* v8.17: Marketplaces lifted to a dedicated top-level card with a
-     peach accent so the rep eye lands here first. Reps were missing
-     the input when it lived as a sub-strip inside the OO card. */
-  .card-marketplaces {
-    border-left: 4px solid var(--peach-dark, #C4541E);
-    background: linear-gradient(180deg, #FFF7F0 0%, #FFFFFF 30%);
-    margin-bottom: 14px;
+  /* v8.17.1: Marketplaces compact strip. Marketplaces is context-only
+     (doesn't feed any commercial verdict), so the input lives as a
+     single horizontal strip - icon, label, two small inputs, live
+     cost line - all on one row at typical desktop widths. Wraps onto
+     a second line on mobile. */
+  .market-strip-card {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    border: 1px solid var(--peach-line, #F1D5BC);
+    border-left: 3px solid var(--peach-dark, #C4541E);
+    background: #FFF7F0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 0 0 12px;
+    font-size: 12.5px;
   }
-  .card-marketplaces h3 {
+  .market-strip-icon {
+    width: 18px; height: 18px;
+    display: inline-flex; align-items: center; justify-content: center;
     color: var(--peach-dark, #C4541E);
-    display: flex; align-items: center; gap: 8px;
+    flex-shrink: 0;
   }
-  .card-marketplaces .market-flag {
-    display: inline-flex;
-    width: 22px; height: 22px;
+  .market-strip-icon svg { width: 100%; height: 100%; }
+  .market-strip-label {
+    display: flex; flex-direction: column; gap: 1px;
     color: var(--peach-dark, #C4541E);
+    line-height: 1.25;
   }
-  .card-marketplaces .market-flag svg {
-    width: 100%; height: 100%;
+  .market-strip-label strong { font-size: 13px; font-weight: 600; }
+  .market-strip-sub {
+    font-size: 10.5px;
+    color: var(--muted);
+    font-weight: 400;
   }
-  .market-card-lede {
-    margin: 4px 0 14px;
+  .market-strip-input {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .market-strip-input label {
+    font-size: 10.5px; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.05em;
+    margin: 0;
+  }
+  .market-strip-input input {
+    width: 80px;
+    padding: 5px 8px;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    border-radius: 5px;
     font-size: 13px;
-    line-height: 1.55;
+    font-family: inherit;
     color: var(--ink);
   }
-  .market-card-cost {
-    margin: 12px 0 0;
-    font-size: 13px;
+  .market-strip-input input:focus {
+    outline: 2px solid var(--peach-dark, #C4541E);
+    outline-offset: -1px;
+  }
+  .market-strip-cost {
+    margin-left: auto;
+    font-size: 12px;
     font-weight: 600;
     color: var(--peach-dark, #C4541E);
-    line-height: 1.5;
+    line-height: 1.4;
+    text-align: right;
   }
-  .market-card-cost.empty { display: none; }
+  .market-strip-cost:empty { display: none; }
+  .market-strip-cost.empty { display: none; }
+  .market-strip-cost strong {
+    font-weight: 700;
+  }
+  @media (max-width: 740px) {
+    .market-strip-card { gap: 8px; padding: 8px 10px; }
+    .market-strip-cost { width: 100%; text-align: left; margin-left: 0; }
+  }
 
   /* v8.17: Kiosk + QROP "has incumbent" toggle and current-spend block.
      Lets the rep capture current setup if any, so the calc can displace
@@ -1577,31 +1615,28 @@
     </label>
   </div>
 
-  <!-- v8.17: Marketplaces lifted to its own top-level card. Heavy
-       marketplace exposure is the single biggest commercial pain for
-       most prospects, and the strongest pitch lever for Flipdish. Used
-       to live as a sub-strip inside the OO card - reps were missing it.
-       Visibility tied to OO scope (since direct ordering is what
-       displaces marketplace volume). -->
-  <div class="card card-marketplaces" id="card-currentMarketplaces" style="display:none;">
-    <h3>
-      <span class="market-flag" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-      </span>
-      Marketplaces today <span class="hint" style="font-weight:400;font-size:12.5px;color:var(--muted);margin-left:6px;">(Deliveroo / Uber Eats / Just Eat)</span>
-    </h3>
-    <p class="market-card-lede">Where most of the customer's revenue is going today - and where the strongest case for Flipdish lives. Direct ordering, kiosk and POS bring this revenue back in-house, reclaiming margin and ownership of the customer.</p>
-    <div class="grid2">
-      <div class="field">
-        <label>Monthly marketplace revenue <span class="hint">(combined)</span></label>
-        <input id="curMarketGmv" type="number" min="0" step="100" placeholder="e.g. 10000">
-      </div>
-      <div class="field">
-        <label>Average commission % <span class="hint">(typical 12-14%)</span></label>
-        <input id="curMarketCommission" type="number" min="0" step="0.5" placeholder="e.g. 13">
-      </div>
-    </div>
-    <p class="market-card-cost" id="marketCardCost"></p>
+  <!-- v8.17.1: Marketplaces is context, not maths. Shrunk to a single
+       compact strip - inline GMV + commission + live cost line. Tells
+       the rep the marketplace pain in one glance without eating the
+       page. Visibility tied to OO scope (since direct ordering is what
+       reclaims marketplace volume). -->
+  <div class="market-strip-card" id="card-currentMarketplaces" style="display:none;">
+    <span class="market-strip-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+    </span>
+    <span class="market-strip-label">
+      <strong>Marketplaces today</strong>
+      <span class="market-strip-sub">Deliveroo / Uber Eats / Just Eat - context for the pitch</span>
+    </span>
+    <span class="market-strip-input">
+      <label>Monthly GMV</label>
+      <input id="curMarketGmv" type="number" min="0" step="100" placeholder="e.g. 10000">
+    </span>
+    <span class="market-strip-input">
+      <label>Commission %</label>
+      <input id="curMarketCommission" type="number" min="0" step="0.5" placeholder="e.g. 13">
+    </span>
+    <span class="market-strip-cost" id="marketCardCost"></span>
   </div>
 
   <!-- v8.8: side-by-side current - In-store left, Direct ordering right.
@@ -1625,7 +1660,7 @@
         </div>
         <div class="field">
           <label>Current merchant rate % <span class="hint">(card)</span></label>
-          <input id="curPosRate" type="number" min="0" step="0.05" placeholder="e.g. 1">
+          <input id="curPosRate" type="number" min="0" step="0.01" placeholder="e.g. 1">
         </div>
         <div class="field">
           <label>Current per-transaction fee</label>
@@ -1660,7 +1695,7 @@
         </div>
         <div class="field">
           <label>Processing fee % <span class="hint">(or commission %)</span></label>
-          <input id="curOOProcessingRate" type="number" min="0" step="0.1" placeholder="e.g. 3.4">
+          <input id="curOOProcessingRate" type="number" min="0" step="0.01" placeholder="e.g. 3.4">
         </div>
         <div class="field">
           <label>Per-transaction fee</label>
@@ -1810,7 +1845,7 @@
           <div class="field" id="fdPosRateField" style="display:none;">
             <label>POS processing %</label>
             <div class="lever-control">
-              <input id="fdPosRate" type="number" min="0" step="0.05" value="1.2">
+              <input id="fdPosRate" type="number" min="0" step="0.01" value="1.2">
               <input type="range" class="lever-slider" data-target="fdPosRate" min="0.5" max="1.5" step="0.01" value="1.2">
               <div class="lever-meta"><span class="lever-floor">0.50%</span><span class="lever-list">1.50%</span></div>
             </div>
@@ -1826,7 +1861,7 @@
           <div class="field" id="fdOOProcessingRateField" style="display:none;">
             <label>OO processing %</label>
             <div class="lever-control">
-              <input id="fdOOProcessingRate" type="number" min="0" step="0.05" value="5">
+              <input id="fdOOProcessingRate" type="number" min="0" step="0.01" value="5">
               <input type="range" class="lever-slider" data-target="fdOOProcessingRate" min="3" max="7" step="0.05" value="5">
               <div class="lever-meta"><span class="lever-floor">3.00%</span><span class="lever-list">7.00%</span></div>
             </div>
@@ -1834,7 +1869,7 @@
           <div class="field" id="fdKioskRateField" style="display:none;">
             <label>Kiosk processing %</label>
             <div class="lever-control">
-              <input id="fdKioskRate" type="number" min="0" step="0.05" value="1.5">
+              <input id="fdKioskRate" type="number" min="0" step="0.01" value="1.5">
               <input type="range" class="lever-slider" data-target="fdKioskRate" min="0.5" max="2" step="0.05" value="1.5">
               <div class="lever-meta"><span class="lever-floor">0.50%</span><span class="lever-list">2.00%</span></div>
             </div>
@@ -1850,7 +1885,7 @@
           <div class="field" id="fdQROPRateField" style="display:none;">
             <label>QROP processing %</label>
             <div class="lever-control">
-              <input id="fdQROPRate" type="number" min="0" step="0.05" value="1.5">
+              <input id="fdQROPRate" type="number" min="0" step="0.01" value="1.5">
               <input type="range" class="lever-slider" data-target="fdQROPRate" min="0.5" max="2" step="0.05" value="1.5">
               <div class="lever-meta"><span class="lever-floor">0.50%</span><span class="lever-list">2.00%</span></div>
             </div>
@@ -2104,7 +2139,7 @@
   var GUARDRAILS = {
     opMarginFactor:      0.75,   // SNR × 0.75 = monthly op margin
     paybackTargetMonths: 3,      // hardware payback envelope = 3 × eligible op margin
-    snrFloorMonthly:     350,    // per site - soft warning when crossed
+    snrFloorMonthly:     250,    // per site - soft warning when crossed (lowered from 350 in v8.17.2 per Will)
     ooSnrCrossSubsidy:   0.25    // 25% of monthly OO SNR offsets hardware payback (option b)
   };
   // Flipdish only offers 12-month contracts; this is a constant rather
@@ -4245,7 +4280,7 @@
   //
   //   3. Suggested play - natural-language opening offer.
   //
-  // All targets are bound by guardrails: SNR floor (£350/mo per site),
+  // All targets are bound by guardrails: SNR floor (£250/mo per site),
   // POS rate floor (Stripe + 0.3pp), OO rate floor (Stripe + 1pp),
   // hardware discount ≤ 3-month op margin envelope.
   function computeOfferPanel(p, v) {
